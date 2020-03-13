@@ -16,10 +16,9 @@ const theme = {
 class LeaseNFTApp extends App {
   state = {
     address: '',
-    balance: 0,
+    balance: '',
     addressTimer: null,
     balanceTimer: null,
-    web3: null,
   }
 
   static async getInitialProps({ Component, ctx }) {
@@ -44,28 +43,46 @@ class LeaseNFTApp extends App {
   }
 
   initMetamask() {
-    const { address } = this.state
     const addressTimer = setInterval(() => {
+      const { address } = this.state
       if (address !== ethereum.selectedAddress) {
-        return this.setState({ address: ethereum.selectedAddress }, () => this.getBalance())
+        return this.saveMetamask({ address: ethereum.selectedAddress }, () => this.getBalance())
       }
     }, 1 * 1000)
     const balanceTimer = setInterval(() => {
+      const { address } = this.state
       if (address !== ethereum.selectedAddress) {
-        return this.setState({ address: ethereum.selectedAddress }, () => this.getBalance())
+        return this.saveMetamask({ address: ethereum.selectedAddress }, () => this.getBalance())
       }
       this.getBalance()
     }, 15 * 1000)
-    this.setState({ address: ethereum.selectedAddress, balanceTimer, addressTimer }, () => this.getBalance())
+    this.saveMetamask({ address: ethereum.selectedAddress, balanceTimer, addressTimer }, () => this.getBalance())
+  }
+
+  saveMetamask(metamask, callback) {
+    const { store } = this.props
+    if (metamask.address) {
+      store.dispatch({
+        type: 'METAMASK_ADDRESS',
+        payload: metamask.address,
+      })
+    }
+    if (metamask.balance !== undefined) {
+      store.dispatch({
+        type: 'METAMASK_BALANCE',
+        payload: metamask.balance,
+      })
+    }
+    this.setState(metamask, callback)
   }
 
   getBalance() {
-    const { address } = this.state
+    const { address, balance: origin } = this.state
     if (address) {
       web3.eth.getBalance(address, (err, res) => {
         if (!err) {
           const balance = Number(web3._extend.utils.fromWei(res))
-          this.setState({ balance })
+          if (origin !== balance) this.saveMetamask({ balance })
         }
       })
     }
@@ -74,7 +91,6 @@ class LeaseNFTApp extends App {
   render() {
     const {
       props: { Component, pageProps, store },
-      state: { address, balance },
     } = this
 
     return (
@@ -111,7 +127,7 @@ class LeaseNFTApp extends App {
         </Head>
         <ThemeProvider theme={theme}>
           <Provider store={store}>
-            <Layout {...{ address, balance }}>
+            <Layout>
               <Component {...pageProps} />
             </Layout>
           </Provider>
