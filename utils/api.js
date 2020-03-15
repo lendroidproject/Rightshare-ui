@@ -30,8 +30,15 @@ function request(config) {
   return axios.request(config)
 }
 
-export function getMyAssets(address) {
-  return request({ url: '/assets/?format=json' })
+export function getMyAssets({ limit, offset, address }) {
+  return request({
+    url: '/assets',
+    params: {
+      format: 'json',
+      limit,
+      offset,
+    },
+  })
 }
 
 export default axios

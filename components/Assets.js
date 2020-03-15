@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { connect } from 'react-redux'
 
@@ -41,6 +41,8 @@ const ItemInfo = styled(Flex)`
   }
 `
 
+const LoadMore = styled.button``
+
 function Item(props) {
   const {
     token_id: id,
@@ -68,16 +70,21 @@ function Item(props) {
 
 export default connect(state => state)(function({ children, ...props }) {
   const { address, dispatch, assets = [] } = props
+  const [page, setPage] = useState({ offset: 0, limit: 20 })
 
   useEffect(() => {
     if (address) {
-      getMyAssets()
+      getMyAssets({
+        offset: 0,
+        limit: 20,
+      })
         .then(response => response.data)
         .then(({ assets }) => {
           dispatch({
             type: 'GET_MY_ASSETS',
             payload: assets,
           })
+          setPage({ offset: assets.length, limit: 20 })
         })
         .catch(error => {
           dispatch({
@@ -89,5 +96,33 @@ export default connect(state => state)(function({ children, ...props }) {
     }
   }, [address])
 
-  return <Wrapper>{assets.map(Item)}</Wrapper>
+  const more = page.offset % page.limit
+  const loadMore = () => {
+    if (page.offset % page.limit === 0) {
+      getMyAssets(page)
+        .then(response => response.data)
+        .then(({ assets: newAssets }) => {
+          const allAssets = [...assets, ...newAssets]
+          dispatch({
+            type: 'GET_MY_ASSETS',
+            payload: allAssets,
+          })
+          setPage({ offset: allAssets.length, limit: 20 })
+        })
+        .catch(error => {
+          dispatch({
+            type: 'GET_MY_ASSETS',
+            payload: [],
+            error,
+          })
+        })
+    }
+  }
+
+  return (
+    <Wrapper>
+      {assets.map(Item)}
+      {<LoadMore onClick={loadMore}>Load more...</LoadMore>}
+    </Wrapper>
+  )
 })
