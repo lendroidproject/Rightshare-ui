@@ -19,25 +19,7 @@ const Content = styled.div`
 `
 
 export default connect(state => state)(function({ children, ...props }) {
-  const { address, balance, dispatch } = props
-
-  useEffect(() => {
-    getMyAssets()
-      .then(response => response.data)
-      .then(({ assets }) => {
-        dispatch({
-          type: 'GET_MY_ASSETS',
-          payload: assets,
-        })
-      })
-      .catch(error => {
-        dispatch({
-          type: 'GET_MY_ASSETS',
-          payload: [],
-          error,
-        })
-      })
-  }, [address])
+  const { address, balance } = props
 
   return (
     <Wrapper>
