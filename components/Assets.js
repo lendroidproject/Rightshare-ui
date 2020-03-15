@@ -52,7 +52,6 @@ function Item(props) {
     current_price: price,
     decimals,
   } = props
-  console.log(background)
 
   return (
     <ItemWrapper className="item" key={id}>

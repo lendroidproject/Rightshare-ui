@@ -1,9 +1,6 @@
 import styled from 'styled-components'
 import { connect } from 'react-redux'
 
-import { getMyAssets } from '~/utils/api'
-import { useEffect } from 'react'
-
 const Wrapper = styled.div`
   width: 100%;
 `
@@ -24,7 +21,7 @@ export default connect(state => state)(function({ children, ...props }) {
   return (
     <Wrapper>
       <Account>
-        {address} : {balance}
+        {address || '---'} : {balance || '0'}
       </Account>
       <Content>{children}</Content>
     </Wrapper>
