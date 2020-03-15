@@ -70,21 +70,23 @@ export default connect(state => state)(function({ children, ...props }) {
   const { address, dispatch, assets = [] } = props
 
   useEffect(() => {
-    getMyAssets()
-      .then(response => response.data)
-      .then(({ assets }) => {
-        dispatch({
-          type: 'GET_MY_ASSETS',
-          payload: assets,
+    if (address) {
+      getMyAssets()
+        .then(response => response.data)
+        .then(({ assets }) => {
+          dispatch({
+            type: 'GET_MY_ASSETS',
+            payload: assets,
+          })
         })
-      })
-      .catch(error => {
-        dispatch({
-          type: 'GET_MY_ASSETS',
-          payload: [],
-          error,
+        .catch(error => {
+          dispatch({
+            type: 'GET_MY_ASSETS',
+            payload: [],
+            error,
+          })
         })
-      })
+    }
   }, [address])
 
   return <Wrapper>{assets.map(Item)}</Wrapper>
