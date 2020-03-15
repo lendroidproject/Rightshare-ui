@@ -96,7 +96,7 @@ export default connect(state => state)(function({ children, ...props }) {
     }
   }, [address])
 
-  const more = page.offset % page.limit
+  const more = page.offset > 0 && page.offset % page.limit
   const loadMore = () => {
     if (page.offset % page.limit === 0) {
       getMyAssets(page)
@@ -122,7 +122,7 @@ export default connect(state => state)(function({ children, ...props }) {
   return (
     <Wrapper>
       {assets.map(Item)}
-      {<LoadMore onClick={loadMore}>Load more...</LoadMore>}
+      {more && <LoadMore onClick={loadMore}>Load more...</LoadMore>}
     </Wrapper>
   )
 })
