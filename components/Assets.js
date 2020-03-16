@@ -5,9 +5,11 @@ import { connect } from 'react-redux'
 import { getMyAssets } from '~/utils/api'
 import { Flex, FlexWrap, FlexCenter, FlexInline } from '~/components/common/Wrapper'
 
-const Wrapper = styled(FlexWrap)`
+const Wrapper = styled(FlexWrap)``
+const Items = styled(FlexWrap)`
   margin: -15px;
   align-items: stretch;
+  margin-bottom: 15px;
 `
 const LoadMore = styled.button``
 
@@ -134,7 +136,7 @@ export default connect(state => state)(function({ children, ...props }) {
       getMyAssets({
         offset: 0,
         limit: 20,
-        // owner,
+        owner,
       })
         .then(response => response.data)
         .then(({ assets }) => {
@@ -226,9 +228,11 @@ export default connect(state => state)(function({ children, ...props }) {
 
   return (
     <Wrapper>
-      {assets.map((asset, index) => (
-        <Item key={index} {...asset} onSelect={setItem} />
-      ))}
+      <Items>
+        {assets.map((asset, index) => (
+          <Item key={index} {...asset} onSelect={setItem} />
+        ))}
+      </Items>
       {!end && <LoadMore onClick={loadMore}>Load more...</LoadMore>}
       {renderItem()}
     </Wrapper>

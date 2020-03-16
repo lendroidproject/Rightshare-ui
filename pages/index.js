@@ -72,7 +72,7 @@ const tabs = [
 ]
 
 export default function() {
-  const [active, setActive] = useState(0)
+  const [active, setActive] = useState(1)
   const { Component } = tabs[active]
   const tabLabels = tabs.map(({ label }) => label)
 
