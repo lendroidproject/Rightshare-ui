@@ -54,6 +54,10 @@ const Tab = ({ label, active, onSelect }) => (
 
 const tabs = [
   {
+    label: 'How it works',
+    Component: () => <div>Coming soon...</div>,
+  },
+  {
     label: 'My Assets',
     Component: Assets,
   },
@@ -63,10 +67,6 @@ const tabs = [
   },
   {
     label: 'My ITokens',
-    Component: () => <div>Coming soon...</div>,
-  },
-  {
-    label: 'Another Tab',
     Component: () => <div>Coming soon...</div>,
   },
 ]
