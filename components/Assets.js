@@ -63,6 +63,12 @@ const ItemDetail = styled(FlexInline)`
     width: 50%;
   }
 
+  .external {
+    img {
+      width: 100%;
+    }
+  }
+
   .info {
     padding: 20px;
 
@@ -182,7 +188,7 @@ export default connect(state => state)(function({ children, ...props }) {
     return (
       <ItemOverlay onClick={() => setItem(null)}>
         <ItemDetail onClick={e => e.stopPropagation()}>
-          <a href={external} target="_blank"><img src={image} alt={name} /></a>
+          <a href={external} className="external" target="_blank"><img src={image} alt={name} /></a>
           <div className="info">
             <div className="heading">
               <p>{assetName}</p>
