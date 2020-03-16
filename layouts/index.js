@@ -7,7 +7,7 @@ const Wrapper = styled.div`
 
 const Account = styled.p`
   margin: 0;
-  padding: 10px;
+  padding: 20px;
   text-align: center;
 
   .logo {

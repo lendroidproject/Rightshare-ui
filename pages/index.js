@@ -42,7 +42,6 @@ const Tabs = styled(FlexCenter)`
 
   > div {
     padding: 10px;
-    border-radius: 4px 4px 0 0;
     cursor: pointer;
     margin: 0 1px;
 
