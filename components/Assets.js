@@ -61,9 +61,12 @@ const ItemDetail = styled(FlexInline)`
 
   > * {
     width: 50%;
+    max-width: 512px;
   }
 
   .external {
+    display: flex;
+
     img {
       width: 100%;
     }
@@ -100,7 +103,7 @@ function Item({ onSelect, ...data }) {
     token_id: id,
     image_preview_url: preview,
     // image_thumbnail_url: thumbnail,
-    // image_original_url: original
+    // image_url: original,
     name,
     background_color: background,
     current_price: price,
@@ -179,16 +182,25 @@ export default connect(state => state)(function({ children, ...props }) {
       name,
       asset_contract: { name: assetName },
       owner: { user, profile_img_url: avatar },
-      permalink, external_link: external,
+      permalink,
+      external_link: external,
       current_price: price,
       image_url: image,
+      background_color: background,
     } = item
     const userName = user ? user.username : '---'
 
     return (
       <ItemOverlay onClick={() => setItem(null)}>
         <ItemDetail onClick={e => e.stopPropagation()}>
-          <a href={external} className="external" target="_blank"><img src={image} alt={name} /></a>
+          <a
+            href={external}
+            className="external"
+            target="_blank"
+            style={{ background: background ? `#${background}` : 'white' }}
+          >
+            <img src={image ? image : 'https://picsum.photos/512'} alt={name} />
+          </a>
           <div className="info">
             <div className="heading">
               <p>{assetName}</p>
