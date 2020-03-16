@@ -11,10 +11,13 @@ const Account = styled.p`
   text-align: center;
 
   .logo {
-    position: absolute;
-    left: 10px;
-    height: 34px;
-    top: 5px;
+    width:100px;
+    height:100px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    align:center;
+
   }
 `
 
