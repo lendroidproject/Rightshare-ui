@@ -21,6 +21,7 @@ const ItemWrapper = styled.div`
   overflow: hidden;
   box-shadow: 1px 1px 5px grey;
   cursor: pointer;
+  background: #eee;
 
   &:hover {
     box-shadow: 0px 0px 7px black;
@@ -37,7 +38,6 @@ const Thumbnail = styled.div`
 `
 const ItemInfo = styled(Flex)`
   justify-content: space-between;
-  background: #eee;
   padding: 10px;
   min-height: 48px;
 
