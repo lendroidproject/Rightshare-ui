@@ -120,7 +120,7 @@ function Item({ onSelect, ...data }) {
       </Thumbnail>
       <ItemInfo>
         <div>{name}</div>
-        <div className="price">{Number(price ? paice : 0).toFixed(decimals)}</div>
+        <div className="price">{Number(price ? price : 0).toFixed(decimals)}</div>
       </ItemInfo>
     </ItemWrapper>
   )
