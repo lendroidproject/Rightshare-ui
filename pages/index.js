@@ -13,6 +13,9 @@ const Accordion = styled.div`
   margin: 0 auto 25px;
   border-radius: 5px;
   overflow: hidden;
+  @media all and (max-width: 767px) {
+    min-height: calc(100vh - 208px);
+  }
 
   * {
     color: black;
@@ -88,7 +91,7 @@ const tabs = [
 ]
 
 export default function() {
-  const [active, setActive] = useState(1)
+  const [active, setActive] = useState(0)
   const { Component } = tabs[active]
   const tabLabels = tabs.map(({ label }) => label)
 
