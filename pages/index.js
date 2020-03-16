@@ -8,6 +8,7 @@ const Accordion = styled.div`
   background: white;
   min-height: calc(100vh - 164px);
   width: 90%;
+  max-width: 1200px;
   margin: 0 auto 25px;
   border-radius: 5px;
   overflow: hidden;
