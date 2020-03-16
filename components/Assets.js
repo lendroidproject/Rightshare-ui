@@ -173,7 +173,7 @@ export default connect(state => state)(function({ children, ...props }) {
       name,
       asset_contract: { name: assetName },
       owner: { user, profile_img_url: avatar },
-      permalink,
+      permalink, external_link: external,
       current_price: price,
       image_url: image,
     } = item
@@ -182,7 +182,7 @@ export default connect(state => state)(function({ children, ...props }) {
     return (
       <ItemOverlay onClick={() => setItem(null)}>
         <ItemDetail onClick={e => e.stopPropagation()}>
-          <img src={image} alt={name} />
+          <a href={external} target="_blank"><img src={image} alt={name} /></a>
           <div className="info">
             <div className="heading">
               <p>{assetName}</p>
