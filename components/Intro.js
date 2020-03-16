@@ -17,6 +17,9 @@ const Wrapper = styled.div`
     max-width: 100%;
     margin: 10px auto;
   }
+  a{
+    color:#0651fa;
+  }
 `
 
 export default function() {
@@ -83,11 +86,9 @@ export default function() {
       </p>
       <p>
         Digital Rights Sharing - As an artist, or even as the owner of a work or art, you have very little right over
-        the art itself. Say you own Banksta(
-        <a href="https://async.art/art/master/0x6c424c25e9f1fff9642cb5b7750b0db7312c29ad-28" target="_blank">
-          https://async.art/art/master/0x6c424c25e9f1fff9642cb5b7750b0db7312c29ad-28
+        the art itself. Say you own <a href="https://async.art/art/master/0x6c424c25e9f1fff9642cb5b7750b0db7312c29ad-28" target="_blank">Banksta
         </a>
-        ), you own the token to have and hold, for some future value. Instead, why can't artists and owners monetize
+        , you own the token to have and hold, for some future value. Instead, why can't artists and owners monetize
         this ownership? You could sell the display rights token to 50 people for say six months. And the Metaverse could
         allow an image to be displayed only if you have the actual NFT or the corresponding valid iRights.
       </p>
@@ -98,7 +99,7 @@ export default function() {
       <h3>Tell us what you think</h3>
       <p>
         If you're feeling creative, come talk to us. We'd love to know what you think and spitball some ideas, on
-        Discord - <a href="https://discord.gg/SyHdEbD">https://discord.gg/SyHdEbD</a>
+        <a href="https://discord.gg/SyHdEbD">Discord </a>
       </p>
     </Wrapper>
   )
