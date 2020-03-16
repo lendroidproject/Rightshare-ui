@@ -30,10 +30,11 @@ const ItemWrapper = styled.div`
 const Thumbnail = styled.div`
   height: 250px;
   display: felx;
-  justify-content: center;
+  align-items: center;
 
   img {
-    height: 100%;
+    width: 100%;
+    display: block;
   }
 `
 const ItemInfo = styled(Flex)`
