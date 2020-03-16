@@ -1,12 +1,21 @@
 import styled from 'styled-components'
 
 const Wrapper = styled.div`
+  text-align: center;
+
   h3 {
     margin: 15px 0 8px;
+    text-align: left;
   }
 
   p {
     margin: 0 0 8px;
+    text-align: left;
+  }
+
+  img {
+    max-width: 100%;
+    margin: 10px auto;
   }
 `
 
