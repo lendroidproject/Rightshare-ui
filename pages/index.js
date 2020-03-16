@@ -30,11 +30,6 @@ const Accordion = styled.div`
     transition: 0.4s;
   }
 
-  .active,
-  .accordion:hover {
-    background-color: #ccc;
-  }
-
   .panel {
     padding: 20px;
     background-color: white;
@@ -49,9 +44,11 @@ const Tabs = styled(FlexCenter)`
     padding: 10px;
     border-radius: 4px 4px 0 0;
     cursor: pointer;
+    margin: 0 1px;
 
-    &:hover {
-      background-color: #eee;
+    &:hover, &.active {
+      background-color: #27A0F7;
+      color: white;
     }
   }
 `
