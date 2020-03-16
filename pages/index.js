@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import styled from 'styled-components'
-import { connect } from 'react-redux'
 
-import { Flex } from '~/components/common/Wrapper'
+import { FlexCenter } from '~/components/common/Wrapper'
 import Assets from '~components/Assets'
 
 const Accordion = styled.div`
@@ -33,7 +32,9 @@ const Accordion = styled.div`
   }
 `
 
-const Tabs = styled(Flex)`
+const Tabs = styled(FlexCenter)`
+  border-bottom: 1px solid #eee;
+
   > div {
     padding: 10px;
     border-radius: 4px 4px 0 0;
@@ -58,7 +59,7 @@ const tabs = [
   },
 ]
 
-export default connect(state => state)(function(props) {
+export default function() {
   const [active, setActive] = useState(0)
   const { Component } = tabs[active]
   const tabLabels = tabs.map(({ label }) => label)
@@ -67,7 +68,7 @@ export default connect(state => state)(function(props) {
     <Accordion>
       <Tabs>
         {tabLabels.map((label, index) => (
-          <Tab label={label} active={active === index} onSelect={() => setActive(index)} />
+          <Tab key={index} label={label} active={active === index} onSelect={() => setActive(index)} />
         ))}
       </Tabs>
       <div className="panel">
@@ -75,4 +76,4 @@ export default connect(state => state)(function(props) {
       </div>
     </Accordion>
   )
-})
+}

@@ -111,7 +111,7 @@ function Item({ onSelect, ...data }) {
   } = data
 
   return (
-    <ItemWrapper className="item" key={id} onClick={() => onSelect(data)}>
+    <ItemWrapper className="item" onClick={() => onSelect(data)}>
       <Thumbnail style={{ background: background ? `#${background}` : 'white' }}>
         <img src={preview ? preview : 'https://picsum.photos/250'} alt="" />
       </Thumbnail>
@@ -126,6 +126,7 @@ function Item({ onSelect, ...data }) {
 export default connect(state => state)(function({ children, ...props }) {
   const { address: owner, dispatch, assets = [] } = props
   const [page, setPage] = useState({ offset: 0, limit: 20 })
+  const [end, setEnd] = useState(false)
   const [item, setItem] = useState(null)
 
   useEffect(() => {
@@ -142,6 +143,7 @@ export default connect(state => state)(function({ children, ...props }) {
             payload: assets,
           })
           setPage({ offset: assets.length, limit: 20 })
+          if (assets.length < page.limit) setEnd(true)
         })
         .catch(error => {
           dispatch({
@@ -153,7 +155,6 @@ export default connect(state => state)(function({ children, ...props }) {
     }
   }, [owner])
 
-  const more = page.offset > 0 && page.offset % page.limit === 0
   const loadMore = () => {
     if (page.offset % page.limit === 0) {
       getMyAssets({ ...page, owner })
@@ -165,6 +166,7 @@ export default connect(state => state)(function({ children, ...props }) {
             payload: allAssets,
           })
           setPage({ offset: allAssets.length, limit: 20 })
+          if (newAssets.length === 0) setEnd(true)
         })
         .catch(error => {
           dispatch({
@@ -224,10 +226,10 @@ export default connect(state => state)(function({ children, ...props }) {
 
   return (
     <Wrapper>
-      {assets.map(asset => (
-        <Item {...asset} onSelect={setItem} />
+      {assets.map((asset, index) => (
+        <Item key={index} {...asset} onSelect={setItem} />
       ))}
-      {more && <LoadMore onClick={loadMore}>Load more...</LoadMore>}
+      {!end && <LoadMore onClick={loadMore}>Load more...</LoadMore>}
       {renderItem()}
     </Wrapper>
   )
