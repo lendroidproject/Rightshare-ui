@@ -11,7 +11,9 @@ const Items = styled(FlexWrap)`
   align-items: stretch;
   margin-bottom: 15px;
 `
-const LoadMore = styled.button``
+const LoadMore = styled.button`
+  background: transparent;
+`
 
 const ItemWrapper = styled.div`
   width: 100%;
@@ -24,7 +26,7 @@ const ItemWrapper = styled.div`
   background: #eee;
 
   &:hover {
-    box-shadow: 0px 0px 7px black;
+    box-shadow: 0px 0px 7px #27A0F7;
   }
 `
 const Thumbnail = styled.div`
@@ -209,8 +211,7 @@ export default connect(state => state)(function({ children, ...props }) {
           </a>
           <div className="info">
             <div className="heading">
-              <p>{assetName}</p>
-              <a href={permalink} target="_blank">
+              <p>{assetName}</p><a href={permalink} target="_blank">
                 Share
               </a>
             </div>

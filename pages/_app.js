@@ -111,7 +111,7 @@ class LeaseNFTApp extends App {
             />
           )}
           <link href="https://necolas.github.io/normalize.css/latest/normalize.css" rel="stylesheet" type="text/css" />
-          <link href="https://fonts.googleapis.com/css?family=Overpass" rel="stylesheet" type="text/css" />
+          <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css" />
           <style>
             {`
               body {
@@ -119,6 +119,7 @@ class LeaseNFTApp extends App {
                 line-height: 1.5;
                 background: url('/bg.png');
                 background-color: #0a2c79;
+                font-family: "Open Sans", sans-serif;
               }
 
               body * {
