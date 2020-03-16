@@ -39,6 +39,10 @@ const Tabs = styled(FlexCenter)`
     padding: 10px;
     border-radius: 4px 4px 0 0;
     cursor: pointer;
+
+    &:hover {
+      background-color: #eee;
+    }
   }
 `
 
@@ -54,7 +58,15 @@ const tabs = [
     Component: Assets,
   },
   {
-    label: 'My Tokens',
+    label: 'My FTokens',
+    Component: () => <div>Coming soon...</div>,
+  },
+  {
+    label: 'My ITokens',
+    Component: () => <div>Coming soon...</div>,
+  },
+  {
+    label: 'Another Tab',
     Component: () => <div>Coming soon...</div>,
   },
 ]

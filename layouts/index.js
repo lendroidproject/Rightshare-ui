@@ -28,7 +28,7 @@ export default connect(state => state)(function({ children, ...props }) {
   return (
     <Wrapper>
       <Account>
-        <img src="https://picsum.photos/30" className="logo" />
+        <img src="/logo.png" className="logo" />
         {address || '---'} : {balance || '0'}
       </Account>
       <Content>{children}</Content>
