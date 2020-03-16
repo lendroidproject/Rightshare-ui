@@ -5,7 +5,16 @@ import { FlexCenter } from '~/components/common/Wrapper'
 import Assets from '~components/Assets'
 
 const Accordion = styled.div`
-  width: 100%;
+  background: white;
+  min-height: calc(100vh - 164px);
+  width: 90%;
+  margin: 0 auto 25px;
+  border-radius: 5px;
+  overflow: hidden;
+
+  * {
+    color: black;
+  }
 
   .accordion {
     background-color: #eee;

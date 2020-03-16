@@ -117,6 +117,18 @@ class LeaseNFTApp extends App {
               body {
                 display: flex;
                 line-height: 1.5;
+                background: url('/bg.png');
+                background-color: #0a2c79;
+              }
+
+              body * {
+                color: white;
+              }
+
+              button {
+                border: 0;
+                padding: 5px 10px;
+                cursor: pointer;
               }
 
               #__next {
