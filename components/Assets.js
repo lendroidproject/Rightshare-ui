@@ -191,6 +191,7 @@ export default connect(state => state)(function({ children, ...props }) {
       current_price: price,
       image_url: image,
       background_color: background,
+      description,
     } = item
     const userName = user ? user.username : '---'
 
@@ -219,6 +220,7 @@ export default connect(state => state)(function({ children, ...props }) {
                 Owned by <b>{userName.length > 20 ? `${userName.substr(0, 17)}...` : userName}</b>
               </span>
             </div>
+            <p>{description}</p>
             <div className="price">Price: {price ? price : 0}</div>
           </div>
         </ItemDetail>
