@@ -63,9 +63,14 @@ const ItemDetail = styled(FlexInline)`
   padding: 20px;
   border-radius: 5px;
   background: white;
+  max-width: 80%;
+
+  @media all and (max-width: 767px) {
+    flex-direction: column;
+  }
 
   > * {
-    width: 50%;
+    width: 100%;
     max-width: 512px;
   }
 

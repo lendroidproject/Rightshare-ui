@@ -41,10 +41,18 @@ const Accordion = styled.div`
 const Tabs = styled(FlexCenter)`
   border-bottom: 1px solid #eee;
 
+  @media all and (max-width: 767px) {
+    flex-wrap: wrap;
+
+    > div {
+      width: 50%;
+      text-align: center;
+    }
+  }
+
   > div {
     padding: 10px;
     cursor: pointer;
-    margin: 0 1px;
 
     &:hover,
     &.active {

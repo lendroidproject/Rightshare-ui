@@ -124,6 +124,7 @@ class LeaseNFTApp extends App {
 
               body * {
                 color: white;
+                box-sizing: border-box;
               }
 
               button {

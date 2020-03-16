@@ -9,13 +9,15 @@ const Account = styled.p`
   margin: 0;
   padding: 20px;
   text-align: center;
+  word-break: break-all;
 
   .logo {
-    width: 325px;
+    max-width: 325px;
+    width: 100%;
     height: 100px;
     display: block;
     margin: 0 auto;
-    padding:20px;
+    padding: 20px 0;
   }
 `
 
