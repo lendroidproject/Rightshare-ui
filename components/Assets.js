@@ -115,15 +115,16 @@ function Item({ onSelect, ...data }) {
 }
 
 export default connect(state => state)(function({ children, ...props }) {
-  const { address, dispatch, assets = [] } = props
+  const { address: owner, dispatch, assets = [] } = props
   const [page, setPage] = useState({ offset: 0, limit: 20 })
   const [item, setItem] = useState(null)
 
   useEffect(() => {
-    if (address) {
+    if (owner) {
       getMyAssets({
         offset: 0,
         limit: 20,
+        // owner,
       })
         .then(response => response.data)
         .then(({ assets }) => {
@@ -141,12 +142,12 @@ export default connect(state => state)(function({ children, ...props }) {
           })
         })
     }
-  }, [address])
+  }, [owner])
 
   const more = page.offset > 0 && page.offset % page.limit === 0
   const loadMore = () => {
     if (page.offset % page.limit === 0) {
-      getMyAssets(page)
+      getMyAssets({ ...page, owner })
         .then(response => response.data)
         .then(({ assets: newAssets }) => {
           const allAssets = [...assets, ...newAssets]
@@ -192,7 +193,9 @@ export default connect(state => state)(function({ children, ...props }) {
             <h2>{name}</h2>
             <div className="owner">
               <img src={avatar} alt={userName} />
-              <span>Owned by <b>{userName.length > 20 ? `${userName.substr(0, 17)}...` : userName}</b></span>
+              <span>
+                Owned by <b>{userName.length > 20 ? `${userName.substr(0, 17)}...` : userName}</b>
+              </span>
             </div>
             <div className="price">Price: {price ? price : 0}</div>
           </div>
