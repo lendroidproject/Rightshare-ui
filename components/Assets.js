@@ -110,6 +110,8 @@ const ItemDetail = styled(FlexInline)`
 
   button {
     margin-top: 20px;
+    background: #0a2c79;
+    color: white;
   }
 
   form {
@@ -176,7 +178,8 @@ export default connect(state => state)(function({ children, ...props }) {
     address: owner,
     dispatch,
     assets = [],
-    methods: { isFrozen, freeze },
+    methods: { isFrozen, approve, freeze },
+    addresses: { RightsDao: approveAddress },
   } = props
   const [page, setPage] = useState({ offset: 0, limit: 20 })
   const [end, setEnd] = useState(false)
@@ -236,7 +239,7 @@ export default connect(state => state)(function({ children, ...props }) {
     if (!item) return null
     const {
       name,
-      asset_contract: { name: assetName },
+      asset_contract: { name: assetName, address },
       owner: { user, profile_img_url: avatar },
       permalink,
       external_link: external,
@@ -246,27 +249,29 @@ export default connect(state => state)(function({ children, ...props }) {
       description,
       frozen,
       token_id: tokenId,
-      asset_contract: { address },
     } = item
     const userName = user ? user.username : '---'
 
     const handleFreeze = e => {
       e.preventDefault()
-      const { expiryDate, expiryTime, isExclusive, maxISupply, circulatingISupply } = freezeForm
-      const expiry = parseInt(new Date(`${expiryDate}T${expiryTime}:00`).getTime() / 1000)
-      freeze(address, tokenId, expiry, isExclusive, maxISupply, circulatingISupply, { from: owner })
-        .on('transactionHash', function(hash) {
-          console.log(1, hash)
-        })
-        .on('receipt', function(receipt) {
-          console.log(2, receipt)
-        })
-        .on('confirmation', function(confirmationNumber, receipt) {
-          console.log(3, confirmationNumber, receipt)
-        })
-        .on('error', function(error, receipt) {
-          console.log(4, error, receipt)
-        })
+      approve(address)(approveAddress, tokenId, { from: owner }).then(result => {
+        console.log(0, result)
+        const { expiryDate, expiryTime, isExclusive, maxISupply, circulatingISupply } = freezeForm
+        const expiry = parseInt(new Date(`${expiryDate}T${expiryTime}:00`).getTime() / 1000)
+        freeze(address, tokenId, expiry, isExclusive, maxISupply, circulatingISupply, { from: owner })
+          .on('transactionHash', function(hash) {
+            console.log(1, hash)
+          })
+          .on('receipt', function(receipt) {
+            console.log(2, receipt)
+          })
+          .on('confirmation', function(confirmationNumber, receipt) {
+            console.log(3, confirmationNumber, receipt)
+          })
+          .on('error', function(error, receipt) {
+            console.log(4, error, receipt)
+          })
+      })
     }
 
     return (

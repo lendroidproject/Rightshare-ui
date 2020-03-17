@@ -3,6 +3,7 @@ import Web3 from 'web3'
 import FRight from './ABIs/FRightABI.json'
 import IRight from './ABIs/IRightABI.json'
 import RightsDao from './ABIs/RightsDaoABI.json'
+import NFT from './ABIs/NFTABI.json'
 
 const addresses = {
   FRight: '0xdebe8d133cd16ebf1c417cb8b1aa9332c40a0b37',
@@ -12,7 +13,7 @@ const addresses = {
 
 const call = method => (...args) => method(...args).call()
 const send = method => (...args) => {
-  const option = args[args.length - 1]
+  const option = args.pop()
   args.pop()
   return method(...args).send(option)
 }
@@ -35,8 +36,15 @@ export default () => {
   // RightsDao
   methods.freeze = send(contracts.RightsDao.methods.freeze)
 
+  // NFT
+  methods.approve = address => {
+    const contract = new instance.eth.Contract(NFT, address)
+    return send(contract.methods.approve)
+  }
+
   return {
     web3: instance,
+    addresses,
     contracts,
     methods,
   }
