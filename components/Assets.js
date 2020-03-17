@@ -26,7 +26,7 @@ const ItemWrapper = styled.div`
   background: #eee;
 
   &:hover {
-    box-shadow: 0px 0px 7px #27A0F7;
+    box-shadow: 0px 0px 7px #27a0f7;
   }
 `
 const Thumbnail = styled.div`
@@ -60,6 +60,7 @@ const ItemOverlay = styled(FlexCenter)`
   height: 100vh;
 `
 const ItemDetail = styled(FlexInline)`
+  align-items: stretch;
   padding: 20px;
   border-radius: 5px;
   background: white;
@@ -106,6 +107,43 @@ const ItemDetail = styled(FlexInline)`
       }
     }
   }
+
+  button {
+    margin-top: 20px;
+  }
+
+  form {
+    .input-group {
+      p {
+        margin: 0 0 8px;
+      }
+
+      .inputs {
+        display: flex;
+        margin-bottom: 8px;
+
+        > * {
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+
+          &.radio {
+            flex-direction: row;
+            align-items: center;
+
+            input {
+              width: 20px;
+              margin-right: 10px;
+            }
+          }
+        }
+
+        input {
+          width: 100%;
+        }
+      }
+    }
+  }
 `
 
 function Item({ onSelect, ...data }) {
@@ -134,10 +172,16 @@ function Item({ onSelect, ...data }) {
 }
 
 export default connect(state => state)(function({ children, ...props }) {
-  const { address: owner, dispatch, assets = [] } = props
+  const {
+    address: owner,
+    dispatch,
+    assets = [],
+    methods: { isFrozen, freeze },
+  } = props
   const [page, setPage] = useState({ offset: 0, limit: 20 })
   const [end, setEnd] = useState(false)
   const [item, setItem] = useState(null)
+  const [freezeForm, setFreezeForm] = useState(null)
 
   useEffect(() => {
     if (owner) {
@@ -200,8 +244,30 @@ export default connect(state => state)(function({ children, ...props }) {
       image_url: image,
       background_color: background,
       description,
+      frozen,
+      token_id: tokenId,
+      asset_contract: { address },
     } = item
     const userName = user ? user.username : '---'
+
+    const handleFreeze = e => {
+      e.preventDefault()
+      const { expiryDate, expiryTime, isExclusive, maxISupply, circulatingISupply } = freezeForm
+      const expiry = parseInt(new Date(`${expiryDate}T${expiryTime}:00`).getTime() / 1000)
+      freeze(address, tokenId, expiry, isExclusive, maxISupply, circulatingISupply, { from: owner })
+        .on('transactionHash', function(hash) {
+          console.log(1, hash)
+        })
+        .on('receipt', function(receipt) {
+          console.log(2, receipt)
+        })
+        .on('confirmation', function(confirmationNumber, receipt) {
+          console.log(3, confirmationNumber, receipt)
+        })
+        .on('error', function(error, receipt) {
+          console.log(4, error, receipt)
+        })
+    }
 
     return (
       <ItemOverlay onClick={() => setItem(null)}>
@@ -216,7 +282,8 @@ export default connect(state => state)(function({ children, ...props }) {
           </a>
           <div className="info">
             <div className="heading">
-              <p>{assetName}</p><a href={permalink} target="_blank">
+              <p>{assetName}</p>
+              <a href={permalink} target="_blank">
                 Share
               </a>
             </div>
@@ -227,19 +294,122 @@ export default connect(state => state)(function({ children, ...props }) {
                 Owned by <b>{userName.length > 20 ? `${userName.substr(0, 17)}...` : userName}</b>
               </span>
             </div>
-            <p>{description}</p>
-            <div className="price">Price: {price ? price : 0}</div>
+            {!!freezeForm ? (
+              <form>
+                <div className="input-group">
+                  <p>Set Expiry</p>
+                  <div className="inputs">
+                    <div>
+                      <label>Date</label>
+                      <input
+                        type="date"
+                        value={freezeForm.expiryDate}
+                        onChange={e => setFreezeForm({ ...freezeForm, expiryDate: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <label>Time</label>
+                      <input
+                        type="time"
+                        value={freezeForm.expiryTime}
+                        onChange={e => setFreezeForm({ ...freezeForm, expiryTime: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                  <p>Set Expiry</p>
+                  <div className="inputs">
+                    <div className="radio">
+                      <input
+                        type="radio"
+                        name="isExclusive"
+                        value={1}
+                        checked={freezeForm.isExclusive}
+                        onChange={e => setFreezeForm({ ...freezeForm, isExclusive: Number(e.target.value) === 1 })}
+                      />
+                      <label>Exclusive</label>
+                    </div>
+                    <div className="radio">
+                      <input
+                        type="radio"
+                        name="isExclusive"
+                        value={2}
+                        checked={!freezeForm.isExclusive}
+                        onChange={e => setFreezeForm({ ...freezeForm, isExclusive: Number(e.target.value) === 1 })}
+                      />
+                      <label>Non-Exclusive</label>
+                    </div>
+                  </div>
+                  {!freezeForm.isExclusive && (
+                    <>
+                      <p>Set Supply</p>
+                      <div className="inputs">
+                        <div>
+                          <label>May I Supply</label>
+                          <input
+                            type="number"
+                            value={freezeForm.maxISupply}
+                            onChange={e => setFreezeForm({ ...freezeForm, maxISupply: Number(e.target.value) })}
+                          />
+                        </div>
+                        <div>
+                          <label>Curclating I Supply</label>
+                          <input
+                            type="number"
+                            value={freezeForm.circulatingISupply}
+                            onChange={e => setFreezeForm({ ...freezeForm, circulatingISupply: Number(e.target.value) })}
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
+                  <button onClick={handleFreeze}>Proceed</button>
+                </div>
+              </form>
+            ) : (
+              <>
+                <p>{description}</p>
+                <div className="price">Price: {price ? price : 0}</div>
+                {!frozen && (
+                  <button
+                    onClick={() =>
+                      setFreezeForm({
+                        expiryDate: new Date().toISOString().split('T')[0],
+                        expiryTime: new Date()
+                          .toISOString()
+                          .split('T')[1]
+                          .substr(0, 5),
+                        isExclusive: true,
+                        maxISupply: 1,
+                        circulatingISupply: 1,
+                      })
+                    }
+                  >
+                    Initiate Right Share
+                  </button>
+                )}
+              </>
+            )}
           </div>
         </ItemDetail>
       </ItemOverlay>
     )
   }
 
+  const handleSelect = item => {
+    const {
+      token_id: tokenId,
+      asset_contract: { address },
+    } = item
+    isFrozen(address, tokenId).then(frozen => {
+      setItem({ ...item, frozen })
+    })
+  }
+
   return (
     <Wrapper>
       <Items>
         {assets.map((asset, index) => (
-          <Item key={index} {...asset} onSelect={setItem} />
+          <Item key={index} {...asset} onSelect={handleSelect} />
         ))}
       </Items>
       {!end && <LoadMore onClick={loadMore}>Load more...</LoadMore>}

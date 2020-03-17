@@ -6,6 +6,8 @@ const reducer = (state, action) => {
       return { ...state, address: action.payload }
     case 'METAMASK_BALANCE':
       return { ...state, balance: action.payload }
+    case 'INIT_CONTRACTS':
+      return { ...state, ...action.payload }
     case 'GET_MY_ASSETS':
       return { ...state, assets: action.payload }
     default:

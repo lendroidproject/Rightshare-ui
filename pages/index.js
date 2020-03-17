@@ -81,11 +81,11 @@ const tabs = [
     Component: Assets,
   },
   {
-    label: 'My FTokens',
+    label: 'My FRights',
     Component: () => <div>Coming soon...</div>,
   },
   {
-    label: 'My ITokens',
+    label: 'My IRights',
     Component: () => <div>Coming soon...</div>,
   },
 ]

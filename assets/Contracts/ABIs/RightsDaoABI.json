@@ -1,0 +1,170 @@
+[
+  {
+    "outputs": [],
+    "inputs": [],
+    "constant": false,
+    "payable": false,
+    "type": "constructor"
+  },
+  {
+    "name": "set_right",
+    "outputs": [
+      {
+        "type": "bool",
+        "name": "out"
+      }
+    ],
+    "inputs": [
+      {
+        "type": "int128",
+        "name": "_type"
+      },
+      {
+        "type": "address",
+        "name": "_address"
+      }
+    ],
+    "constant": false,
+    "payable": false,
+    "type": "function",
+    "gas": 37235
+  },
+  {
+    "name": "transfer_right_ownership",
+    "outputs": [
+      {
+        "type": "bool",
+        "name": "out"
+      }
+    ],
+    "inputs": [
+      {
+        "type": "int128",
+        "name": "_type"
+      },
+      {
+        "type": "address",
+        "name": "_to"
+      }
+    ],
+    "constant": false,
+    "payable": false,
+    "type": "function",
+    "gas": 5147
+  },
+  {
+    "name": "set_right_proxy_registry",
+    "outputs": [
+      {
+        "type": "bool",
+        "name": "out"
+      }
+    ],
+    "inputs": [
+      {
+        "type": "int128",
+        "name": "_type"
+      },
+      {
+        "type": "address",
+        "name": "_proxy_registry"
+      }
+    ],
+    "constant": false,
+    "payable": false,
+    "type": "function",
+    "gas": 5321
+  },
+  {
+    "name": "freeze",
+    "outputs": [
+      {
+        "type": "bool",
+        "name": "out"
+      }
+    ],
+    "inputs": [
+      {
+        "type": "address",
+        "name": "_base_asset_address"
+      },
+      {
+        "type": "uint256",
+        "name": "_base_asset_id"
+      },
+      {
+        "type": "uint256",
+        "unit": "sec",
+        "name": "_expiry"
+      },
+      {
+        "type": "bool",
+        "name": "_is_exclusive"
+      },
+      {
+        "type": "uint256",
+        "name": "_max_i_supply"
+      },
+      {
+        "type": "uint256",
+        "name": "circulating_i_supply"
+      }
+    ],
+    "constant": false,
+    "payable": false,
+    "type": "function",
+    "gas": 3393
+  },
+  {
+    "name": "unfreeze",
+    "outputs": [
+      {
+        "type": "bool",
+        "name": "out"
+      }
+    ],
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "_right_id"
+      }
+    ],
+    "constant": false,
+    "payable": false,
+    "type": "function",
+    "gas": 7606
+  },
+  {
+    "name": "owner",
+    "outputs": [
+      {
+        "type": "address",
+        "name": "out"
+      }
+    ],
+    "inputs": [],
+    "constant": true,
+    "payable": false,
+    "type": "function",
+    "gas": 663
+  },
+  {
+    "name": "contracts",
+    "outputs": [
+      {
+        "type": "address",
+        "name": "out"
+      }
+    ],
+    "inputs": [
+      {
+        "type": "int128",
+        "name": "arg0"
+      }
+    ],
+    "constant": true,
+    "payable": false,
+    "type": "function",
+    "gas": 898
+  }
+]

@@ -6,6 +6,7 @@ import { ThemeProvider } from 'styled-components'
 import { Provider } from 'react-redux'
 import withRedux from 'next-redux-wrapper'
 import configureStore from '~/store'
+import Contracts from '~assets/Contracts'
 
 import Layout from '~/layouts'
 
@@ -57,6 +58,12 @@ class LeaseNFTApp extends App {
       this.getBalance()
     }, 15 * 1000)
     this.saveMetamask({ address: ethereum.selectedAddress, balanceTimer, addressTimer }, () => this.getBalance())
+
+    const { store } = this.props
+    store.dispatch({
+      type: 'INIT_CONTRACTS',
+      payload: Contracts(),
+    })
   }
 
   saveMetamask(metamask, callback) {
