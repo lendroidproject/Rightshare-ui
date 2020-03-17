@@ -14,7 +14,6 @@ const addresses = {
 const call = method => (...args) => method(...args).call()
 const send = method => (...args) => {
   const option = args.pop()
-  args.pop()
   return method(...args).send(option)
 }
 
