@@ -1,8 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import styled from 'styled-components'
 import { connect } from 'react-redux'
 
-import { getMyAssets } from '~/utils/api'
 import { FlexWrap } from '~/components/common/Wrapper'
 
 import AssetDetail from './AssetDetail'

@@ -118,9 +118,14 @@ class LeaseNFTApp extends App {
             />
           )}
           <link href="https://necolas.github.io/normalize.css/latest/normalize.css" rel="stylesheet" type="text/css" />
-          <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" type="text/css" />
-          <style>
-            {`
+          <link
+            href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700"
+            rel="stylesheet"
+            type="text/css"
+          />
+          <style
+            dangerouslySetInnerHTML={{
+              __html: `
               body {
                 display: flex;
                 line-height: 1.5;
@@ -152,8 +157,9 @@ class LeaseNFTApp extends App {
               #__next {
                 width: 100%;
               }
-            `}
-          </style>
+            `,
+            }}
+          />
         </Head>
         <ThemeProvider theme={theme}>
           <Provider store={store}>
