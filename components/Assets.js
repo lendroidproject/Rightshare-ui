@@ -186,54 +186,36 @@ export default connect(state => state)(function({ children, ...props }) {
   const [item, setItem] = useState(null)
   const [freezeForm, setFreezeForm] = useState(null)
 
+  const myAssets = query =>
+    getMyAssets(query)
+      .then(response => response.data)
+      .then(({ assets: newAssets }) => {
+        const allAssets = [...(query.offset ? assets : []), ...newAssets]
+        dispatch({
+          type: 'GET_MY_ASSETS',
+          payload: allAssets,
+        })
+        setPage({ offset: allAssets.length, limit: 20 })
+        if (newAssets.length < query.limit) setEnd(true)
+      })
+      .catch(error => {
+        dispatch({
+          type: 'GET_MY_ASSETS',
+          payload: [],
+          error,
+        })
+      })
+  const loadMore = () => myAssets({ ...page, owner })
+
   useEffect(() => {
     if (owner) {
-      getMyAssets({
+      myAssets({
         offset: 0,
         limit: 20,
         owner,
       })
-        .then(response => response.data)
-        .then(({ assets }) => {
-          dispatch({
-            type: 'GET_MY_ASSETS',
-            payload: assets,
-          })
-          setPage({ offset: assets.length, limit: 20 })
-          if (assets.length < page.limit) setEnd(true)
-        })
-        .catch(error => {
-          dispatch({
-            type: 'GET_MY_ASSETS',
-            payload: [],
-            error,
-          })
-        })
     }
   }, [owner])
-
-  const loadMore = () => {
-    if (page.offset % page.limit === 0) {
-      getMyAssets({ ...page, owner })
-        .then(response => response.data)
-        .then(({ assets: newAssets }) => {
-          const allAssets = [...assets, ...newAssets]
-          dispatch({
-            type: 'GET_MY_ASSETS',
-            payload: allAssets,
-          })
-          setPage({ offset: allAssets.length, limit: 20 })
-          if (newAssets.length === 0) setEnd(true)
-        })
-        .catch(error => {
-          dispatch({
-            type: 'GET_MY_ASSETS',
-            payload: [],
-            error,
-          })
-        })
-    }
-  }
 
   const renderItem = () => {
     if (!item) return null
@@ -264,6 +246,11 @@ export default connect(state => state)(function({ children, ...props }) {
           })
           .on('receipt', function(receipt) {
             console.log(2, receipt)
+            myAssets({
+              offset: 0,
+              limit: 20,
+              owner,
+            })
           })
           .on('confirmation', function(confirmationNumber, receipt) {
             console.log(3, confirmationNumber, receipt)
