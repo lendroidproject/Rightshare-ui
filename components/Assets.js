@@ -61,18 +61,52 @@ const ItemOverlay = styled(FlexCenter)`
 `
 const ItemDetail = styled(FlexInline)`
   align-items: stretch;
-  padding: 20px;
+  padding: 10px;
   border-radius: 5px;
   background: white;
   max-width: 80%;
+  position: relative;
 
   @media all and (max-width: 767px) {
     flex-direction: column;
   }
 
+  .close {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    width: 24px;
+    height: 24px;
+    background: lightgrey;
+    border-radius: 50%;
+    cursor: pointer;
+    &:hover {
+      background: grey;
+    }
+  }
+  .close:before,
+  .close:after {
+    position: absolute;
+    left: 11px;
+    top: 4px;
+    content: ' ';
+    height: 16px;
+    width: 2px;
+    background-color: white;
+  }
+  .close:before {
+    transform: rotate(45deg);
+  }
+  .close:after {
+    transform: rotate(-45deg);
+  }
+
   > * {
-    width: 100%;
-    max-width: 512px;
+    width: 384px;
+    max-width: 100%;
+    min-height: 384px;
+    align-items: center;
+    padding: 10px;
   }
 
   .external {
@@ -84,8 +118,6 @@ const ItemDetail = styled(FlexInline)`
   }
 
   .info {
-    padding: 20px;
-
     .heading {
       display: flex;
       justify-content: space-between;
@@ -95,10 +127,14 @@ const ItemDetail = styled(FlexInline)`
       }
     }
 
+    h2 {
+      margin: 0 0 10px;
+    }
+
     .owner {
       display: flex;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
 
       img {
         border-radius: 50%;
@@ -109,25 +145,35 @@ const ItemDetail = styled(FlexInline)`
   }
 
   button {
-    margin-top: 20px;
+    margin-top: 12px;
     background: #0a2c79;
     color: white;
+    border-radius: 4px;
+    padding: 10px 20px;
   }
 
   form {
     .input-group {
       p {
         margin: 0 0 8px;
+        font-size: 16px;
+        font-weight: 600;
+      }
+
+      label {
+        font-size: 14px;
+        margin-bottom: 4px;
       }
 
       .inputs {
         display: flex;
-        margin-bottom: 8px;
+        margin: 0 -8px 8px;
 
         > * {
           width: 100%;
           display: flex;
           flex-direction: column;
+          margin: 0 8px;
 
           &.radio {
             flex-direction: row;
@@ -142,6 +188,15 @@ const ItemDetail = styled(FlexInline)`
 
         input {
           width: 100%;
+          font-size: 14px;
+          border-radius: 4px;
+          border: 1px solid;
+          padding: 5px 10px;
+          line-height: 1.5;
+
+          &[type='radio'] {
+            cursor: pointer;
+          }
         }
       }
     }
@@ -223,7 +278,7 @@ export default connect(state => state)(function({ children, ...props }) {
       name,
       asset_contract: { name: assetName, address },
       owner: { user, profile_img_url: avatar },
-      permalink,
+      // permalink,
       external_link: external,
       current_price: price,
       image_url: image,
@@ -264,20 +319,17 @@ export default connect(state => state)(function({ children, ...props }) {
     return (
       <ItemOverlay onClick={() => setItem(null)}>
         <ItemDetail onClick={e => e.stopPropagation()}>
-          <a
-            href={external}
-            className="external"
-            target="_blank"
-            style={{ background: background ? `#${background}` : 'white' }}
-          >
-            <img src={image ? image : 'https://picsum.photos/512'} alt={name} />
+          <a href={external} className="external" target="_blank">
+            <img
+              src={image ? image : 'https://picsum.photos/512'}
+              alt={name}
+              style={{ background: background ? `#${background}` : 'white' }}
+            />
           </a>
           <div className="info">
+            <div className="close" onClick={() => setItem(null)} />
             <div className="heading">
               <p>{assetName}</p>
-              <a href={permalink} target="_blank">
-                Share
-              </a>
             </div>
             <h2>{name}</h2>
             <div className="owner">
@@ -308,7 +360,7 @@ export default connect(state => state)(function({ children, ...props }) {
                       />
                     </div>
                   </div>
-                  <p>Set Expiry</p>
+                  <p>Set Access</p>
                   <div className="inputs">
                     <div className="radio">
                       <input
@@ -318,7 +370,7 @@ export default connect(state => state)(function({ children, ...props }) {
                         checked={freezeForm.isExclusive}
                         onChange={e => setFreezeForm({ ...freezeForm, isExclusive: Number(e.target.value) === 1 })}
                       />
-                      <label>Exclusive</label>
+                      <label onClick={e => setFreezeForm({ ...freezeForm, isExclusive: true })}>Exclusive</label>
                     </div>
                     <div className="radio">
                       <input
@@ -328,7 +380,7 @@ export default connect(state => state)(function({ children, ...props }) {
                         checked={!freezeForm.isExclusive}
                         onChange={e => setFreezeForm({ ...freezeForm, isExclusive: Number(e.target.value) === 1 })}
                       />
-                      <label>Non-Exclusive</label>
+                      <label onClick={e => setFreezeForm({ ...freezeForm, isExclusive: false })}>Non-Exclusive</label>
                     </div>
                   </div>
                   {!freezeForm.isExclusive && (
