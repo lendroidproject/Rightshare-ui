@@ -3,7 +3,9 @@ import styled from 'styled-components'
 
 import { FlexCenter } from '~/components/common/Wrapper'
 import Intro from '~components/Intro'
-import Assets from '~components/Assets'
+import MyAssets from '~components/MyAssets'
+import MyFRights from '~components/MyFRights'
+import MyIRights from '~components/MyIRights'
 
 const Accordion = styled.div`
   background: white;
@@ -19,6 +21,10 @@ const Accordion = styled.div`
 
   * {
     color: black;
+
+    button {
+      color: white;
+    }
   }
 
   .accordion {
@@ -78,15 +84,15 @@ const tabs = [
   },
   {
     label: 'My Assets',
-    Component: Assets,
+    Component: MyAssets,
   },
   {
     label: 'My FRights',
-    Component: () => <div>Coming soon...</div>,
+    Component: MyFRights,
   },
   {
     label: 'My IRights',
-    Component: () => <div>Coming soon...</div>,
+    Component: MyIRights,
   },
 ]
 
