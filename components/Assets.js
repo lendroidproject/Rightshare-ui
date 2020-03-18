@@ -446,6 +446,7 @@ export default connect(state => state)(function({ children, ...props }) {
     } = item
     isFrozen(address, tokenId).then(frozen => {
       setItem({ ...item, frozen })
+      setFreezeForm(null);
     })
   }
 

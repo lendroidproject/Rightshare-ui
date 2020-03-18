@@ -12,8 +12,6 @@ const Account = styled.p`
   word-break: break-all;
 
   .logo {
-    max-width: 325px;
-    width: 100%;
     height: 100px;
     display: block;
     margin: 0 auto;
