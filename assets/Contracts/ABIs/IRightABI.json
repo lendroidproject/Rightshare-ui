@@ -220,6 +220,60 @@
 	{
 		"inputs": [
 			{
+				"internalType": "address",
+				"name": "_to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_parentId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_endTime",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "_baseAssetAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_baseAssetId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "_isExclusive",
+				"type": "bool"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_maxISupply",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_serialNumber",
+				"type": "uint256"
+			}
+		],
+		"name": "issue",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "_ok",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
 				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
@@ -227,6 +281,11 @@
 		],
 		"name": "metadata",
 		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "parentId",
+				"type": "uint256"
+			},
 			{
 				"internalType": "uint256",
 				"name": "tokenId",
@@ -285,55 +344,6 @@
 		"type": "function"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_to",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_endTime",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "_baseAssetAddress",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_baseAssetId",
-				"type": "uint256"
-			},
-			{
-				"internalType": "bool",
-				"name": "_isExclusive",
-				"type": "bool"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_maxISupply",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_serialNumber",
-				"type": "uint256"
-			}
-		],
-		"name": "mintToAndUpdateMetadata",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "_ok",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"inputs": [],
 		"name": "name",
 		"outputs": [
@@ -379,9 +389,52 @@
 		"type": "function"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "parentId",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "_parentId",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"inputs": [],
 		"name": "renounceOwnership",
 		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_from",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "revoke",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "_ok",
+				"type": "bool"
+			}
+		],
 		"stateMutability": "nonpayable",
 		"type": "function"
 	},

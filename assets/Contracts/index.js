@@ -6,9 +6,9 @@ import RightsDao from './ABIs/RightsDaoABI.json'
 import NFT from './ABIs/NFTABI.json'
 
 const addresses = {
-  FRight: '0xdebe8d133cd16ebf1c417cb8b1aa9332c40a0b37',
-  IRight: '0x7f103826b7735d669442180be129ec3b0ad60bf1',
-  RightsDao: '0x7e255ccdedf7defb26fac6348d63b49610e30fb9',
+  FRight: '0x646BB8Aa5FBcE2E2F3d9b2036b6f2025f4d32556',
+  IRight: '0x4890096ef662e4557772085d8042D4f7788C99B0',
+  RightsDao: '0x457212145522eD8e3F29F2a96eF007758D2c63d0',
 }
 
 const call = method => (...args) => method(...args).call()
@@ -25,18 +25,30 @@ export default () => {
     RightsDao: new instance.eth.Contract(RightsDao, addresses.RightsDao),
   }
 
-  const methods = {}
+  const methods = {
+    addresses: {},
+    FRight: {},
+    IRight: {},
+    RightsDao: {},
+    NFT: {},
+  }
+
+  // Addresses
+  methods.addresses.getName = addr => Object.keys(addresses).find(k => addresses[k].toLowerCase() === addr.toLowerCase())
 
   // FRight
-  methods.isFrozen = call(contracts.FRight.methods.isFrozen)
+  methods.FRight.isFrozen = call(contracts.FRight.methods.isFrozen)
+  methods.FRight.metadata = call(contracts.FRight.methods.metadata)
+  methods.FRight.isUnfreezable = call(contracts.FRight.methods.isUnfreezable)
 
   // IRight
 
   // RightsDao
-  methods.freeze = send(contracts.RightsDao.methods.freeze)
+  methods.RightsDao.freeze = send(contracts.RightsDao.methods.freeze)
+  methods.RightsDao.unfreeze = send(contracts.RightsDao.methods.unfreeze)
 
   // NFT
-  methods.approve = address => {
+  methods.NFT.approve = address => {
     const contract = new instance.eth.Contract(NFT, address)
     return send(contract.methods.approve)
   }

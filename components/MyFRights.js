@@ -67,7 +67,7 @@ export default connect(state => state)(function({ children, ...props }) {
 
   return (
     <Wrapper>
-      <Assets data={assets} />
+      <Assets data={assets} loadMore={loadMore} />
       {!end && (
         <LoadMore>
           <button onClick={loadMore}>Load more...</button>

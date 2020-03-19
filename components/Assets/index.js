@@ -16,7 +16,10 @@ const Items = styled(FlexWrap)`
 
 export default connect(state => state)(function({ children, data, loadMore, ...props }) {
   const {
-    methods: { isFrozen },
+    methods: {
+      addresses: { getName },
+      FRight: { isFrozen, isUnfreezable, metadata },
+    },
   } = props
   const [item, setItem] = useState(null)
 
@@ -25,9 +28,23 @@ export default connect(state => state)(function({ children, data, loadMore, ...p
       token_id: tokenId,
       asset_contract: { address },
     } = item
-    isFrozen(address, tokenId).then(frozen => {
-      setItem({ ...item, frozen })
-    })
+    setItem(item)
+
+    const type = getName(address)
+    switch (type) {
+      case 'FRight':
+      case 'IRight':
+        isUnfreezable(tokenId).then(isUnfreezable => {
+          metadata(tokenId).then(detail => {
+            setItem({ ...item, type, isUnfreezable, detail })
+          })
+        })
+        break
+      default:
+        isFrozen(address, tokenId).then(isFrozen => {
+          setItem({ ...item, isFrozen })
+        })
+    }
   }
 
   return (
@@ -41,7 +58,7 @@ export default connect(state => state)(function({ children, data, loadMore, ...p
         <AssetDetail
           item={item}
           {...props}
-          onProceed={() => {
+          onReload={() => {
             loadMore(true)
             setItem(null)
           }}

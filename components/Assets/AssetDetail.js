@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { FlexCenter, FlexInline } from '~/components/common/Wrapper'
 
+import AssetForm from './AssetForm'
+
 const ItemOverlay = styled(FlexCenter)`
   background: rgba(0, 0, 0, 0.7);
   z-index: 11;
@@ -66,68 +68,6 @@ const ItemDetail = styled(FlexInline)`
       }
     }
   }
-
-  form {
-    button {
-      position: relative;
-      &:disabled img {
-        display: block;
-      }
-      img {
-        display: none;
-        position: absolute;
-        height: 100%;
-        top: 0;
-        left: calc(50% - 19px);
-      }
-    }
-
-    p {
-      margin: 4px 0;
-      font-size: 16px;
-      font-weight: 600;
-    }
-
-    label {
-      font-size: 14px;
-      margin-bottom: 4px;
-    }
-
-    .inputs {
-      display: flex;
-      margin: 0 -8px 8px;
-
-      > * {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        margin: 0 8px;
-
-        &.radio {
-          flex-direction: row;
-          align-items: center;
-
-          input {
-            width: 20px;
-            margin-right: 10px;
-          }
-        }
-      }
-
-      input {
-        width: 100%;
-        font-size: 14px;
-        border-radius: 4px;
-        border: 1px solid;
-        padding: 5px 10px;
-        line-height: 1.5;
-
-        &[type='radio'] {
-          cursor: pointer;
-        }
-      }
-    }
-  }
 `
 
 const Close = styled.div`
@@ -162,13 +102,27 @@ const Close = styled.div`
   }
 `
 
-export default ({ item, onProceed, onClose, ...props }) => {
+const transformFreeze = ({ endTime, isExclusive, maxISupply, circulatingISupply }) => ({
+  expiryDate: new Date(Number(endTime) * 1000).toISOString().split('T')[0],
+  expiryTime: new Date(Number(endTime) * 1000)
+    .toISOString()
+    .split('T')[1]
+    .substr(0, 5),
+  isExclusive,
+  maxISupply,
+  circulatingISupply,
+})
+
+export default ({ item, onReload, onClose, ...props }) => {
   const {
     address: owner,
-    methods: { approve, freeze },
+    methods: {
+      NFT: { approve },
+      RightsDao: { freeze, unfreeze },
+    },
     addresses: { RightsDao: approveAddress },
   } = props
-  const [freezeForm, setFreezeForm] = useState(null)
+  const [originFreezeForm, setFreezeForm] = useState(null)
   const [status, setStatus] = useState(null)
 
   useEffect(() => {
@@ -186,10 +140,13 @@ export default ({ item, onProceed, onClose, ...props }) => {
     image_url: image,
     background_color: background,
     description,
-    frozen,
+    isFrozen,
+    isUnfreezable,
+    detail,
     token_id: tokenId,
   } = item
   const userName = user ? user.username : '---'
+  const freezeForm = isUnfreezable ? transformFreeze(detail) : originFreezeForm
 
   const handleFreeze = e => {
     e.preventDefault()
@@ -198,17 +155,30 @@ export default ({ item, onProceed, onClose, ...props }) => {
       .then(receipt => {
         console.log(0, receipt)
         setStatus({ ...status, process: true })
-        const { expiryDate, expiryTime, isExclusive, maxISupply, circulatingISupply } = freezeForm
+        const { expiryDate, expiryTime, isExclusive, maxISupply } = freezeForm
         const expiry = parseInt(new Date(`${expiryDate}T${expiryTime}:00`).getTime() / 1000)
-        freeze(address, tokenId, expiry, isExclusive, maxISupply, circulatingISupply, { from: owner })
+        freeze(address, tokenId, expiry, isExclusive, maxISupply, { from: owner })
           .then(receipt => {
             console.log(1, receipt)
-            onProceed()
+            onReload()
           })
           .catch((error, receipt) => {
             console.log(-2, error, receipt)
             setStatus(null)
           })
+      })
+      .catch((error, receipt) => {
+        console.log(-1, error, receipt)
+        setStatus(null)
+      })
+  }
+  const handleUnfreeze = e => {
+    e.preventDefault()
+    setStatus({ start: true })
+    unfreeze(detail.tokenId, { from: owner })
+      .then(receipt => {
+        console.log(0, receipt)
+        onReload()
       })
       .catch((error, receipt) => {
         console.log(-1, error, receipt)
@@ -239,71 +209,31 @@ export default ({ item, onProceed, onClose, ...props }) => {
             </span>
           </div>
           {!!freezeForm ? (
-            <form>
-              <p>Set Expiry</p>
-              <div className="inputs">
-                <div>
-                  <label>Date</label>
-                  <input
-                    type="date"
-                    value={freezeForm.expiryDate}
-                    onChange={e => setFreezeForm({ ...freezeForm, expiryDate: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <label>Time</label>
-                  <input
-                    type="time"
-                    value={freezeForm.expiryTime}
-                    onChange={e => setFreezeForm({ ...freezeForm, expiryTime: e.target.value })}
-                  />
-                </div>
-              </div>
-              <p>Set Access</p>
-              <div className="inputs">
-                <div className="radio">
-                  <input
-                    type="radio"
-                    name="isExclusive"
-                    value={1}
-                    checked={freezeForm.isExclusive}
-                    onChange={e => setFreezeForm({ ...freezeForm, isExclusive: Number(e.target.value) === 1 })}
-                  />
-                  <label onClick={() => setFreezeForm({ ...freezeForm, isExclusive: true })}>Exclusive</label>
-                </div>
-                <div className="radio">
-                  <input
-                    type="radio"
-                    name="isExclusive"
-                    value={2}
-                    checked={!freezeForm.isExclusive}
-                    onChange={e => setFreezeForm({ ...freezeForm, isExclusive: Number(e.target.value) === 1 })}
-                  />
-                  <label onClick={() => setFreezeForm({ ...freezeForm, isExclusive: false })}>Non-Exclusive</label>
-                </div>
-              </div>
-              {!freezeForm.isExclusive && (
-                <div className="inputs">
-                  <div>
-                    <label>May Supply - iRights?</label>
-                    <input
-                      type="number"
-                      value={freezeForm.maxISupply}
-                      onChange={e => setFreezeForm({ ...freezeForm, maxISupply: Number(e.target.value) })}
-                    />
-                  </div>
-                </div>
+            <AssetForm
+              {...{
+                form: freezeForm,
+                setForm: setFreezeForm,
+                readOnly: isUnfreezable,
+              }}
+            >
+              {isFrozen === false && (
+                <button disabled={!!status} onClick={handleFreeze}>
+                  Proceed
+                  <img src="/spinner.svg" />
+                </button>
               )}
-              <button onClick={handleFreeze} disabled={!!status}>
-                Proceed
-                <img src="/spinner.svg" />
-              </button>
-            </form>
+              {isUnfreezable === true && (
+                <button disabled={!!status} onClick={handleUnfreeze}>
+                  Unfreeze
+                  <img src="/spinner.svg" />
+                </button>
+              )}
+            </AssetForm>
           ) : (
             <>
               <p>{description}</p>
               <div className="price">Price: {price ? price : 0}</div>
-              {!frozen && (
+              {isFrozen === false && (
                 <button
                   onClick={() =>
                     setFreezeForm({

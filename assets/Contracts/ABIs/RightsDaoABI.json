@@ -104,16 +104,54 @@
       {
         "type": "uint256",
         "name": "_max_i_supply"
-      },
-      {
-        "type": "uint256",
-        "name": "circulating_i_supply"
       }
     ],
     "constant": false,
     "payable": false,
     "type": "function",
-    "gas": 3393
+    "gas": 8094
+  },
+  {
+    "name": "issue_i",
+    "outputs": [
+      {
+        "type": "bool",
+        "name": "out"
+      }
+    ],
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "_f_right_id"
+      },
+      {
+        "type": "uint256",
+        "name": "_expiry"
+      }
+    ],
+    "constant": false,
+    "payable": false,
+    "type": "function",
+    "gas": 14862
+  },
+  {
+    "name": "revoke_i",
+    "outputs": [
+      {
+        "type": "bool",
+        "name": "out"
+      }
+    ],
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "_i_right_id"
+      }
+    ],
+    "constant": false,
+    "payable": false,
+    "type": "function",
+    "gas": 10486
   },
   {
     "name": "unfreeze",
@@ -126,13 +164,13 @@
     "inputs": [
       {
         "type": "uint256",
-        "name": "_right_id"
+        "name": "_f_right_id"
       }
     ],
     "constant": false,
     "payable": false,
     "type": "function",
-    "gas": 7606
+    "gas": 9443
   },
   {
     "name": "owner",
@@ -146,7 +184,7 @@
     "constant": true,
     "payable": false,
     "type": "function",
-    "gas": 663
+    "gas": 723
   },
   {
     "name": "contracts",
@@ -165,6 +203,6 @@
     "constant": true,
     "payable": false,
     "type": "function",
-    "gas": 898
+    "gas": 958
   }
 ]
