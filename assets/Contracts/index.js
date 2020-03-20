@@ -8,7 +8,7 @@ import NFT from './ABIs/NFTABI.json'
 const addresses = {
   FRight: '0x646BB8Aa5FBcE2E2F3d9b2036b6f2025f4d32556',
   IRight: '0x4890096ef662e4557772085d8042D4f7788C99B0',
-  RightsDao: '0x457212145522eD8e3F29F2a96eF007758D2c63d0',
+  RightsDao: '0x3B4134763bF0F73f9E227286A7Fb098C13252df4',
 }
 
 const call = method => (...args) => method(...args).call()
