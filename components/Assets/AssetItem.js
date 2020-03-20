@@ -16,13 +16,15 @@ const ItemWrapper = styled.div`
   }
 `
 const Thumbnail = styled.div`
+  width: 250px;
   height: 250px;
+  max-width: 100%;
   display: felx;
   align-items: center;
+  justify-content: center;
 
   img {
-    width: 100%;
-    display: block;
+    height: 100%;
   }
 `
 const ItemInfo = styled(Flex)`
