@@ -275,7 +275,7 @@ export default ({ item, onReload, onClose, ...props }) => {
                   {...{
                     form: freezeForm,
                     setForm: setFreezeForm,
-                    readOnly: isUnfreezable,
+                    readOnly: type === 'FRight',
                   }}
                 ></AssetForm>
               )}
