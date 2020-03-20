@@ -265,7 +265,7 @@ export default ({ item, onReload, onClose, ...props }) => {
           <div className="price">Price: {price ? price : 0}</div>
           {!!freezeForm ? (
             <>
-              {type === 'FRight' && (
+              {freezeForm && (
                 <AssetForm
                   {...{
                     form: freezeForm,
