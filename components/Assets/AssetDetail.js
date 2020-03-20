@@ -43,7 +43,7 @@ const ItemDetail = styled(FlexInline)`
     align-items: center;
 
     img {
-      height: 100%;
+      height: auto;
       max-height: 384px;
     }
   }
@@ -182,7 +182,6 @@ export default ({ item, onReload, onClose, ...props }) => {
     approve(address)(approveAddress, tokenId, { from: owner })
       .then(receipt => {
         console.log(0, receipt)
-        setStatus({ ...status, process: true })
         const { expiryDate, expiryTime, isExclusive, maxISupply } = freezeForm
         const expiry = parseInt(new Date(`${expiryDate}T${expiryTime}:00`).getTime() / 1000)
         freeze(address, tokenId, expiry, isExclusive, maxISupply, { from: owner })
