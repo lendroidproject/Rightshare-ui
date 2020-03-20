@@ -24,6 +24,19 @@ const Accordion = styled.div`
 
     button {
       color: white;
+      position: relative;
+
+      &:disabled img {
+        display: block;
+      }
+
+      img {
+        display: none;
+        position: absolute;
+        height: 100%;
+        top: 0;
+        left: calc(50% - 19px);
+      }
     }
   }
 

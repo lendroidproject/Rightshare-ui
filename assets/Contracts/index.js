@@ -40,12 +40,19 @@ export default () => {
   methods.FRight.isFrozen = call(contracts.FRight.methods.isFrozen)
   methods.FRight.metadata = call(contracts.FRight.methods.metadata)
   methods.FRight.isUnfreezable = call(contracts.FRight.methods.isUnfreezable)
+  methods.FRight.isIMintAble = call(contracts.FRight.methods.isIMintAble)
+  methods.FRight.tokenURI = call(contracts.FRight.methods.tokenURI)
 
   // IRight
+  methods.IRight.metadata = call(contracts.IRight.methods.metadata)
+  methods.IRight.tokenURI = call(contracts.IRight.methods.tokenURI)
+  methods.IRight.transfer = send(contracts.IRight.methods.transferFrom)
 
   // RightsDao
   methods.RightsDao.freeze = send(contracts.RightsDao.methods.freeze)
   methods.RightsDao.unfreeze = send(contracts.RightsDao.methods.unfreeze)
+  methods.RightsDao.issueI = send(contracts.RightsDao.methods.issue_i)
+  methods.RightsDao.revokeI = send(contracts.RightsDao.methods.revoke_i)
 
   // NFT
   methods.NFT.approve = address => {

@@ -18,7 +18,8 @@ export default connect(state => state)(function({ children, data, loadMore, ...p
   const {
     methods: {
       addresses: { getName },
-      FRight: { isFrozen, isUnfreezable, metadata },
+      FRight: { isFrozen, isUnfreezable, isIMintAble, metadata },
+      IRight: { metadata: iMetadata },
     },
   } = props
   const [item, setItem] = useState(null)
@@ -33,11 +34,15 @@ export default connect(state => state)(function({ children, data, loadMore, ...p
     const type = getName(address)
     switch (type) {
       case 'FRight':
+        Promise.all([metadata(tokenId), isIMintAble(tokenId), isUnfreezable(tokenId)]).then(
+          ([metadata, isIMintAble, isUnfreezable]) => {
+            setItem({ ...item, type, metadata, isIMintAble, isUnfreezable })
+          }
+        )
+        break
       case 'IRight':
-        isUnfreezable(tokenId).then(isUnfreezable => {
-          metadata(tokenId).then(detail => {
-            setItem({ ...item, type, isUnfreezable, detail })
-          })
+        Promise.all([iMetadata(tokenId)]).then(([metadata]) => {
+          setItem({ ...item, type, metadata })
         })
         break
       default:

@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { FlexCenter, FlexInline } from '~/components/common/Wrapper'
 
 import AssetForm from './AssetForm'
+import TransferForm from './TransferForm'
 
 const ItemOverlay = styled(FlexCenter)`
   background: rgba(0, 0, 0, 0.7);
@@ -68,6 +69,14 @@ const ItemDetail = styled(FlexInline)`
       }
     }
   }
+
+  .buttons {
+    margin: 0 -6px -12px;
+
+    button {
+      margin: 12px 6px;
+    }
+  }
 `
 
 const Close = styled.div`
@@ -118,7 +127,8 @@ export default ({ item, onReload, onClose, ...props }) => {
     address: owner,
     methods: {
       NFT: { approve },
-      RightsDao: { freeze, unfreeze },
+      RightsDao: { freeze, unfreeze, issueI, revokeI },
+      IRight: { transfer },
     },
     addresses: { RightsDao: approveAddress },
   } = props
@@ -126,7 +136,9 @@ export default ({ item, onReload, onClose, ...props }) => {
   const [status, setStatus] = useState(null)
 
   useEffect(() => {
-    setFreezeForm(null)
+    if (item) {
+      setFreezeForm(null)
+    }
   }, [item])
 
   if (!item) return null
@@ -140,17 +152,19 @@ export default ({ item, onReload, onClose, ...props }) => {
     image_url: image,
     background_color: background,
     description,
+    type,
     isFrozen,
+    metadata,
     isUnfreezable,
-    detail,
+    isIMintAble,
     token_id: tokenId,
   } = item
   const userName = user ? user.username : '---'
-  const freezeForm = isUnfreezable ? transformFreeze(detail) : originFreezeForm
+  const freezeForm = metadata ? transformFreeze(metadata) : originFreezeForm
 
   const handleFreeze = e => {
     e.preventDefault()
-    setStatus({ start: true })
+    setStatus({ start: 'freeze' })
     approve(address)(approveAddress, tokenId, { from: owner })
       .then(receipt => {
         console.log(0, receipt)
@@ -174,8 +188,47 @@ export default ({ item, onReload, onClose, ...props }) => {
   }
   const handleUnfreeze = e => {
     e.preventDefault()
-    setStatus({ start: true })
-    unfreeze(detail.tokenId, { from: owner })
+    setStatus({ start: 'unfreeze' })
+    unfreeze(metadata.tokenId, { from: owner })
+      .then(receipt => {
+        console.log(0, receipt)
+        onReload()
+      })
+      .catch((error, receipt) => {
+        console.log(-1, error, receipt)
+        setStatus(null)
+      })
+  }
+  const handleIssueI = e => {
+    e.preventDefault()
+    setStatus({ start: 'issueI' })
+    issueI(metadata.tokenId, Number(metadata.endTime), { from: owner })
+      .then(receipt => {
+        console.log(0, receipt)
+        onReload()
+      })
+      .catch((error, receipt) => {
+        console.log(-1, error, receipt)
+        setStatus(null)
+      })
+  }
+  const handleRevoke = e => {
+    e.preventDefault()
+    setStatus({ start: 'revokeI' })
+    revokeI(metadata.tokenId, { from: owner })
+      .then(receipt => {
+        console.log(0, receipt)
+        onReload()
+      })
+      .catch((error, receipt) => {
+        console.log(-1, error, receipt)
+        setStatus(null)
+      })
+  }
+  const handleTransfer = e => {
+    e.preventDefault()
+    setStatus({ start: 'transfer' })
+    transfer(owner, originFreezeForm.to, metadata.tokenId, { from: owner })
       .then(receipt => {
         console.log(0, receipt)
         onReload()
@@ -208,31 +261,63 @@ export default ({ item, onReload, onClose, ...props }) => {
               Owned by <b>{userName.length > 20 ? `${userName.substr(0, 17)}...` : userName}</b>
             </span>
           </div>
+          <p>{description}</p>
+          <div className="price">Price: {price ? price : 0}</div>
           {!!freezeForm ? (
-            <AssetForm
-              {...{
-                form: freezeForm,
-                setForm: setFreezeForm,
-                readOnly: isUnfreezable,
-              }}
-            >
-              {isFrozen === false && (
-                <button disabled={!!status} onClick={handleFreeze}>
-                  Proceed
-                  <img src="/spinner.svg" />
-                </button>
-              )}
-              {isUnfreezable === true && (
-                <button disabled={!!status} onClick={handleUnfreeze}>
-                  Unfreeze
-                  <img src="/spinner.svg" />
-                </button>
-              )}
-            </AssetForm>
-          ) : (
             <>
-              <p>{description}</p>
-              <div className="price">Price: {price ? price : 0}</div>
+              {type === 'FRight' && (
+                <AssetForm
+                  {...{
+                    form: freezeForm,
+                    setForm: setFreezeForm,
+                    readOnly: isUnfreezable,
+                  }}
+                ></AssetForm>
+              )}
+              {type === 'IRight' && (
+                <TransferForm
+                  owner={owner}
+                  {...{
+                    form: freezeForm,
+                    setForm: setFreezeForm,
+                  }}
+                />
+              )}
+              <div className="buttons">
+                {isFrozen === false && (
+                  <button disabled={!!status} onClick={handleFreeze}>
+                    Proceed
+                    {status && status.start === 'freeze' && <img src="/spinner.svg" />}
+                  </button>
+                )}
+                {isUnfreezable === true && (
+                  <button disabled={!!status} onClick={handleUnfreeze}>
+                    Unfreeze
+                    {status && status.start === 'unfreeze' && <img src="/spinner.svg" />}
+                  </button>
+                )}
+                {isIMintAble === true && (
+                  <button disabled={!!status} onClick={handleIssueI}>
+                    Mint I Right
+                    {status && status.start === 'issueI' && <img src="/spinner.svg" />}
+                  </button>
+                )}
+                {type === 'IRight' && (
+                  <>
+                    <button disabled={!!status} onClick={handleTransfer}>
+                      Transfer
+                      {status && status.start === 'transfer' && <img src="/spinner.svg" />}
+                    </button>
+                    <button disabled={!!status} onClick={handleRevoke}>
+                      Burn Right
+                      {status && status.start === 'revokeI' && <img src="/spinner.svg" />}
+                    </button>
+                  </>
+                )}
+              </div>
+            </>
+          ) : (
+            <div className="buttons">
               {isFrozen === false && (
                 <button
                   onClick={() =>
@@ -251,7 +336,7 @@ export default ({ item, onReload, onClose, ...props }) => {
                   Initiate Right Share
                 </button>
               )}
-            </>
+            </div>
           )}
         </div>
       </ItemDetail>

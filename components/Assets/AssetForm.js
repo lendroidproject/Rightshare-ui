@@ -1,20 +1,6 @@
 import styled from 'styled-components'
 
-const Form = styled.form`
-  button {
-    position: relative;
-    &:disabled img {
-      display: block;
-    }
-    img {
-      display: none;
-      position: absolute;
-      height: 100%;
-      top: 0;
-      left: calc(50% - 19px);
-    }
-  }
-
+export const Form = styled.form`
   p {
     margin: 4px 0;
     font-size: 16px;
