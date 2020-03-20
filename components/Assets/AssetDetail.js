@@ -134,10 +134,12 @@ export default ({ item, onReload, onClose, ...props }) => {
   } = props
   const [originFreezeForm, setFreezeForm] = useState(null)
   const [status, setStatus] = useState(null)
+  const [transferMode, setTransferMode] = useState(false)
 
   useEffect(() => {
     if (item) {
       setFreezeForm(null)
+      setTransferMode(false)
     }
   }, [item])
 
@@ -226,6 +228,9 @@ export default ({ item, onReload, onClose, ...props }) => {
       })
   }
   const handleTransfer = e => {
+    if (!transferMode) {
+      return setTransferMode(true)
+    }
     e.preventDefault()
     setStatus({ start: 'transfer' })
     transfer(owner, originFreezeForm.to, metadata.tokenId, { from: owner })
@@ -265,7 +270,7 @@ export default ({ item, onReload, onClose, ...props }) => {
           <div className="price">Price: {price ? price : 0}</div>
           {!!freezeForm ? (
             <>
-              {freezeForm && (
+              {freezeForm && !transferMode && (
                 <AssetForm
                   {...{
                     form: freezeForm,
@@ -274,7 +279,7 @@ export default ({ item, onReload, onClose, ...props }) => {
                   }}
                 ></AssetForm>
               )}
-              {type === 'IRight' && (
+              {type === 'IRight' && transferMode && (
                 <TransferForm
                   owner={owner}
                   {...{
@@ -303,16 +308,16 @@ export default ({ item, onReload, onClose, ...props }) => {
                   </button>
                 )}
                 {type === 'IRight' && (
-                  <>
-                    <button disabled={!!status} onClick={handleTransfer}>
-                      Transfer
-                      {status && status.start === 'transfer' && <img src="/spinner.svg" />}
-                    </button>
-                    <button disabled={!!status} onClick={handleRevoke}>
-                      Burn Right
-                      {status && status.start === 'revokeI' && <img src="/spinner.svg" />}
-                    </button>
-                  </>
+                  <button disabled={!!status} onClick={handleTransfer}>
+                    Transfer
+                    {status && status.start === 'transfer' && <img src="/spinner.svg" />}
+                  </button>
+                )}
+                {type === 'IRight' && !transferMode && (
+                  <button disabled={!!status} onClick={handleRevoke}>
+                    Burn Right
+                    {status && status.start === 'revokeI' && <img src="/spinner.svg" />}
+                  </button>
                 )}
               </div>
             </>
