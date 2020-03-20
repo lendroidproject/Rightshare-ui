@@ -2,6 +2,7 @@ import { Form } from './AssetForm'
 
 export default ({ owner, form, setForm }) => (
   <Form onSubmit={e => e.preventDefault()}>
+    <p>Transfer</p>
     <div className="inputs">
       <div>
         <label>From</label>

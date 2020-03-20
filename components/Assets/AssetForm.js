@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 
 export const Form = styled.form`
-  p {
+  > p {
     margin: 4px 0;
     font-size: 16px;
     font-weight: 600;
@@ -101,7 +101,7 @@ export default ({ form, setForm, readOnly, children }) => (
     {!form.isExclusive && (
       <div className="inputs">
         <div>
-          <label>May Supply - iRights?</label>
+          <label>Max Supply - iRights?</label>
           <input
             type="number"
             value={form.maxISupply}

@@ -149,6 +149,10 @@ class LeaseNFTApp extends App {
                 padding: 10px 20px;
               }
 
+              p {
+                margin: 8px 0;
+              }
+
               button:disabled {
                 background: #0a2c7999;
                 cursor: not-allowed;

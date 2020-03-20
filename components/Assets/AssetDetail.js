@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { FlexCenter, FlexInline } from '~/components/common/Wrapper'
 
 import AssetForm from './AssetForm'
+import AssetMetaData from './AssetMetaData'
 import TransferForm from './TransferForm'
 
 const ItemOverlay = styled(FlexCenter)`
@@ -22,6 +23,8 @@ const ItemDetail = styled(FlexInline)`
   background: white;
   max-width: 80%;
   position: relative;
+  max-height: 80vh;
+  overflow: auto;
 
   @media all and (max-width: 767px) {
     flex-direction: column;
@@ -30,16 +33,18 @@ const ItemDetail = styled(FlexInline)`
   > * {
     width: 384px;
     max-width: 100%;
-    min-height: 384px;
     align-items: center;
     padding: 10px;
   }
 
   .external {
     display: flex;
+    justify-content: center;
+    align-items: center;
 
     img {
-      width: 100%;
+      height: 100%;
+      max-height: 384px;
     }
   }
 
@@ -50,6 +55,7 @@ const ItemDetail = styled(FlexInline)`
 
       p {
         margin: 0;
+        font-size: 14px;
       }
     }
 
@@ -67,6 +73,10 @@ const ItemDetail = styled(FlexInline)`
         width: 35px;
         margin-right: 10px;
       }
+    }
+
+    p.desc {
+      font-size: 13px;
     }
   }
 
@@ -111,7 +121,8 @@ const Close = styled.div`
   }
 `
 
-const transformFreeze = ({ endTime, isExclusive, maxISupply, circulatingISupply }) => ({
+const transformFreeze = ({ endTime, isExclusive, maxISupply, circulatingISupply, serialNumber }) => ({
+  expiry: new Date(Number(endTime) * 1000).toISOString(),
   expiryDate: new Date(Number(endTime) * 1000).toISOString().split('T')[0],
   expiryTime: new Date(Number(endTime) * 1000)
     .toISOString()
@@ -120,6 +131,7 @@ const transformFreeze = ({ endTime, isExclusive, maxISupply, circulatingISupply 
   isExclusive,
   maxISupply,
   circulatingISupply,
+  serialNumber,
 })
 
 export default ({ item, onReload, onClose, ...props }) => {
@@ -134,12 +146,12 @@ export default ({ item, onReload, onClose, ...props }) => {
   } = props
   const [originFreezeForm, setFreezeForm] = useState(null)
   const [status, setStatus] = useState(null)
-  const [transferMode, setTransferMode] = useState(false)
+  const [transferForm, setTransferForm] = useState(null)
 
   useEffect(() => {
     if (item) {
       setFreezeForm(null)
-      setTransferMode(false)
+      setTransferForm(null)
     }
   }, [item])
 
@@ -228,12 +240,12 @@ export default ({ item, onReload, onClose, ...props }) => {
       })
   }
   const handleTransfer = e => {
-    if (!transferMode) {
-      return setTransferMode(true)
+    if (!transferForm) {
+      return setTransferForm({ to: '' })
     }
     e.preventDefault()
     setStatus({ start: 'transfer' })
-    transfer(owner, originFreezeForm.to, metadata.tokenId, { from: owner })
+    transfer(owner, transferForm.to, metadata.tokenId, { from: owner })
       .then(receipt => {
         console.log(0, receipt)
         onReload()
@@ -243,6 +255,7 @@ export default ({ item, onReload, onClose, ...props }) => {
         setStatus(null)
       })
   }
+  console.log(metadata);
 
   return (
     <ItemOverlay onClick={onClose}>
@@ -266,83 +279,81 @@ export default ({ item, onReload, onClose, ...props }) => {
               Owned by <b>{userName.length > 20 ? `${userName.substr(0, 17)}...` : userName}</b>
             </span>
           </div>
-          <p>{description}</p>
+          <p className="desc">{description}</p>
           <div className="price">Price: {price ? price : 0}</div>
-          {!!freezeForm ? (
-            <>
-              {freezeForm && !transferMode && (
-                <AssetForm
-                  {...{
-                    form: freezeForm,
-                    setForm: setFreezeForm,
-                    readOnly: type === 'FRight',
-                  }}
-                ></AssetForm>
-              )}
-              {type === 'IRight' && transferMode && (
-                <TransferForm
-                  owner={owner}
-                  {...{
-                    form: freezeForm,
-                    setForm: setFreezeForm,
-                  }}
-                />
-              )}
+          {!type &&
+            (!!freezeForm ? (
+              <AssetForm
+                {...{
+                  form: freezeForm,
+                  setForm: setFreezeForm,
+                  readOnly: type === 'FRight',
+                }}
+              ></AssetForm>
+            ) : (
               <div className="buttons">
                 {isFrozen === false && (
-                  <button disabled={!!status} onClick={handleFreeze}>
-                    Proceed
-                    {status && status.start === 'freeze' && <img src="/spinner.svg" />}
-                  </button>
-                )}
-                {isUnfreezable === true && (
-                  <button disabled={!!status} onClick={handleUnfreeze}>
-                    Unfreeze
-                    {status && status.start === 'unfreeze' && <img src="/spinner.svg" />}
-                  </button>
-                )}
-                {isIMintAble === true && (
-                  <button disabled={!!status} onClick={handleIssueI}>
-                    Mint I Right
-                    {status && status.start === 'issueI' && <img src="/spinner.svg" />}
-                  </button>
-                )}
-                {type === 'IRight' && (
-                  <button disabled={!!status} onClick={handleTransfer}>
-                    Transfer
-                    {status && status.start === 'transfer' && <img src="/spinner.svg" />}
-                  </button>
-                )}
-                {type === 'IRight' && !transferMode && (
-                  <button disabled={!!status} onClick={handleRevoke}>
-                    Burn Right
-                    {status && status.start === 'revokeI' && <img src="/spinner.svg" />}
+                  <button
+                    onClick={() =>
+                      setFreezeForm({
+                        expiryDate: new Date().toISOString().split('T')[0],
+                        expiryTime: new Date()
+                          .toISOString()
+                          .split('T')[1]
+                          .substr(0, 5),
+                        isExclusive: true,
+                        maxISupply: 1,
+                        circulatingISupply: 1,
+                      })
+                    }
+                  >
+                    Initiate Right Share
                   </button>
                 )}
               </div>
-            </>
-          ) : (
-            <div className="buttons">
-              {isFrozen === false && (
-                <button
-                  onClick={() =>
-                    setFreezeForm({
-                      expiryDate: new Date().toISOString().split('T')[0],
-                      expiryTime: new Date()
-                        .toISOString()
-                        .split('T')[1]
-                        .substr(0, 5),
-                      isExclusive: true,
-                      maxISupply: 1,
-                      circulatingISupply: 1,
-                    })
-                  }
-                >
-                  Initiate Right Share
-                </button>
-              )}
-            </div>
+            ))}
+          {type && !transferForm && <AssetMetaData data={freezeForm} />}
+          {type === 'IRight' && transferForm && (
+            <TransferForm
+              owner={owner}
+              {...{
+                form: transferForm,
+                setForm: setTransferForm,
+              }}
+            />
           )}
+          <div className="buttons">
+            {isFrozen === false && freezeForm && (
+              <button disabled={!!status} onClick={handleFreeze}>
+                Proceed
+                {status && status.start === 'freeze' && <img src="/spinner.svg" />}
+              </button>
+            )}
+            {isUnfreezable === true && (
+              <button disabled={!!status} onClick={handleUnfreeze}>
+                Unfreeze
+                {status && status.start === 'unfreeze' && <img src="/spinner.svg" />}
+              </button>
+            )}
+            {isIMintAble === true && (
+              <button disabled={!!status} onClick={handleIssueI}>
+                Mint I Right
+                {status && status.start === 'issueI' && <img src="/spinner.svg" />}
+              </button>
+            )}
+            {type === 'IRight' && (
+              <button disabled={!!status} onClick={handleTransfer}>
+                {transferForm ? 'Proceed' : 'Transfer'}
+                {status && status.start === 'transfer' && <img src="/spinner.svg" />}
+              </button>
+            )}
+            {type === 'IRight' && !transferForm && (
+              <button disabled={!!status} onClick={handleRevoke}>
+                Burn Right
+                {status && status.start === 'revokeI' && <img src="/spinner.svg" />}
+              </button>
+            )}
+          </div>
         </div>
       </ItemDetail>
     </ItemOverlay>
