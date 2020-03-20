@@ -16,7 +16,14 @@ const LoadMore = styled.div`
 `
 
 export default connect(state => state)(function({ children, ...props }) {
-  const { address: owner, dispatch, assets = [] } = props
+  const {
+    address: owner,
+    methods: {
+      addresses: { getName },
+    },
+    dispatch,
+    assets = [],
+  } = props
   const [page, setPage] = useState({ offset: 0, limit: 20 })
   const [end, setEnd] = useState(false)
 
@@ -62,12 +69,12 @@ export default connect(state => state)(function({ children, ...props }) {
 
   return (
     <Wrapper>
-      <Assets data={assets} loadMore={loadMore} />
-      {!end && (
+      <Assets data={assets.filter(({ asset_contract: { address } }) => !getName(address))} loadMore={loadMore} />
+      {/* {!end && (
         <LoadMore>
           <button onClick={loadMore}>Load more...</button>
         </LoadMore>
-      )}
+      )} */}
     </Wrapper>
   )
 })

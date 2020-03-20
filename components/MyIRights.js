@@ -68,11 +68,11 @@ export default connect(state => state)(function({ children, ...props }) {
   return (
     <Wrapper>
       <Assets data={assets} loadMore={loadMore} />
-      {!end && (
+      {/* {!end && (
         <LoadMore>
           <button onClick={loadMore}>Load more...</button>
         </LoadMore>
-      )}
+      )} */}
     </Wrapper>
   )
 })

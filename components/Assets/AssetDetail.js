@@ -254,7 +254,6 @@ export default ({ item, onReload, onClose, ...props }) => {
         setStatus(null)
       })
   }
-  console.log(metadata);
 
   return (
     <ItemOverlay onClick={onClose}>
