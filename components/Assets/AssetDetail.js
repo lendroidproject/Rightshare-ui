@@ -202,7 +202,7 @@ export default ({ item, onReload, onClose, ...props }) => {
   const handleUnfreeze = e => {
     e.preventDefault()
     setStatus({ start: 'unfreeze' })
-    unfreeze(metadata.tokenId, { from: owner })
+    unfreeze(tokenId, { from: owner })
       .then(receipt => {
         console.log(0, receipt)
         onReload()
@@ -305,7 +305,7 @@ export default ({ item, onReload, onClose, ...props }) => {
                       })
                     }
                   >
-                    Initiate Right Share
+                    Initiate Rightshare
                   </button>
                 )}
               </div>
@@ -335,7 +335,7 @@ export default ({ item, onReload, onClose, ...props }) => {
             )}
             {isIMintAble === true && (
               <button disabled={!!status} onClick={handleIssueI}>
-                Mint I Right
+                Mint iRight
                 {status && status.start === 'issueI' && <img src="/spinner.svg" />}
               </button>
             )}
@@ -347,7 +347,7 @@ export default ({ item, onReload, onClose, ...props }) => {
             )}
             {type === 'IRight' && !transferForm && (
               <button disabled={!!status} onClick={handleRevoke}>
-                Burn Right
+                Burn iRIghts
                 {status && status.start === 'revokeI' && <img src="/spinner.svg" />}
               </button>
             )}

@@ -100,11 +100,11 @@ const tabs = [
     Component: MyAssets,
   },
   {
-    label: 'My FRights',
+    label: 'My fRights',
     Component: MyFRights,
   },
   {
-    label: 'My IRights',
+    label: 'My iRights',
     Component: MyIRights,
   },
 ]
