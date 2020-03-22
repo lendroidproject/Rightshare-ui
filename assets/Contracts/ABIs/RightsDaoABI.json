@@ -132,7 +132,7 @@
     "constant": false,
     "payable": false,
     "type": "function",
-    "gas": 14862
+    "gas": 15361
   },
   {
     "name": "revoke_i",
@@ -151,7 +151,7 @@
     "constant": false,
     "payable": false,
     "type": "function",
-    "gas": 10486
+    "gas": 14804
   },
   {
     "name": "unfreeze",

@@ -6,9 +6,9 @@ import RightsDao from './ABIs/RightsDaoABI.json'
 import NFT from './ABIs/NFTABI.json'
 
 const addresses = {
-  FRight: '0x646BB8Aa5FBcE2E2F3d9b2036b6f2025f4d32556',
-  IRight: '0x4890096ef662e4557772085d8042D4f7788C99B0',
-  RightsDao: '0x3B4134763bF0F73f9E227286A7Fb098C13252df4',
+  FRight: '0xFc248D053E8E5F71542c0F4956f0292453393A87',
+  IRight: '0xdb210A5da035d160c7528BeCc349d58156818E7C',
+  RightsDao: '0xa43F7069C723587dedaC7c3c82C2f913a1806ff2',
 }
 
 const call = method => (...args) => method(...args).call()
