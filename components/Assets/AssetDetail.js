@@ -268,7 +268,7 @@ export default ({ item, onReload, onClose, ...props }) => {
     e.preventDefault()
 
     const validations = ['to']
-    const [isValid, errors] = validate(freezeForm, validations)
+    const [isValid, errors] = validate(transferForm, validations)
     if (!isValid) {
       return setErrors(errors)
     }
