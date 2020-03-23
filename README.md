@@ -1,6 +1,6 @@
-# leaseNFT-ui
+# Rightshare UI
 
-UI for leaseNFT App
+UI for Rightshare App
 
 This proect is powered by [Next.js](https://github.com/zeit/next.js/).
 

@@ -1,7 +1,7 @@
 {
-  "name": "lease-nft-ui",
+  "name": "nft-rightshare-ui",
   "version": "1.0.0",
-  "description": "UI for leaseNFT App",
+  "description": "UI for Rightshare App",
   "main": "index.js",
   "scripts": {
     "dev": "next",
@@ -12,14 +12,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lendroidproject/leaseNFT-ui.git"
+    "url": "git+https://github.com/lendroidproject/Rightshare-ui.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/lendroidproject/leaseNFT-ui/issues"
+    "url": "https://github.com/lendroidproject/Rightshare-ui/issues"
   },
-  "homepage": "https://github.com/lendroidproject/leaseNFT-ui#readme",
+  "homepage": "https://github.com/lendroidproject/Rightshare-ui#readme",
   "dependencies": {
     "axios": "^0.19.2",
     "dotenv": "^8.2.0",
