@@ -48,11 +48,15 @@ export const Form = styled.form`
       &[readonly] {
         background: #eee;
       }
+
+      &.error {
+        border-color: red;
+      }
     }
   }
 `
 
-export default ({ form, setForm, readOnly, children }) => (
+export default ({ form, setForm, readOnly, children, errors }) => (
   <Form onSubmit={e => e.preventDefault()}>
     <p>Set Expiry</p>
     <div className="inputs">
@@ -107,6 +111,7 @@ export default ({ form, setForm, readOnly, children }) => (
             value={form.maxISupply}
             onChange={e => setForm({ ...form, maxISupply: Number(e.target.value) })}
             readOnly={readOnly}
+            className={errors.maxISupply ? 'error' : ''}
           />
         </div>
       </div>

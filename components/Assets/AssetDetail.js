@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
+import { validate } from '~/utils/validation'
 import { FlexCenter, FlexInline } from '~/components/common/Wrapper'
 
 import AssetForm from './AssetForm'
@@ -147,11 +148,25 @@ export default ({ item, onReload, onClose, ...props }) => {
   const [originFreezeForm, setFreezeForm] = useState(null)
   const [status, setStatus] = useState(null)
   const [transferForm, setTransferForm] = useState(null)
+  const [errors, setErrors] = useState({})
+
+  const handleFreezeForm = form => {
+    if (Object.keys(errors).length) {
+      setErrors({})
+    }
+    setFreezeForm(form)
+  }
+  const handleTransferForm = form => {
+    if (Object.keys(errors).length) {
+      setErrors({})
+    }
+    setTransferForm(form)
+  }
 
   useEffect(() => {
     if (item) {
-      setFreezeForm(null)
-      setTransferForm(null)
+      handleFreezeForm(null)
+      handleTransferForm(null)
     }
   }, [item])
 
@@ -178,6 +193,13 @@ export default ({ item, onReload, onClose, ...props }) => {
 
   const handleFreeze = e => {
     e.preventDefault()
+
+    const validations = ['expiryDate', 'expiryTime', 'isExclusive', 'maxISupply']
+    const [isValid, errors] = validate(freezeForm, validations)
+    if (!isValid) {
+      return setErrors(errors)
+    }
+
     setStatus({ start: 'freeze' })
     approve(address)(approveAddress, tokenId, { from: owner })
       .then(receipt => {
@@ -240,9 +262,16 @@ export default ({ item, onReload, onClose, ...props }) => {
   }
   const handleTransfer = e => {
     if (!transferForm) {
-      return setTransferForm({ to: '' })
+      return handleTransferForm({ to: '' })
     }
     e.preventDefault()
+
+    const validations = ['to']
+    const [isValid, errors] = validate(freezeForm, validations)
+    if (!isValid) {
+      return setErrors(errors)
+    }
+
     setStatus({ start: 'transfer' })
     transfer(owner, transferForm.to, metadata.tokenId, { from: owner })
       .then(receipt => {
@@ -284,16 +313,17 @@ export default ({ item, onReload, onClose, ...props }) => {
               <AssetForm
                 {...{
                   form: freezeForm,
-                  setForm: setFreezeForm,
+                  setForm: handleFreezeForm,
                   readOnly: type === 'FRight',
                 }}
+                errors={errors}
               ></AssetForm>
             ) : (
               <div className="buttons">
                 {isFrozen === false && (
                   <button
                     onClick={() =>
-                      setFreezeForm({
+                      handleFreezeForm({
                         expiryDate: new Date().toISOString().split('T')[0],
                         expiryTime: new Date()
                           .toISOString()
@@ -316,8 +346,9 @@ export default ({ item, onReload, onClose, ...props }) => {
               owner={owner}
               {...{
                 form: transferForm,
-                setForm: setTransferForm,
+                setForm: handleTransferForm,
               }}
+              errors={errors}
             />
           )}
           <div className="buttons">

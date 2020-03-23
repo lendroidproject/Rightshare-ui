@@ -1,6 +1,6 @@
 import { Form } from './AssetForm'
 
-export default ({ owner, form, setForm }) => (
+export default ({ owner, form, setForm, errors }) => (
   <Form onSubmit={e => e.preventDefault()}>
     <p>Transfer</p>
     <div className="inputs">
@@ -12,7 +12,7 @@ export default ({ owner, form, setForm }) => (
     <div className="inputs">
       <div>
         <label>To</label>
-        <input value={form.to} onChange={e => setForm({ ...form, to: e.target.value })} />
+        <input className={errors.to ? 'error' : ''} value={form.to} onChange={e => setForm({ ...form, to: e.target.value })} />
       </div>
     </div>
   </Form>
