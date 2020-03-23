@@ -15,7 +15,7 @@ const LoadMore = styled.div`
   }
 `
 
-export default connect(state => state)(function({ children, ...props }) {
+export default connect(state => state)(function({ children, onTab, ...props }) {
   const {
     address: owner,
     dispatch,
@@ -67,7 +67,7 @@ export default connect(state => state)(function({ children, ...props }) {
 
   return (
     <Wrapper>
-      <Assets data={assets} loadMore={loadMore} />
+      <Assets data={assets} loadMore={loadMore} onTab={onTab} />
       {/* {!end && (
         <LoadMore>
           <button onClick={loadMore}>Load more...</button>

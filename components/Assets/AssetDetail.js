@@ -7,7 +7,7 @@ import AssetForm from './AssetForm'
 import AssetMetaData from './AssetMetaData'
 import TransferForm from './TransferForm'
 
-const ItemOverlay = styled(FlexCenter)`
+export const ItemOverlay = styled(FlexCenter)`
   background: rgba(0, 0, 0, 0.7);
   z-index: 11;
   position: fixed;
@@ -17,7 +17,7 @@ const ItemOverlay = styled(FlexCenter)`
   height: 100vh;
 `
 
-const ItemDetail = styled(FlexInline)`
+export const ItemDetail = styled(FlexInline)`
   align-items: stretch;
   padding: 10px;
   border-radius: 5px;
@@ -149,6 +149,7 @@ export default ({ item, onReload, onClose, ...props }) => {
   const [status, setStatus] = useState(null)
   const [transferForm, setTransferForm] = useState(null)
   const [errors, setErrors] = useState({})
+  console.log(errors)
 
   const handleFreezeForm = form => {
     if (Object.keys(errors).length) {
@@ -194,7 +195,7 @@ export default ({ item, onReload, onClose, ...props }) => {
   const handleFreeze = e => {
     e.preventDefault()
 
-    const validations = ['expiryDate', 'expiryTime', 'isExclusive', 'maxISupply']
+    const validations = ['expiryDate', 'expiryTime', 'maxISupply']
     const [isValid, errors] = validate(freezeForm, validations)
     if (!isValid) {
       return setErrors(errors)
@@ -209,7 +210,7 @@ export default ({ item, onReload, onClose, ...props }) => {
         freeze(address, tokenId, expiry, isExclusive, maxISupply, { from: owner })
           .then(receipt => {
             console.log(1, receipt)
-            onReload()
+            onReload('freeze')
           })
           .catch((error, receipt) => {
             console.log(-2, error, receipt)

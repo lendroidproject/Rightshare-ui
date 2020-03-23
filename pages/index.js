@@ -122,7 +122,7 @@ export default function() {
         ))}
       </Tabs>
       <div className="panel">
-        <Component />
+        <Component onTab={setActive} />
       </div>
     </Accordion>
   )

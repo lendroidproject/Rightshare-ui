@@ -6,6 +6,7 @@ import { FlexWrap } from '~/components/common/Wrapper'
 
 import AssetDetail from './AssetDetail'
 import AssetItem from './AssetItem'
+import SuccessModal from './SuccessModal'
 
 const Wrapper = styled(FlexWrap)``
 const Items = styled(FlexWrap)`
@@ -14,7 +15,7 @@ const Items = styled(FlexWrap)`
   margin-bottom: 15px;
 `
 
-export default connect(state => state)(function({ children, data, loadMore, ...props }) {
+export default connect(state => state)(function({ children, data, loadMore, onTab, ...props }) {
   const {
     methods: {
       addresses: { getName },
@@ -23,6 +24,7 @@ export default connect(state => state)(function({ children, data, loadMore, ...p
     },
   } = props
   const [item, setItem] = useState(null)
+  const [success, setSuccess] = useState(null)
 
   const handleSelect = item => {
     const {
@@ -63,11 +65,28 @@ export default connect(state => state)(function({ children, data, loadMore, ...p
         <AssetDetail
           item={item}
           {...props}
-          onReload={() => {
+          onReload={reason => {
             loadMore(true)
             setItem(null)
+            if (reason) {
+              switch (reason) {
+                default:
+                  setSuccess(reason)
+              }
+            }
           }}
           onClose={() => setItem(null)}
+        />
+      )}
+      {success && (
+        <SuccessModal
+          onClose={() => {
+            switch (success) {
+              default:
+                onTab(0)
+            }
+            setSuccess(null)
+          }}
         />
       )}
     </Wrapper>
