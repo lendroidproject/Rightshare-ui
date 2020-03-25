@@ -2,11 +2,11 @@ import React from 'react'
 import Head from 'next/head'
 import App from 'next/app'
 import { ThemeProvider } from 'styled-components'
+import RightshareJS from 'rightshare-js'
 
 import { Provider } from 'react-redux'
 import withRedux from 'next-redux-wrapper'
 import configureStore from '~/store'
-import Contracts from '~assets/Contracts'
 
 import Layout from '~/layouts'
 
@@ -27,9 +27,9 @@ class RightshareApp extends App {
     return { pageProps }
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     if (window.ethereum) {
-      if (ethereum._metamask.isEnabled()) {
+      if (ethereum._metamask.isEnabled() && (await ethereum._metamask.isUnlocked())) {
         this.initMetamask()
       } else {
         ethereum.enable().then(() => this.initMetamask())
@@ -62,7 +62,7 @@ class RightshareApp extends App {
     const { store } = this.props
     store.dispatch({
       type: 'INIT_CONTRACTS',
-      payload: Contracts(),
+      payload: RightshareJS(ethereum),
     })
   }
 
