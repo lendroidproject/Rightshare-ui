@@ -2,28 +2,19 @@ import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { connect } from 'react-redux'
 
-import { getMyAssets } from '~/utils/api'
 import Assets from '~/components/Assets'
 
 const Wrapper = styled.div``
-const LoadMore = styled.div`
-  text-align: center;
-
-  button {
-    background: transparent;
-    color: black;
-  }
-`
 
 export default connect(state => state)(function({ children, onTab, ...props }) {
   const {
     address: owner,
+    apis: { getMyAssets },
     dispatch,
     iRights: assets = [],
     addresses: { IRight: asset_contract_address },
   } = props
-  const [page, setPage] = useState({ offset: 0, limit: 20 })
-  const [end, setEnd] = useState(false)
+  const [page, setPage] = useState({ offset: 0 })
 
   const myAssets = query =>
     getMyAssets({ ...query, asset_contract_address })
@@ -34,8 +25,7 @@ export default connect(state => state)(function({ children, onTab, ...props }) {
           type: 'GET_MY_IRIGHTS',
           payload: allAssets,
         })
-        setPage({ offset: allAssets.length, limit: 20 })
-        if (newAssets.length < query.limit) setEnd(true)
+        setPage({ offset: allAssets.length })
       })
       .catch(error => {
         dispatch({
@@ -49,7 +39,6 @@ export default connect(state => state)(function({ children, onTab, ...props }) {
       refresh
         ? {
             offset: 0,
-            limit: 20,
             owner,
           }
         : { ...page, owner }
@@ -59,7 +48,6 @@ export default connect(state => state)(function({ children, onTab, ...props }) {
     if (owner) {
       myAssets({
         offset: 0,
-        limit: 20,
         owner,
       })
     }
@@ -68,11 +56,6 @@ export default connect(state => state)(function({ children, onTab, ...props }) {
   return (
     <Wrapper>
       <Assets data={assets} loadMore={loadMore} onTab={onTab} />
-      {/* {!end && (
-        <LoadMore>
-          <button onClick={loadMore}>Load more...</button>
-        </LoadMore>
-      )} */}
     </Wrapper>
   )
 })

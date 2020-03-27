@@ -2,22 +2,22 @@ import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { connect } from 'react-redux'
 
-import { getMyAssets } from '~/utils/api'
 import Assets from '~/components/Assets'
 
 const Wrapper = styled.div``
-const LoadMore = styled.div`
-  text-align: center;
+// const LoadMore = styled.div`
+//   text-align: center;
 
-  button {
-    background: transparent;
-    color: black;
-  }
-`
+//   button {
+//     background: transparent;
+//     color: black;
+//   }
+// `
 
 export default connect(state => state)(function({ children, onTab, ...props }) {
   const {
     address: owner,
+    apis: { getMyAssets },
     methods: {
       addresses: { getName },
     },
@@ -25,9 +25,9 @@ export default connect(state => state)(function({ children, onTab, ...props }) {
     assets = [],
   } = props
   const [page, setPage] = useState({ offset: 0, limit: 20 })
-  const [end, setEnd] = useState(false)
+  // const [end, setEnd] = useState(false)
 
-  const myAssets = query =>
+  const myAssets = ({ limit, ...query }) =>
     getMyAssets(query)
       .then(response => response.data)
       .then(({ assets: newAssets }) => {
@@ -37,7 +37,7 @@ export default connect(state => state)(function({ children, onTab, ...props }) {
           payload: allAssets,
         })
         setPage({ offset: allAssets.length, limit: 20 })
-        if (newAssets.length < query.limit) setEnd(true)
+        // if (newAssets.length < query.limit) setEnd(true)
       })
       .catch(error => {
         dispatch({

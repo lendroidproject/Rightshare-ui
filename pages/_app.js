@@ -10,6 +10,9 @@ import configureStore from '~/store'
 
 import Layout from '~/layouts'
 
+const OPENSEA_API_URL = process.env.OPENSEA_API_URL
+const OPENSEA_API_KEY = process.env.OPENSEA_API_KEY
+
 const theme = {
   primary: 'default',
 }
@@ -60,9 +63,17 @@ class RightshareApp extends App {
     this.saveMetamask({ address: ethereum.selectedAddress, balanceTimer, addressTimer }, () => this.getBalance())
 
     const { store } = this.props
+    const handleMessage = (type, payload, error) => {
+      store.dispatch({
+        type,
+        payload,
+        error,
+      })
+    }
+    const library = RightshareJS(ethereum, { onEvent: handleMessage, apiURL: OPENSEA_API_URL, apiKey: OPENSEA_API_KEY })
     store.dispatch({
       type: 'INIT_CONTRACTS',
-      payload: RightshareJS(ethereum),
+      payload: library,
     })
   }
 
