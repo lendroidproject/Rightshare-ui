@@ -149,7 +149,6 @@ export default ({ item, onReload, onClose, ...props }) => {
   const [status, setStatus] = useState(null)
   const [transferForm, setTransferForm] = useState(null)
   const [errors, setErrors] = useState({})
-  console.log(errors)
 
   const handleFreezeForm = form => {
     if (Object.keys(errors).length) {
@@ -206,7 +205,8 @@ export default ({ item, onReload, onClose, ...props }) => {
       .then(receipt => {
         console.log(0, receipt)
         const { expiryDate, expiryTime, isExclusive, maxISupply } = freezeForm
-        const expiry = parseInt(new Date(`${expiryDate}T${expiryTime}:00`).getTime() / 1000)
+        const [year, month, day] = expiryDate.split('-');
+        const expiry = parseInt(new Date(Date.UTC(year, month - 1, day, ...expiryTime.split(':'))).getTime() / 1000)
         freeze(address, tokenId, expiry, isExclusive, maxISupply, { from: owner })
           .then(receipt => {
             console.log(1, receipt)

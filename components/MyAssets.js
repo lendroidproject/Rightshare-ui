@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { connect } from 'react-redux'
 
+import { getMyAssets } from '~/utils/api'
 import Assets from '~/components/Assets'
 
 const Wrapper = styled.div``
@@ -17,7 +18,6 @@ const Wrapper = styled.div``
 export default connect(state => state)(function({ children, onTab, ...props }) {
   const {
     address: owner,
-    apis: { getMyAssets },
     methods: {
       addresses: { getName },
     },

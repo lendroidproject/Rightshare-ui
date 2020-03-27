@@ -2,6 +2,8 @@ import styled from 'styled-components'
 
 import { ItemOverlay, ItemDetail } from './AssetDetail'
 
+const MAIN_NETWORK = process.env.MAIN_NETWORK === 'true'
+
 const Content = styled(ItemDetail)`
   flex-direction: column;
   padding: 20px 25px;
@@ -36,7 +38,7 @@ export default ({ onClose }) => (
         you can see them.
         <br />
         You can also view details, share or sell them directly from{' '}
-        <a href="https://rinkeby.opensea.io/account" target="_blank" rel="noopener noreferrer">
+        <a href={MAIN_NETWORK ? "https://opensea.io/account" : "https://rinkeby.opensea.io/account"} target="_blank" rel="noopener noreferrer">
           your OpenSea account
         </a>
         .

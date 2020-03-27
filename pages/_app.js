@@ -10,7 +10,7 @@ import configureStore from '~/store'
 
 import Layout from '~/layouts'
 
-const OPENSEA_API_URL = process.env.OPENSEA_API_URL
+const MAIN_NETWORK = process.env.MAIN_NETWORK === 'true'
 const OPENSEA_API_KEY = process.env.OPENSEA_API_KEY
 
 const theme = {
@@ -70,7 +70,22 @@ class RightshareApp extends App {
         error,
       })
     }
-    const library = RightshareJS(ethereum, { onEvent: handleMessage, apiURL: OPENSEA_API_URL, apiKey: OPENSEA_API_KEY })
+    const library = RightshareJS(ethereum, {
+      onEvent: handleMessage,
+      apiURL: MAIN_NETWORK ? 'https://api.opensea.io/api/v1' : 'https://rinkeby-api.opensea.io/api/v1',
+      apiKey: OPENSEA_API_KEY,
+      addresses: MAIN_NETWORK
+        ? {
+            FRight: '0xD923152e96B0f8eDb28a8feC8765D9F8D81a6920',
+            IRight: '0xcD8bF9Dd771E93B17e2164698dcB30Cb87D51057',
+            RightsDao: '0xb2c6bC6CB79909feEC35947564C0a1Ab0977EbD8',
+          }
+        : {
+            FRight: '0xFc248D053E8E5F71542c0F4956f0292453393A87',
+            IRight: '0xdb210A5da035d160c7528BeCc349d58156818E7C',
+            RightsDao: '0xa43F7069C723587dedaC7c3c82C2f913a1806ff2',
+          },
+    })
     store.dispatch({
       type: 'INIT_CONTRACTS',
       payload: library,
@@ -195,7 +210,7 @@ class RightshareApp extends App {
         </Head>
         <ThemeProvider theme={theme}>
           <Provider store={store}>
-            <Layout>
+            <Layout mainNetwork={MAIN_NETWORK}>
               <Component {...pageProps} />
             </Layout>
           </Provider>
