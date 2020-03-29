@@ -6,3 +6,5 @@ node_modules
 .env
 out
 build
+
+.DS_Store
