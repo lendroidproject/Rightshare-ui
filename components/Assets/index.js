@@ -21,6 +21,7 @@ export default connect(state => state)(function({ children, data, loadMore, onTa
       addresses: { getName },
       FRight: { isFrozen, isUnfreezable, isIMintAble, metadata },
       IRight: { metadata: iMetadata },
+      hasIRight,
     },
   } = props
   const [item, setItem] = useState(null)
@@ -48,6 +49,7 @@ export default connect(state => state)(function({ children, data, loadMore, onTa
         })
         break
       default:
+        hasIRight(address, tokenId).then(console.log)
         isFrozen(address, tokenId).then(isFrozen => {
           setItem({ ...item, isFrozen })
         })
