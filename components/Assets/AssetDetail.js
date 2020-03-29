@@ -122,11 +122,23 @@ const Close = styled.div`
   }
 `
 
+const transformUTC = time => {
+  const date = new Date(time)
+  const dateUTC = Date.UTC(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    date.getHours(),
+    date.getMinutes(),
+    date.getSeconds()
+  )
+  return new Date(dateUTC).toISOString()
+}
+
 const transformFreeze = ({ endTime, isExclusive, maxISupply, circulatingISupply, serialNumber }) => ({
-  expiry: new Date(Number(endTime) * 1000).toISOString(),
-  expiryDate: new Date(Number(endTime) * 1000).toISOString().split('T')[0],
-  expiryTime: new Date(Number(endTime) * 1000)
-    .toISOString()
+  expiry: transformUTC(Number(endTime) * 1000),
+  expiryDate: transformUTC(Number(endTime) * 1000).split('T')[0],
+  expiryTime: transformUTC(Number(endTime) * 1000)
     .split('T')[1]
     .substr(0, 5),
   isExclusive,
@@ -205,7 +217,7 @@ export default ({ item, onReload, onClose, ...props }) => {
       .then(receipt => {
         console.log(0, receipt)
         const { expiryDate, expiryTime, isExclusive, maxISupply } = freezeForm
-        const [year, month, day] = expiryDate.split('-');
+        const [year, month, day] = expiryDate.split('-')
         const expiry = parseInt(new Date(Date.UTC(year, month - 1, day, ...expiryTime.split(':'))).getTime() / 1000)
         freeze(address, tokenId, expiry, isExclusive, maxISupply, { from: owner })
           .then(receipt => {

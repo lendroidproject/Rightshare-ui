@@ -20,7 +20,7 @@ export default ({ data: { expiry, isExclusive, maxISupply, circulatingISupply, s
   <Table cellSpacing="0" borderSpacing="1">
     <tbody>
       <tr>
-        <td>Expiry :</td>
+        <td>Expiry (UTC):</td>
         <td>{expiry}</td>
       </tr>
       <tr>

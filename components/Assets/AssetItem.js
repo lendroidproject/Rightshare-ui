@@ -41,9 +41,9 @@ const ItemInfo = styled(Flex)`
 export default ({ onSelect, ...data }) => {
   const {
     token_id: id,
-    image_preview_url: preview,
+    // image_preview_url: preview,
     // image_thumbnail_url: thumbnail,
-    // image_url: original,
+    image_url: original,
     name,
     background_color: background,
     current_price: price,
@@ -53,7 +53,7 @@ export default ({ onSelect, ...data }) => {
   return (
     <ItemWrapper className="item" onClick={() => onSelect(data)}>
       <Thumbnail style={{ background: background ? `#${background}` : 'white' }}>
-        <img src={preview ? preview : 'https://picsum.photos/250'} alt="" />
+        <img src={original ? original : 'https://picsum.photos/250'} alt="" />
       </Thumbnail>
       <ItemInfo>
         <div>{name}</div>

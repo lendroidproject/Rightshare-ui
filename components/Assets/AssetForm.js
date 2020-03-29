@@ -58,7 +58,7 @@ export const Form = styled.form`
 
 export default ({ form, setForm, readOnly, children, errors }) => (
   <Form onSubmit={e => e.preventDefault()}>
-    <p>Set Expiry</p>
+    <p>Set Expiry (UTC)</p>
     <div className="inputs">
       <div>
         <label>Date</label>

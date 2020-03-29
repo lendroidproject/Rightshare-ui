@@ -13,9 +13,9 @@ axios.defaults.baseURL = getBaseURL()
 axios.defaults.timeout = 30 * 1000 // Max time limit: 30s
 axios.defaults.method = 'GET'
 axios.defaults.headers = {
-  'Accept': 'application/json',
+  Accept: 'application/json',
   'Content-Type': 'application/json',
-  'x-api-key': OPENSEA_API_KEY
+  'x-api-key': OPENSEA_API_KEY,
 }
 
 function jsonConfig(config) {
@@ -34,9 +34,7 @@ export function getMyAssets(params) {
   delete params.limit
   return request({
     url: '/assets',
-    params: {
-      ...params,
-    }
+    params,
   })
 }
 

@@ -3,22 +3,26 @@ import styled from 'styled-components'
 const Wrapper = styled.div`
   text-align: center;
 
+  h3,
+  ul,
+  p {
+    text-align: left;
+  }
+
   h3 {
     margin: 15px 0 8px;
-    text-align: left;
   }
 
   p {
     margin: 0 0 8px;
-    text-align: left;
   }
 
   img {
     max-width: 100%;
     margin: 10px auto;
   }
-  a{
-    color:#0651fa;
+  a {
+    color: #0651fa;
   }
 `
 
@@ -34,19 +38,16 @@ export default function() {
         As a first step, you deposit your parcel in a smart contract. When you do, you freeze your access rights to the
         parcel and create two new 'Rights Tokens'
       </p>
-      <p>
-        <ul>
-          <li>
-            <b>Frozen Rights or fRights</b> - You set an expiry period and 'freeze'
-            your access to the land parcel until then. On expiry, the holder of fRights can unfreeze access to the land
-            parcel.
-          </li>
-          <li>
-            <b>Interim Rights or iRights</b> - Until the expiry, anyone who holds iRights can be given access to the land parcel.
-          </li>
-        </ul>
-
-      </p>
+      <ul>
+        <li>
+          <b>Frozen Rights or fRights</b> - You set an expiry period and 'freeze' your access to the land parcel until
+          then. On expiry, the holder of fRights can unfreeze access to the land parcel.
+        </li>
+        <li>
+          <b>Interim Rights or iRights</b> - Until the expiry, anyone who holds iRights can be given access to the land
+          parcel.
+        </li>
+      </ul>
       <br />
       <p>
         The fRights and iRights are NFTs themselves, which means they are transferable - sent and received, bought and
@@ -84,24 +85,27 @@ export default function() {
       </p>
       <h3>Some Use Cases</h3>
       <p>
-        <b>Leasing Parcels</b> - This is what we have described above. It could happen in other Metaverse worlds, as long as
-        the dApp is willing to support iRights. There could also be a market where you could sell access to your
+        <b>Leasing Parcels</b> - This is what we have described above. It could happen in other Metaverse worlds, as
+        long as the dApp is willing to support iRights. There could also be a market where you could sell access to your
         parcels. Why would you do that? Well, we're quite not sure yet. You tell us!
       </p>
       <p>
-        <b>Collaboration</b> - Let's create a graffiti wall on Cryptovoxels where a number of artists collaborate together, and
-        auction off the parcel.
+        <b>Collaboration</b> - Let's create a graffiti wall on Cryptovoxels where a number of artists collaborate
+        together, and auction off the parcel.
       </p>
       <p>
-        <b>Digital Rights Sharing</b> - As an artist, or even as the owner of a work or art, you have very little right over
-        the art itself. Say you own <a href="https://async.art/art/master/0x6c424c25e9f1fff9642cb5b7750b0db7312c29ad-28" target="_blank">Banksta</a>,
-        you own the token to have and hold, for some future value. Instead, why can't artists and owners monetize
-        this ownership? You could sell the display rights token to 50 people for say six months. And the Metaverse could
+        <b>Digital Rights Sharing</b> - As an artist, or even as the owner of a work or art, you have very little right
+        over the art itself. Say you own{' '}
+        <a href="https://async.art/art/master/0x6c424c25e9f1fff9642cb5b7750b0db7312c29ad-28" target="_blank">
+          Banksta
+        </a>
+        , you own the token to have and hold, for some future value. Instead, why can't artists and owners monetize this
+        ownership? You could sell the display rights token to 50 people for say six months. And the Metaverse could
         allow an image to be displayed only if you have the actual NFT or the corresponding valid iRights.
       </p>
       <p>
-        <b>Metaverse Advertising</b> - This is a take-off from Andrew Steinwold's blog about an advertising marketplace. Why
-        not lease out your parcels and let people run an advertising network?
+        <b>Metaverse Advertising</b> - This is a take-off from Andrew Steinwold's blog about an advertising marketplace.
+        Why not lease out your parcels and let people run an advertising network?
       </p>
       <h3>Tell us what you think</h3>
       <p>
