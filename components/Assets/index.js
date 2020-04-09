@@ -15,19 +15,19 @@ const Items = styled(FlexWrap)`
   margin-bottom: 15px;
 `
 
-export default connect(state => state)(function({ children, data, loadMore, onTab, ...props }) {
+export default connect((state) => state)(function ({ children, data, loadMore, onTab, ...props }) {
   const {
     methods: {
       addresses: { getName },
       FRight: { isFrozen, isUnfreezable, isIMintAble, metadata },
       IRight: { metadata: iMetadata },
-      hasIRight,
+      RightsDao: { currentFVersion, currentIVersion },
     },
   } = props
   const [item, setItem] = useState(null)
   const [success, setSuccess] = useState(null)
 
-  const handleSelect = item => {
+  const handleSelect = (item) => {
     const {
       token_id: tokenId,
       asset_contract: { address },
@@ -49,10 +49,11 @@ export default connect(state => state)(function({ children, data, loadMore, onTa
         })
         break
       default:
-        hasIRight(address, tokenId).then(console.log)
-        isFrozen(address, tokenId).then(isFrozen => {
-          setItem({ ...item, isFrozen })
-        })
+        Promise.all([isFrozen(address, tokenId), currentFVersion(), currentIVersion()]).then(
+          ([isFrozen, fVersion, iVersion]) => {
+            setItem({ ...item, isFrozen, fVersion, iVersion })
+          }
+        )
     }
   }
 
@@ -67,7 +68,7 @@ export default connect(state => state)(function({ children, data, loadMore, onTa
         <AssetDetail
           item={item}
           {...props}
-          onReload={reason => {
+          onReload={(reason) => {
             loadMore(true)
             setItem(null)
             if (reason) {

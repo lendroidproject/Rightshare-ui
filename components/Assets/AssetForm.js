@@ -33,13 +33,14 @@ export const Form = styled.form`
       }
     }
 
-    input {
+    input, select {
       width: 100%;
       font-size: 14px;
       border-radius: 4px;
       border: 1px solid;
       padding: 5px 10px;
       line-height: 1.5;
+      background: white;
 
       &[type='radio'] {
         cursor: pointer;
@@ -56,8 +57,8 @@ export const Form = styled.form`
   }
 `
 
-export default ({ form, setForm, readOnly, children, errors }) => (
-  <Form onSubmit={e => e.preventDefault()}>
+export default ({ form, setForm, readOnly, data, children, errors }) => (
+  <Form onSubmit={(e) => e.preventDefault()}>
     <p>Set Expiry (UTC)</p>
     <div className="inputs">
       <div>
@@ -65,7 +66,7 @@ export default ({ form, setForm, readOnly, children, errors }) => (
         <input
           type="date"
           value={form.expiryDate}
-          onChange={e => setForm({ ...form, expiryDate: e.target.value })}
+          onChange={(e) => setForm({ ...form, expiryDate: e.target.value })}
           readOnly={readOnly}
         />
       </div>
@@ -74,7 +75,7 @@ export default ({ form, setForm, readOnly, children, errors }) => (
         <input
           type="time"
           value={form.expiryTime}
-          onChange={e => setForm({ ...form, expiryTime: e.target.value })}
+          onChange={(e) => setForm({ ...form, expiryTime: e.target.value })}
           readOnly={readOnly}
         />
       </div>
@@ -87,7 +88,7 @@ export default ({ form, setForm, readOnly, children, errors }) => (
           name="isExclusive"
           value={1}
           checked={form.isExclusive}
-          onChange={e => setForm({ ...form, isExclusive: Number(e.target.value) === 1 })}
+          onChange={(e) => setForm({ ...form, isExclusive: Number(e.target.value) === 1 })}
         />
         <label onClick={() => setForm({ ...form, isExclusive: true })}>Exclusive</label>
       </div>
@@ -97,7 +98,7 @@ export default ({ form, setForm, readOnly, children, errors }) => (
           name="isExclusive"
           value={2}
           checked={!form.isExclusive}
-          onChange={e => setForm({ ...form, isExclusive: Number(e.target.value) === 1 })}
+          onChange={(e) => setForm({ ...form, isExclusive: Number(e.target.value) === 1 })}
         />
         <label onClick={() => setForm({ ...form, isExclusive: false })}>Non-Exclusive</label>
       </div>
@@ -109,13 +110,45 @@ export default ({ form, setForm, readOnly, children, errors }) => (
           <input
             type="number"
             value={form.maxISupply}
-            onChange={e => setForm({ ...form, maxISupply: Number(e.target.value) })}
+            onChange={(e) => setForm({ ...form, maxISupply: Number(e.target.value) })}
             readOnly={readOnly}
             className={errors.maxISupply ? 'error' : ''}
           />
         </div>
       </div>
     )}
+    <div className="inputs">
+      <div>
+        <label>
+          <b>F</b> Version
+        </label>
+        <select
+          type="number"
+          value={form.fVersion}
+          onChange={(e) => setForm({ ...form, fVersion: Number(e.target.value) })}
+          readOnly={readOnly}
+        >
+          {new Array(data.fVersion || 1).fill(null).map((_, idx) => (
+            <option key={idx + 1}>{idx + 1}</option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label>
+          <b>I</b> Version
+        </label>
+        <select
+          type="number"
+          value={form.iVersion}
+          onChange={(e) => setForm({ ...form, iVersion: Number(e.target.value) })}
+          readOnly={readOnly}
+        >
+          {new Array(data.iVersion || 1).fill(null).map((_, idx) => (
+            <option key={idx + 1}>{idx + 1}</option>
+          ))}
+        </select>
+      </div>
+    </div>
     {children}
   </Form>
 )

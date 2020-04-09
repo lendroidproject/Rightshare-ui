@@ -6,6 +6,7 @@ import { FlexCenter, FlexInline } from '~/components/common/Wrapper'
 import AssetForm from './AssetForm'
 import AssetMetaData from './AssetMetaData'
 import TransferForm from './TransferForm'
+import IMintForm from './IMintForm'
 
 export const ItemOverlay = styled(FlexCenter)`
   background: rgba(0, 0, 0, 0.7);
@@ -42,6 +43,7 @@ export const ItemDetail = styled(FlexInline)`
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: auto;
 
     img {
       height: auto;
@@ -122,7 +124,7 @@ const Close = styled.div`
   }
 `
 
-const transformUTC = time => {
+const transformUTC = (time) => {
   const date = new Date(time)
   const dateUTC = Date.UTC(
     date.getFullYear(),
@@ -160,25 +162,33 @@ export default ({ item, onReload, onClose, ...props }) => {
   const [originFreezeForm, setFreezeForm] = useState(null)
   const [status, setStatus] = useState(null)
   const [transferForm, setTransferForm] = useState(null)
+  const [mintForm, setMintForm] = useState({ iVersion: 1 })
   const [errors, setErrors] = useState({})
 
-  const handleFreezeForm = form => {
+  const handleFreezeForm = (form) => {
     if (Object.keys(errors).length) {
       setErrors({})
     }
     setFreezeForm(form)
   }
-  const handleTransferForm = form => {
+  const handleTransferForm = (form) => {
     if (Object.keys(errors).length) {
       setErrors({})
     }
     setTransferForm(form)
+  }
+  const handleMintForm = (form) => {
+    if (Object.keys(errors).length) {
+      setErrors({})
+    }
+    setMintForm(form)
   }
 
   useEffect(() => {
     if (item) {
       handleFreezeForm(null)
       handleTransferForm(null)
+      handleMintForm({ iVersion: 1 })
     }
   }, [item])
 
@@ -195,6 +205,8 @@ export default ({ item, onReload, onClose, ...props }) => {
     description,
     type,
     isFrozen,
+    fVersion,
+    iVersion,
     metadata,
     isUnfreezable,
     isIMintAble,
@@ -203,7 +215,7 @@ export default ({ item, onReload, onClose, ...props }) => {
   const userName = user ? user.username : '---'
   const freezeForm = metadata ? transformFreeze(metadata) : originFreezeForm
 
-  const handleFreeze = e => {
+  const handleFreeze = (e) => {
     e.preventDefault()
 
     const validations = ['expiryDate', 'expiryTime', 'maxISupply']
@@ -214,13 +226,13 @@ export default ({ item, onReload, onClose, ...props }) => {
 
     setStatus({ start: 'freeze' })
     approve(address)(approveAddress, tokenId, { from: owner })
-      .then(receipt => {
+      .then((receipt) => {
         console.log(0, receipt)
-        const { expiryDate, expiryTime, isExclusive, maxISupply } = freezeForm
+        const { expiryDate, expiryTime, isExclusive, maxISupply, fVersion, iVersion } = freezeForm
         const [year, month, day] = expiryDate.split('-')
         const expiry = parseInt(new Date(Date.UTC(year, month - 1, day, ...expiryTime.split(':'))).getTime() / 1000)
-        freeze(address, tokenId, expiry, isExclusive, maxISupply, { from: owner })
-          .then(receipt => {
+        freeze(address, tokenId, expiry, isExclusive, [maxISupply, fVersion, iVersion], { from: owner })
+          .then((receipt) => {
             console.log(1, receipt)
             onReload('freeze')
           })
@@ -234,11 +246,11 @@ export default ({ item, onReload, onClose, ...props }) => {
         setStatus(null)
       })
   }
-  const handleUnfreeze = e => {
+  const handleUnfreeze = (e) => {
     e.preventDefault()
     setStatus({ start: 'unfreeze' })
     unfreeze(tokenId, { from: owner })
-      .then(receipt => {
+      .then((receipt) => {
         console.log(0, receipt)
         onReload()
       })
@@ -247,12 +259,14 @@ export default ({ item, onReload, onClose, ...props }) => {
         setStatus(null)
       })
   }
-  const handleIssueI = e => {
+  const handleIssueI = (e) => {
     e.preventDefault()
     setStatus({ start: 'issueI' })
-    issueI(metadata.tokenId, Number(metadata.endTime), { from: owner })
-      .then(receipt => {
+    const { iVersion } = mintForm
+    issueI([metadata.tokenId, Number(metadata.endTime), iVersion], { from: owner })
+      .then((receipt) => {
         console.log(0, receipt)
+        handleMintForm({ iVersion: 1 })
         onReload()
       })
       .catch((error, receipt) => {
@@ -260,11 +274,11 @@ export default ({ item, onReload, onClose, ...props }) => {
         setStatus(null)
       })
   }
-  const handleRevoke = e => {
+  const handleRevoke = (e) => {
     e.preventDefault()
     setStatus({ start: 'revokeI' })
     revokeI(metadata.tokenId, { from: owner })
-      .then(receipt => {
+      .then((receipt) => {
         console.log(0, receipt)
         onReload()
       })
@@ -273,7 +287,7 @@ export default ({ item, onReload, onClose, ...props }) => {
         setStatus(null)
       })
   }
-  const handleTransfer = e => {
+  const handleTransfer = (e) => {
     if (!transferForm) {
       return handleTransferForm({ to: '' })
     }
@@ -287,7 +301,7 @@ export default ({ item, onReload, onClose, ...props }) => {
 
     setStatus({ start: 'transfer' })
     transfer(owner, transferForm.to, metadata.tokenId, { from: owner })
-      .then(receipt => {
+      .then((receipt) => {
         console.log(0, receipt)
         onReload()
       })
@@ -299,7 +313,7 @@ export default ({ item, onReload, onClose, ...props }) => {
 
   return (
     <ItemOverlay onClick={onClose}>
-      <ItemDetail onClick={e => e.stopPropagation()}>
+      <ItemDetail onClick={(e) => e.stopPropagation()}>
         <a href={external} className="external" target="_blank">
           <img
             src={image ? image : 'https://picsum.photos/512'}
@@ -328,6 +342,7 @@ export default ({ item, onReload, onClose, ...props }) => {
                   form: freezeForm,
                   setForm: handleFreezeForm,
                   readOnly: type === 'FRight',
+                  data: { fVersion, iVersion },
                 }}
                 errors={errors}
               ></AssetForm>
@@ -338,13 +353,12 @@ export default ({ item, onReload, onClose, ...props }) => {
                     onClick={() =>
                       handleFreezeForm({
                         expiryDate: new Date().toISOString().split('T')[0],
-                        expiryTime: new Date()
-                          .toISOString()
-                          .split('T')[1]
-                          .substr(0, 5),
+                        expiryTime: new Date().toISOString().split('T')[1].substr(0, 5),
                         isExclusive: true,
                         maxISupply: 1,
                         circulatingISupply: 1,
+                        fVersion: 1,
+                        iVersion: 1,
                       })
                     }
                   >
@@ -362,6 +376,15 @@ export default ({ item, onReload, onClose, ...props }) => {
                 setForm: handleTransferForm,
               }}
               errors={errors}
+            />
+          )}
+          {type === 'FRight' && isIMintAble && (
+            <IMintForm
+              {...{
+                form: mintForm,
+                setForm: handleMintForm,
+                data: { iVersion },
+              }}
             />
           )}
           <div className="buttons">
