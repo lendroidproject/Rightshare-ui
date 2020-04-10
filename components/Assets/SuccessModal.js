@@ -2,7 +2,7 @@ import styled from 'styled-components'
 
 import { ItemOverlay, ItemDetail } from './AssetDetail'
 
-const MAIN_NETWORK = process.env.MAIN_NETWORK === 'true'
+const MAIN_NETWORK = process.env.MAIN_NETWORK
 
 const Content = styled(ItemDetail)`
   flex-direction: column;

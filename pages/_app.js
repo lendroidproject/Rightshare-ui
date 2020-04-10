@@ -10,7 +10,7 @@ import configureStore from '~/store'
 
 import Layout from '~/layouts'
 
-const MAIN_NETWORK = process.env.MAIN_NETWORK === 'true'
+const MAIN_NETWORK = process.env.MAIN_NETWORK
 const OPENSEA_API_KEY = process.env.OPENSEA_API_KEY
 
 const theme = {
