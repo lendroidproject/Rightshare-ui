@@ -58,6 +58,12 @@ const Accordion = styled.div`
     background-color: white;
     overflow: hidden;
   }
+  
+  .notification {
+    background-color: #900;
+    padding: 10px;
+    color: #ccc;
+  }
 `
 
 const Tabs = styled(FlexCenter)`
@@ -116,6 +122,9 @@ export default function() {
 
   return (
     <Accordion>
+      <div key='notification' className='notification'>
+        While we await the audit results of our mainnet contracts, we have restricted their usage to only whitelisted ETH addresses. We encourage you to try Rightshare out on the <a href="https://rinkeby-rightshare.lendroid.com">Rinkeby testnet</a> which does not have such restrictions. Thank you!
+      </div>
       <Tabs>
         {tabLabels.map((label, index) => (
           <Tab key={index} label={label} active={active === index} onSelect={() => setActive(index)} />

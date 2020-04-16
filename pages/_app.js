@@ -76,9 +76,9 @@ class RightshareApp extends App {
       apiKey: OPENSEA_API_KEY,
       addresses: MAIN_NETWORK
         ? {
-            FRight: '0xD923152e96B0f8eDb28a8feC8765D9F8D81a6920',
-            IRight: '0xcD8bF9Dd771E93B17e2164698dcB30Cb87D51057',
-            RightsDao: '0xb2c6bC6CB79909feEC35947564C0a1Ab0977EbD8',
+            FRight: '0x2144DF04A44086fCf28290cF050A3F038A87f049',
+            IRight: '0xb00707bF77c74C3f1CE899B230b9f0ACDD7FE6e2',
+            RightsDao: '0x0c2881Ef133c37E2CCbf95BB4Acf10fbdeaa42cE',
           }
         : {
             FRight: '0x5E2144e7c4AbCE35F8D562aC1e1ddCe87eA0bB2C',

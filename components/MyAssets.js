@@ -28,8 +28,8 @@ export default connect(state => state)(function({ children, onTab, ...props }) {
   // const [end, setEnd] = useState(false)
 
   const myAssets = ({ limit, ...query }) =>
-    // getMyAssets({...query, asset_contract_address: '0x79986af15539de2db9a5086382daeda917a9cf0c'})
-    getMyAssets(query)
+    getMyAssets({...query, asset_contract_address: '0x79986af15539de2db9a5086382daeda917a9cf0c'})
+    // getMyAssets(query)
       .then(response => response.data)
       .then(({ assets: newAssets }) => {
         const allAssets = [...(query.offset ? assets : []), ...newAssets]
