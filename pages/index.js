@@ -7,6 +7,8 @@ import MyAssets from '~components/MyAssets'
 import MyFRights from '~components/MyFRights'
 import MyIRights from '~components/MyIRights'
 
+const MAIN_NETWORK = process.env.MAIN_NETWORK
+
 const Accordion = styled.div`
   background: white;
   min-height: calc(100vh - 164px);
@@ -58,7 +60,7 @@ const Accordion = styled.div`
     background-color: white;
     overflow: hidden;
   }
-  
+
   .notification {
     background-color: #900;
     padding: 10px;
@@ -115,16 +117,21 @@ const tabs = [
   },
 ]
 
-export default function() {
+export default function () {
   const [active, setActive] = useState(0)
   const { Component } = tabs[active]
   const tabLabels = tabs.map(({ label }) => label)
 
   return (
     <Accordion>
-      <div key='notification' className='notification'>
-        While we await the audit results of our mainnet contracts, we have restricted their usage to only whitelisted ETH addresses. We encourage you to try Rightshare out on the <a href="https://rinkeby-rightshare.lendroid.com">Rinkeby testnet</a> which does not have such restrictions. Thank you!
-      </div>
+      {MAIN_NETWORK && (
+        <div key="notification" className="notification">
+          While we await the audit results of our mainnet contracts, we have restricted their usage to only whitelisted
+          ETH addresses. We encourage you to try Rightshare out on the{' '}
+          <a href="https://rinkeby-rightshare.lendroid.com">Rinkeby testnet</a> which does not have such restrictions.
+          Thank you!
+        </div>
+      )}
       <Tabs>
         {tabLabels.map((label, index) => (
           <Tab key={index} label={label} active={active === index} onSelect={() => setActive(index)} />

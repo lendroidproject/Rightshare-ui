@@ -26,7 +26,7 @@ const Wrapper = styled.div`
   }
 `
 
-export default function() {
+export default function () {
   return (
     <Wrapper>
       <p>
@@ -109,7 +109,7 @@ export default function() {
       </p>
       <h3>Tell us what you think</h3>
       <p>
-        If you're feeling creative, come talk to us. We'd love to know what you think and spitball some ideas, on
+        If you're feeling creative, come talk to us. We'd love to know what you think and spitball some ideas, on{' '}
         <a href="https://discord.gg/SyHdEbD">Discord </a>
       </p>
     </Wrapper>

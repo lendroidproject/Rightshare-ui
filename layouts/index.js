@@ -23,13 +23,13 @@ const Content = styled.div`
   width: 100%;
 `
 
-export default connect(state => state)(function({ children, ...props }) {
-  const { address, balance,  mainNetwork } = props
+export default connect((state) => state)(function ({ children, ...props }) {
+  const { address, balance, mainNetwork } = props
 
   return (
     <Wrapper>
       <Account>
-        <img src={mainNetwork ? "/logo_main.png" : "/logo.png"} className="logo" />
+        <img src={mainNetwork ? '/logo.png' : '/logo_rinkeby.png'} className="logo" />
         {address || '---'} : {balance || '0'}
       </Account>
       <Content>{children}</Content>

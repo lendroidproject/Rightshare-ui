@@ -155,8 +155,8 @@ class RightshareApp extends App {
               body {
                 display: flex;
                 line-height: 1.5;
-                background: url('/bg.png');
-                background-color: #0a2c79;
+                background: url('/bg.jpg');
+                background-color: #c2a061;
                 font-family: "Open Sans", sans-serif;
               }
 
