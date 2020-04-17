@@ -98,7 +98,7 @@ export default connect((state) => state)(function ({ children, onTab, ...props }
         <Spinner />
       ) : (
         <>
-          <Refresh onClick={() => loadMore(true)}>&#8634;</Refresh>
+          <Refresh onClick={() => loadMore(true, { owner })}>&#8634;</Refresh>
           {assets.length === 0 && (
             <NoData>
               {rights && rights.length === 0 ? (

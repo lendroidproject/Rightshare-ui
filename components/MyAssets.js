@@ -9,7 +9,7 @@ import Assets from '~/components/Assets'
 const MAIN_NETWORK = process.env.MAIN_NETWORK
 const Wrapper = styled.div``
 
-export const PAGE_LIMIT = 5
+export const PAGE_LIMIT = 20
 export const NoData = styled.p`
   text-align: center;
 `
@@ -124,7 +124,7 @@ export default connect((state) => state)(function ({ children, onTab, ...props }
         <Spinner />
       ) : (
         <>
-          <Refresh onClick={() => loadMore(true)}>&#8634;</Refresh>
+          <Refresh onClick={() => loadMore(true, { owner })}>&#8634;</Refresh>
           {assets.length === 0 && (
             <NoData>
               No digital collectibles available in your wallet. Purchase some from{' '}
