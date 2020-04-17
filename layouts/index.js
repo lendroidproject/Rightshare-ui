@@ -22,6 +22,18 @@ const Content = styled.div`
   width: 100%;
 `
 
+const Footer = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-bottom: 15px;
+
+  a {
+    margin: 0 10px;
+    text-decoration: none;
+    color: #0a2c79;
+  }
+`
+
 const CopyRight = styled.div`
   text-align: center;
   margin-bottom: 20px;
@@ -37,6 +49,14 @@ export default connect((state) => state)(function ({ children, ...props }) {
         {address || '---'} : {balance || '0'}
       </Account>
       <Content>{children}</Content>
+      <Footer>
+        <a href="https://github.com/lendroidproject/Rightshare-contracts" target="_blank">
+          Github
+        </a>
+        <a href="https://discordapp.com/invite/SyHdEbD" target="_blank">
+          Discord
+        </a>
+      </Footer>
       <CopyRight>Copyright © 2020 Rightshare.</CopyRight>
     </Wrapper>
   )
