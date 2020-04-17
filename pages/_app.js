@@ -161,7 +161,6 @@ class RightshareApp extends App {
               }
 
               body * {
-                color: white;
                 box-sizing: border-box;
               }
 
