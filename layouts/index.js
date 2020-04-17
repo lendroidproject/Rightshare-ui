@@ -31,12 +31,40 @@ const Footer = styled.div`
     margin: 0 10px;
     text-decoration: none;
     color: #0a2c79;
+    display: flex;
+    position: relative;
+
+    img {
+      height: 50px;
+    }
+
+    &.discord:after {
+      content: '';
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      top: 10px;
+      bottom: 10px;
+      background: white;
+      border-radius: 50%;
+      z-index: -1;
+    }
   }
 `
 
 const CopyRight = styled.div`
   text-align: center;
   margin-bottom: 20px;
+`
+
+const Discord = styled.div`
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+
+  a {
+    display: flex;
+  }
 `
 
 export default connect((state) => state)(function ({ children, ...props }) {
@@ -51,13 +79,18 @@ export default connect((state) => state)(function ({ children, ...props }) {
       <Content>{children}</Content>
       <Footer>
         <a href="https://github.com/lendroidproject/Rightshare-contracts" target="_blank">
-          Github
+          <img src="/logos/github.png" />
         </a>
-        <a href="https://discordapp.com/invite/SyHdEbD" target="_blank">
-          Discord
+        <a href="https://discordapp.com/invite/SyHdEbD" target="_blank" className="discord">
+          <img src="/logos/discord.png" />
         </a>
       </Footer>
       <CopyRight>Copyright © 2020 Rightshare.</CopyRight>
+      <Discord>
+        <a href="https://discordapp.com/invite/SyHdEbD" target="_blank">
+          <img src="/discord.png" />
+        </a>
+      </Discord>
     </Wrapper>
   )
 })
