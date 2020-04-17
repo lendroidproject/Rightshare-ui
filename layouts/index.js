@@ -22,6 +22,11 @@ const Content = styled.div`
   width: 100%;
 `
 
+const CopyRight = styled.div`
+  text-align: center;
+  margin-bottom: 20px;
+`
+
 export default connect((state) => state)(function ({ children, ...props }) {
   const { address, balance, mainNetwork } = props
 
@@ -32,6 +37,7 @@ export default connect((state) => state)(function ({ children, ...props }) {
         {address || '---'} : {balance || '0'}
       </Account>
       <Content>{children}</Content>
+      <CopyRight>Copyright © 2020 Rightshare.</CopyRight>
     </Wrapper>
   )
 })
