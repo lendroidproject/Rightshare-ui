@@ -9,11 +9,19 @@ const reducer = (state, action) => {
     case 'INIT_CONTRACTS':
       return { ...state, ...action.payload }
     case 'GET_MY_ASSETS':
-      return { ...state, assets: action.payload }
-    case 'GET_MY_FRIGHTS':
-      return { ...state, fRights: action.payload }
-    case 'GET_MY_IRIGHTS':
-      return { ...state, iRights: action.payload }
+      const { assets: newAssets, refresh } = action.payload
+      const assets = refresh ? newAssets : [...(state.assets || []), ...newAssets]
+      return { ...state, assets }
+    case 'GET_MY_FRIGHTS': {
+      const { assets: newAssets, refresh } = action.payload
+      const fRights = refresh ? newAssets : [...(state.fRights || []), ...newAssets]
+      return { ...state, fRights }
+    }
+    case 'GET_MY_IRIGHTS': {
+      const { assets: newAssets, refresh } = action.payload
+      const iRights = refresh ? newAssets : [...(state.iRights || []), ...newAssets]
+      return { ...state, iRights }
+    }
     default:
       return state
   }

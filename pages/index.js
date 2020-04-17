@@ -11,7 +11,7 @@ const MAIN_NETWORK = process.env.MAIN_NETWORK
 
 const Accordion = styled.div`
   background: white;
-  min-height: calc(100vh - 164px);
+  min-height: calc(100vh - 190px);
   width: 90%;
   max-width: 1200px;
   margin: 0 auto 25px;
@@ -58,7 +58,7 @@ const Accordion = styled.div`
   .panel {
     padding: 20px;
     background-color: white;
-    overflow: hidden;
+    position: relative;
   }
 
   .notification {
@@ -70,6 +70,9 @@ const Accordion = styled.div`
 
 const Tabs = styled(FlexCenter)`
   border-bottom: 1px solid #eee;
+  position: sticky;
+  top: 0;
+  background: white;
 
   @media all and (max-width: 767px) {
     flex-wrap: wrap;
@@ -104,7 +107,7 @@ const tabs = [
     Component: Intro,
   },
   {
-    label: 'My Assets',
+    label: MAIN_NETWORK ? 'My Parcels' : 'My Assets',
     Component: MyAssets,
   },
   {

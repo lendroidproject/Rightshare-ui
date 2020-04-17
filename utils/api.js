@@ -31,7 +31,6 @@ function request(config) {
 }
 
 export function getMyAssets(params) {
-  delete params.limit
   return request({
     url: '/assets',
     params,

@@ -7,15 +7,14 @@ const Wrapper = styled.div`
 
 const Account = styled.p`
   margin: 0;
-  padding: 20px;
+  padding: 30px 20px 20px;
   text-align: center;
   word-break: break-all;
 
   .logo {
-    height: 100px;
+    height: 60px;
     display: block;
-    margin: 0 auto;
-    padding: 20px 0;
+    margin: 0 auto 10px;
   }
 `
 

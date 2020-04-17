@@ -98,8 +98,8 @@ const Wrapper = styled.div`
   }
 `
 
-export default () => (
-  <Wrapper className="spinner">
+export default ({ className = '', ...props }) => (
+  <Wrapper className={`spinner ${className}`} {...props}>
     <div className="spin">
       <div></div>
       <div></div>

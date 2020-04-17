@@ -8,17 +8,24 @@ import Assets from '~/components/Assets'
 
 const MAIN_NETWORK = process.env.MAIN_NETWORK
 const Wrapper = styled.div``
-// const LoadMore = styled.div`
-//   text-align: center;
 
-//   button {
-//     background: transparent;
-//     color: black;
-//   }
-// `
-
+export const PAGE_LIMIT = 5
 export const NoData = styled.p`
   text-align: center;
+`
+export const Refresh = styled.div`
+  position: absolute !important;
+  right: 20px;
+  top: 20px;
+  font-size: 1.5em;
+  margin-top: 0;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    color: #27a0f7;
+  }
 `
 
 export default connect((state) => state)(function ({ children, onTab, ...props }) {
@@ -30,25 +37,26 @@ export default connect((state) => state)(function ({ children, onTab, ...props }
     dispatch,
     assets = [],
   } = props
-  const [page, setPage] = useState({ offset: 0, limit: 20 })
+  const [page, setPage] = useState({ offset: 0, limit: PAGE_LIMIT })
   const [loading, setLoading] = useState(true)
-  // const [end, setEnd] = useState(false)
+  const [end, setEnd] = useState(false)
+  const [refresh, setRefresh] = useState(true)
 
-  const myAssets = ({ limit, ...query }) => {
+  const myAssets = (query, refresh = false) => {
     setLoading(true)
+    setRefresh(refresh)
     ;(MAIN_NETWORK
       ? getMyAssets({ ...query, asset_contract_address: '0x79986af15539de2db9a5086382daeda917a9cf0c' })
       : getMyAssets(query)
     )
       .then((response) => response.data)
       .then(({ assets: newAssets }) => {
-        const allAssets = [...(query.offset ? assets : []), ...newAssets]
         dispatch({
           type: 'GET_MY_ASSETS',
-          payload: allAssets,
+          payload: { assets: newAssets, refresh },
         })
-        setPage({ offset: allAssets.length, limit: 20 })
-        // if (newAssets.length < query.limit) setEnd(true)
+        setPage({ offset: query.offset + PAGE_LIMIT, limit: PAGE_LIMIT })
+        setEnd(newAssets.length < query.limit)
       })
       .catch((error) => {
         dispatch({
@@ -57,53 +65,78 @@ export default connect((state) => state)(function ({ children, onTab, ...props }
           error,
         })
       })
-      .finally(() => setLoading(false))
-  }
-  const loadMore = (refresh) =>
-    myAssets(
-      refresh
-        ? {
-            offset: 0,
-            limit: 20,
-            owner,
+      .finally(() =>
+        setTimeout(() => {
+          setLoading(false)
+          setRefresh(false)
+          const el = document.querySelector('.load-more')
+          if (el) {
+            el.setAttribute('data-loading', false)
+            isScrolledIntoView(el)
           }
-        : { ...page, owner }
-    )
+        }, 250)
+      )
+  }
+  const loadMore = (refresh = false, { offset = 0, owner } = {}) =>
+    myAssets({ offset, limit: PAGE_LIMIT, owner }, refresh)
 
   useEffect(() => {
     if (owner) {
-      myAssets({
-        offset: 0,
-        limit: 20,
-        owner,
-      })
+      myAssets(
+        {
+          offset: 0,
+          limit: PAGE_LIMIT,
+          owner,
+        },
+        true
+      )
     }
   }, [owner])
 
+  const isScrolledIntoView = () => {
+    const el = document.querySelector('.load-more')
+    if (!el || el.dataset.loading === 'true') return
+    const rect = el.getBoundingClientRect()
+    const elemTop = rect.top
+    const elemBottom = rect.bottom
+    const isVisible = elemTop >= 0 && elemBottom <= window.innerHeight
+    if (isVisible) {
+      el.setAttribute('data-loading', true)
+      loadMore(false, { offset: Number(el.dataset.offset), owner: el.dataset.owner })
+    }
+  }
+
+  useEffect(() => {
+    window.addEventListener('scroll', isScrolledIntoView, false)
+    return () => window.removeEventListener('scroll', isScrolledIntoView, false)
+  }, [])
+
   return (
     <Wrapper>
-      {loading ? (
-        <Spinner />
-      ) : assets.length > 0 ? (
+      {!refresh && (
         <Assets
-          data={assets.filter(({ asset_contract: { address } }) => !getName(address))}
+          data={assets.filter(({ asset_contract: { address } }) => !['FRight', 'IRight'].includes(getName(address)))}
           loadMore={loadMore}
           onTab={onTab}
         />
-      ) : (
-        <NoData>
-          No digital collectibles available in your wallet. Purchase some from{' '}
-          <a href={MAIN_NETWORK ? 'https://opensea.io/assets/cryptovoxels' : 'https://opensea.io'} target="_blank">
-            OpenSea
-          </a>
-          .
-        </NoData>
       )}
-      {/* {!end && (
-        <LoadMore>
-          <button onClick={loadMore}>Load more...</button>
-        </LoadMore>
-      )} */}
+      {loading ? (
+        <Spinner />
+      ) : (
+        <>
+          <Refresh onClick={() => loadMore(true)}>&#8634;</Refresh>
+          {assets.length === 0 && (
+            <NoData>
+              No digital collectibles available in your wallet. Purchase some from{' '}
+              <a href={MAIN_NETWORK ? 'https://opensea.io/assets/cryptovoxels' : 'https://opensea.io'} target="_blank">
+                OpenSea
+              </a>
+              .
+            </NoData>
+          )}
+          {!end && <Spinner className="load-more" data-offset={page.offset} data-owner={owner} />}
+        </>
+      )}
     </Wrapper>
   )
 })
