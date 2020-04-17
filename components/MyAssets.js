@@ -79,6 +79,7 @@ export default connect((state) => state)(function ({ children, onTab, ...props }
   }
   const loadMore = (refresh = false, { offset = 0, owner } = {}) =>
     myAssets({ offset, limit: PAGE_LIMIT, owner }, refresh)
+  const handleRefresh = (refresh = true) => loadMore(refresh, { owner })
 
   useEffect(() => {
     if (owner) {
@@ -116,7 +117,7 @@ export default connect((state) => state)(function ({ children, onTab, ...props }
       {!refresh && (
         <Assets
           data={assets.filter(({ asset_contract: { address } }) => !['FRight', 'IRight'].includes(getName(address)))}
-          loadMore={loadMore}
+          loadMore={handleRefresh}
           onTab={onTab}
         />
       )}
@@ -124,7 +125,7 @@ export default connect((state) => state)(function ({ children, onTab, ...props }
         <Spinner />
       ) : (
         <>
-          <Refresh onClick={() => loadMore(true, { owner })}>&#8634;</Refresh>
+          <Refresh onClick={handleRefresh}>&#8634;</Refresh>
           {assets.length === 0 && (
             <NoData>
               No digital collectibles available in your wallet. Purchase some from{' '}

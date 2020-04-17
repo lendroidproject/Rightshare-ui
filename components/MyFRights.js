@@ -57,6 +57,7 @@ export default connect((state) => state)(function ({ children, onTab, ...props }
   }
   const loadMore = (refresh = false, { offset = 0, owner } = {}) =>
     myAssets({ offset, limit: PAGE_LIMIT, owner }, refresh)
+  const handleRefresh = (refresh = true) => loadMore(refresh, { owner })
 
   useEffect(() => {
     if (owner) {
@@ -91,12 +92,12 @@ export default connect((state) => state)(function ({ children, onTab, ...props }
 
   return (
     <Wrapper>
-      {!refresh && <Assets data={assets} loadMore={loadMore} onTab={onTab} />}
+      {!refresh && <Assets data={assets} loadMore={handleRefresh} onTab={onTab} />}
       {loading ? (
         <Spinner />
       ) : (
         <>
-          <Refresh onClick={() => loadMore(true, { owner })}>&#8634;</Refresh>
+          <Refresh onClick={handleRefresh}>&#8634;</Refresh>
           {assets.length === 0 && (
             <NoData>
               {rights && rights.length === 0 ? (

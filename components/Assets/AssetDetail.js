@@ -311,8 +311,13 @@ export default ({ item, onReload, onClose, ...props }) => {
       })
   }
 
+  const handleClose = (e) => {
+    if (status) return
+    onClose(e)
+  }
+
   return (
-    <ItemOverlay onClick={onClose}>
+    <ItemOverlay onClick={handleClose}>
       <ItemDetail onClick={(e) => e.stopPropagation()}>
         <a href={external} className="external" target="_blank">
           <img
@@ -322,7 +327,7 @@ export default ({ item, onReload, onClose, ...props }) => {
           />
         </a>
         <div className="info">
-          <Close onClick={onClose} />
+          <Close onClick={handleClose} />
           <div className="heading">
             <p>{assetName}</p>
           </div>
