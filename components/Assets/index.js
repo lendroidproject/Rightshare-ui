@@ -69,13 +69,14 @@ export default connect((state) => state)(function ({ children, data, loadMore, o
           item={item}
           {...props}
           onReload={(reason) => {
-            loadMore(true)
             setItem(null)
             if (reason) {
               switch (reason) {
                 default:
                   setSuccess(reason)
               }
+            } else {
+              loadMore(true)
             }
           }}
           onClose={() => setItem(null)}
