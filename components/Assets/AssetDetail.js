@@ -350,7 +350,7 @@ export default ({ item, onReload, onClose, ...props }) => {
                   data: { fVersion, iVersion },
                 }}
                 errors={errors}
-              ></AssetForm>
+              />
             ) : (
               <div className="buttons">
                 {isFrozen === false && (
