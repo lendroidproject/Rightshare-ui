@@ -19,8 +19,8 @@ export default connect((state) => state)(function ({ children, data, loadMore, o
   const {
     methods: {
       addresses: { getName },
-      FRight: { isFrozen, isUnfreezable, isIMintAble, metadata },
-      IRight: { metadata: iMetadata },
+      FRight: { isFrozen, isUnfreezable, isIMintAble, metadata, tokenURI },
+      IRight: { metadata: iMetadata, tokenURI: iTokenURI },
       RightsDao: { currentFVersion, currentIVersion },
     },
   } = props
@@ -37,8 +37,9 @@ export default connect((state) => state)(function ({ children, data, loadMore, o
     const type = getName(address)
     switch (type) {
       case 'FRight':
-        Promise.all([metadata(tokenId), isIMintAble(tokenId), isUnfreezable(tokenId)]).then(
-          ([metadata, isIMintAble, isUnfreezable]) => {
+        Promise.all([tokenURI(tokenId), metadata(tokenId), isIMintAble(tokenId), isUnfreezable(tokenId)]).then(
+          ([tokenURI, metadata, isIMintAble, isUnfreezable]) => {
+            console.log(tokenURI);
             setItem({ ...item, type, metadata, isIMintAble, isUnfreezable })
           }
         )

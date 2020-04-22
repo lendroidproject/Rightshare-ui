@@ -35,6 +35,7 @@ const ItemInfo = styled(Flex)`
   .price {
     flex: 0 0 50px;
     text-align: right;
+    display: none; /* Price */
   }
 `
 

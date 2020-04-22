@@ -88,7 +88,7 @@ export default connect((state) => state)(function ({ children, ...props }) {
       <CopyRight>Copyright © 2020 Rightshare.</CopyRight>
       <Discord>
         <a href="https://discordapp.com/invite/SyHdEbD" target="_blank">
-          <img src="/discord.png" />
+          <img src="/discord.svg" />
         </a>
       </Discord>
     </Wrapper>

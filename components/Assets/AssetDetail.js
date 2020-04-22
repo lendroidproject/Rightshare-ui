@@ -228,10 +228,10 @@ export default ({ item, onReload, onClose, ...props }) => {
     approve(address)(approveAddress, tokenId, { from: owner })
       .then((receipt) => {
         console.log(0, receipt)
-        const { expiryDate, expiryTime, isExclusive, maxISupply, fVersion, iVersion } = freezeForm
+        const { expiryDate, expiryTime, maxISupply, fVersion, iVersion } = freezeForm
         const [year, month, day] = expiryDate.split('-')
         const expiry = parseInt(new Date(Date.UTC(year, month - 1, day, ...expiryTime.split(':'))).getTime() / 1000)
-        freeze(address, tokenId, expiry, isExclusive, [maxISupply, fVersion, iVersion], { from: owner })
+        freeze(address, tokenId, expiry, [maxISupply, fVersion, iVersion], { from: owner })
           .then((receipt) => {
             console.log(1, receipt)
             onReload('freeze')
