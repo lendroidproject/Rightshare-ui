@@ -39,9 +39,10 @@ export default connect((state) => state)(function ({ children, onTab, ...props }
       .catch((error) => {
         dispatch({
           type: 'GET_MY_FRIGHTS',
-          payload: [],
+          payload: { assets: [], refresh },
           error,
         })
+        setEnd(true)
       })
       .finally(() =>
         setTimeout(() => {

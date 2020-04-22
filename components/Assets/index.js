@@ -2,6 +2,7 @@ import { useState } from 'react'
 import styled from 'styled-components'
 import { connect } from 'react-redux'
 
+import { fetchMetadata } from '~/utils/api'
 import { FlexWrap } from '~/components/common/Wrapper'
 
 import AssetDetail from './AssetDetail'
@@ -37,16 +38,29 @@ export default connect((state) => state)(function ({ children, data, loadMore, o
     const type = getName(address)
     switch (type) {
       case 'FRight':
-        Promise.all([tokenURI(tokenId), metadata(tokenId), isIMintAble(tokenId), isUnfreezable(tokenId)]).then(
-          ([tokenURI, metadata, isIMintAble, isUnfreezable]) => {
-            console.log(tokenURI);
-            setItem({ ...item, type, metadata, isIMintAble, isUnfreezable })
+        Promise.all([tokenURI(tokenId), metadata(tokenId), isIMintable(tokenId), isUnfreezable(tokenId)]).then(
+          ([tokenURI, metadata, isIMintable, isUnfreezable]) => {
+            fetchMetadata(tokenURI)
+              .then(({ data: tokenInfo }) => {
+                setItem({ ...item, type, tokenInfo, metadata, isIMintable, isUnfreezable })
+              })
+              .catch((err) => {
+                console.error(err)
+                setItem({ ...item, type, tokenInfo: {}, metadata, isIMintable, isUnfreezable })
+              })
           }
         )
         break
       case 'IRight':
-        Promise.all([iMetadata(tokenId)]).then(([metadata]) => {
-          setItem({ ...item, type, metadata })
+        Promise.all([iTokenURI(tokenId), iMetadata(tokenId)]).then(([tokenURI, metadata]) => {
+          fetchMetadata(tokenURI)
+            .then(({ data: tokenInfo }) => {
+              setItem({ ...item, type, tokenInfo, metadata })
+            })
+            .catch((err) => {
+              console.error(err)
+              setItem({ ...item, type, tokenInfo: {}, metadata })
+            })
         })
         break
       default:

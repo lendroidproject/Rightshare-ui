@@ -64,6 +64,22 @@ const Discord = styled.div`
 
   a {
     display: flex;
+
+    img {
+      width: 60px;
+    }
+
+    &:after {
+      content: '';
+      position: absolute;
+      left: 13px;
+      right: 13px;
+      top: 13px;
+      bottom: 15px;
+      background: white;
+      border-radius: 50%;
+      z-index: -1;
+    }
   }
 `
 

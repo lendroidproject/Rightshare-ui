@@ -137,10 +137,10 @@ const transformUTC = (time) => {
   return new Date(dateUTC).toISOString()
 }
 
-const transformFreeze = ({ endTime, isExclusive, maxISupply, circulatingISupply, serialNumber }) => ({
-  expiry: transformUTC(Number(endTime) * 1000),
-  expiryDate: transformUTC(Number(endTime) * 1000).split('T')[0],
-  expiryTime: transformUTC(Number(endTime) * 1000)
+const transformFreeze = ({ expiry, endTime, isExclusive, maxISupply, circulatingISupply, serialNumber }) => ({
+  expiry: transformUTC(Number(expiry || endTime) * 1000),
+  expiryDate: transformUTC(Number(expiry || endTime) * 1000).split('T')[0],
+  expiryTime: transformUTC(Number(expiry || endTime) * 1000)
     .split('T')[1]
     .substr(0, 5),
   isExclusive,
@@ -197,8 +197,8 @@ export default ({ item, onReload, onClose, ...props }) => {
     name,
     asset_contract: { name: assetName, address },
     owner: { user, profile_img_url: avatar },
-    // permalink,
-    external_link: external,
+    permalink,
+    // external_link: external,
     current_price: price,
     image_url: image,
     background_color: background,
@@ -209,11 +209,18 @@ export default ({ item, onReload, onClose, ...props }) => {
     iVersion,
     metadata,
     isUnfreezable,
-    isIMintAble,
+    isIMintable,
     token_id: tokenId,
+    tokenInfo: {
+      name: infoName,
+      background_color: infoBack,
+      description: infoDesc,
+      expiry: infoExpiry,
+      image: infoImage,
+    } = {},
   } = item
   const userName = user ? user.username : '---'
-  const freezeForm = metadata ? transformFreeze(metadata) : originFreezeForm
+  const freezeForm = metadata ? transformFreeze({ ...metadata, expiry: infoExpiry }) : originFreezeForm
 
   const handleFreeze = (e) => {
     e.preventDefault()
@@ -319,11 +326,11 @@ export default ({ item, onReload, onClose, ...props }) => {
   return (
     <ItemOverlay onClick={handleClose}>
       <ItemDetail onClick={(e) => e.stopPropagation()}>
-        <a href={external} className="external" target="_blank">
+        <a href={permalink} className="external" target="_blank">
           <img
-            src={image ? image : 'https://picsum.photos/512'}
+            src={(infoImage || image) ? (infoImage || image) : 'https://picsum.photos/512'}
             alt={name}
-            style={{ background: background ? `#${background}` : 'white' }}
+            style={{ background: (infoBack || background) ? `#${(infoBack || background)}` : 'white' }}
           />
         </a>
         <div className="info">
@@ -331,14 +338,14 @@ export default ({ item, onReload, onClose, ...props }) => {
           <div className="heading">
             <p>{assetName}</p>
           </div>
-          <h2>{name}</h2>
+          <h2>{infoName || name}</h2>
           <div className="owner">
             <img src={avatar} alt={userName} />
             <span>
               Owned by <b>{userName.length > 20 ? `${userName.substr(0, 17)}...` : userName}</b>
             </span>
           </div>
-          <p className="desc">{description}</p>
+          <p className="desc">{infoDesc || description}</p>
           <div className="price">Price: {price ? price : 0}</div>
           {!type &&
             (!!freezeForm ? (
@@ -383,7 +390,7 @@ export default ({ item, onReload, onClose, ...props }) => {
               errors={errors}
             />
           )}
-          {type === 'FRight' && isIMintAble && (
+          {type === 'FRight' && isIMintable && (
             <IMintForm
               {...{
                 form: mintForm,
@@ -405,7 +412,7 @@ export default ({ item, onReload, onClose, ...props }) => {
                 {status && status.start === 'unfreeze' && <img src="/spinner.svg" />}
               </button>
             )}
-            {isIMintAble === true && (
+            {isIMintable === true && (
               <button disabled={!!status} onClick={handleIssueI}>
                 Mint iRight
                 {status && status.start === 'issueI' && <img src="/spinner.svg" />}
