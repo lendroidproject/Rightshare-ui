@@ -20,7 +20,7 @@ export default connect((state) => state)(function ({ children, data, loadMore, o
   const {
     methods: {
       addresses: { getName },
-      FRight: { isFrozen, isUnfreezable, isIMintAble, metadata, tokenURI },
+      FRight: { isFrozen, isUnfreezable, isIMintable, metadata, tokenURI },
       IRight: { metadata: iMetadata, tokenURI: iTokenURI },
       RightsDao: { currentFVersion, currentIVersion },
     },
