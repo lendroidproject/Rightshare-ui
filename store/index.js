@@ -22,6 +22,18 @@ const reducer = (state, action) => {
       const iRights = refresh ? newAssets : [...(state.iRights || []), ...newAssets]
       return { ...state, iRights }
     }
+    case 'GET_ASSET_INFO': {
+      const { data, type } = action.payload
+      const source = state[type]
+      const replaces = source.map((item) => {
+        const match = data.find(({ token_id: id, permalink }) => id === item.token_id && permalink === item.permalink)
+        if (match) {
+          return { ...match, loaded: true }
+        }
+        return item
+      })
+      return { ...state, [type]: replaces }
+    }
     default:
       return state
   }

@@ -2,13 +2,35 @@ import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { connect } from 'react-redux'
 
-import { getMyAssets } from '~/utils/api'
+import { getMyAssets, fetchMetadata } from '~/utils/api'
 import Spinner from '~/components/common/Spinner'
 import Assets from '~/components/Assets'
 import { PAGE_LIMIT, NoData, Refresh } from './MyAssets'
 
 const MAIN_NETWORK = process.env.MAIN_NETWORK
 const Wrapper = styled.div``
+
+export const fetchInfos = (assets, tokenURI) =>
+Promise.all(
+  assets.map(
+    (asset) =>
+      new Promise((resolve) => {
+        tokenURI(asset.token_id)
+          .then((uri) => {
+            fetchMetadata(uri)
+              .then(({ data: tokenInfo }) => resolve({ ...asset, tokenInfo }))
+              .catch((err) => {
+                console.error(err)
+                resolve(asset)
+              })
+          })
+          .catch((err) => {
+            console.error(err)
+            resolve(asset)
+          })
+      })
+  )
+)
 
 export default connect((state) => state)(function ({ children, onTab, ...props }) {
   const {
@@ -17,6 +39,9 @@ export default connect((state) => state)(function ({ children, onTab, ...props }
     assets: rights,
     fRights: assets = [],
     addresses: { FRight: asset_contract_address },
+    methods: {
+      FRight: { tokenURI },
+    },
   } = props
   const [page, setPage] = useState({ offset: 0, limit: PAGE_LIMIT })
   const [loading, setLoading] = useState(true)
@@ -35,6 +60,12 @@ export default connect((state) => state)(function ({ children, onTab, ...props }
         })
         setPage({ offset: query.offset + PAGE_LIMIT, limit: PAGE_LIMIT })
         setEnd(newAssets.length < query.limit)
+        fetchInfos(newAssets, tokenURI).then((data) =>
+          dispatch({
+            type: 'GET_ASSET_INFO',
+            payload: { data, type: 'fRights' },
+          })
+        )
       })
       .catch((error) => {
         dispatch({

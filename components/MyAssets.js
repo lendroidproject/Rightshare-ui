@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { connect } from 'react-redux'
 
-import { getMyAssets } from '~/utils/api'
+import { getMyAssets, forceFetch } from '~/utils/api'
 import Spinner from '~/components/common/Spinner'
 import Assets from '~/components/Assets'
 
@@ -27,6 +27,26 @@ export const Refresh = styled.div`
     color: #27a0f7;
   }
 `
+
+export const fetchInfos = (assets, owner) =>
+  Promise.all(
+    assets.map(
+      (asset) =>
+        new Promise((resolve) => {
+          if (asset.image_url) return resolve(asset)
+          const {
+            token_id: tokenId,
+            asset_contract: { address },
+          } = asset
+          forceFetch({ tokenId, address, owner })
+            .then(({ data }) => resolve({ ...asset, image_url: asset.image_url || data.image_url }))
+            .catch((err) => {
+              console.error(err)
+              resolve(asset)
+            })
+        })
+    )
+  )
 
 export default connect((state) => state)(function ({ children, onTab, ...props }) {
   const {
@@ -57,6 +77,12 @@ export default connect((state) => state)(function ({ children, onTab, ...props }
         })
         setPage({ offset: query.offset + PAGE_LIMIT, limit: PAGE_LIMIT })
         setEnd(newAssets.length < query.limit)
+        fetchInfos(newAssets, owner).then((data) =>
+          dispatch({
+            type: 'GET_ASSET_INFO',
+            payload: { data, type: 'assets' },
+          })
+        )
       })
       .catch((error) => {
         dispatch({

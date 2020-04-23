@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import Spinner from '~/components/common/Spinner'
 import { Flex } from '~/components/common/Wrapper'
 
 const ItemWrapper = styled.div`
@@ -44,20 +45,32 @@ export default ({ onSelect, ...data }) => {
     token_id: id,
     // image_preview_url: preview,
     // image_thumbnail_url: thumbnail,
-    image_url: original,
+    image_url: image,
     name,
     background_color: background,
     current_price: price,
     decimals,
+    tokenInfo: { name: infoName, background_color: infoBack, image: infoImage } = {},
+    loaded,
   } = data
 
   return (
     <ItemWrapper className="item" onClick={() => onSelect(data)}>
       <Thumbnail style={{ background: background ? `#${background}` : 'white' }}>
-        <img src={original ? original : 'https://picsum.photos/250'} alt="" />
+        {!image && !loaded ? (
+          <Spinner />
+        ) : (
+          <img
+            src={
+              infoImage || image ? infoImage || image : `https://via.placeholder.com/250/FFFFFF/000000?text=%23${id}`
+            }
+            alt={infoName || name}
+            style={{ background: infoBack || background ? `#${infoBack || background}` : 'white' }}
+          />
+        )}
       </Thumbnail>
       <ItemInfo>
-        <div>{name}</div>
+        <div>{infoName || name}</div>
         <div className="price">{Number(price ? price : 0).toFixed(decimals)}</div>
       </ItemInfo>
     </ItemWrapper>

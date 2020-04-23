@@ -6,6 +6,7 @@ import { getMyAssets } from '~/utils/api'
 import Spinner from '~/components/common/Spinner'
 import Assets from '~/components/Assets'
 import { PAGE_LIMIT, NoData, Refresh } from './MyAssets'
+import { fetchInfos } from './MyFRights'
 
 const MAIN_NETWORK = process.env.MAIN_NETWORK
 const Wrapper = styled.div``
@@ -18,6 +19,9 @@ export default connect((state) => state)(function ({ children, onTab, ...props }
     fRights,
     iRights: assets = [],
     addresses: { IRight: asset_contract_address },
+    methods: {
+      IRight: { tokenURI },
+    },
   } = props
   const [page, setPage] = useState({ offset: 0, limit: PAGE_LIMIT })
   const [loading, setLoading] = useState(true)
@@ -30,13 +34,18 @@ export default connect((state) => state)(function ({ children, onTab, ...props }
     getMyAssets({ ...query, asset_contract_address })
       .then((response) => response.data)
       .then(({ assets: newAssets }) => {
-        const allAssets = [...(query.offset ? assets : []), ...newAssets]
         dispatch({
           type: 'GET_MY_IRIGHTS',
           payload: { assets: newAssets, refresh },
         })
         setPage({ offset: query.offset + PAGE_LIMIT, limit: PAGE_LIMIT })
         setEnd(newAssets.length < query.limit)
+        fetchInfos(newAssets, tokenURI).then((data) =>
+          dispatch({
+            type: 'GET_ASSET_INFO',
+            payload: { data, type: 'iRights' },
+          })
+        )
       })
       .catch((error) => {
         dispatch({

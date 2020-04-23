@@ -328,8 +328,8 @@ export default ({ item, onReload, onClose, ...props }) => {
       <ItemDetail onClick={(e) => e.stopPropagation()}>
         <a href={permalink} className="external" target="_blank">
           <img
-            src={(infoImage || image) ? (infoImage || image) : 'https://picsum.photos/512'}
-            alt={name}
+            src={(infoImage || image) ? (infoImage || image) : `https://via.placeholder.com/512/FFFFFF/000000?text=%23${tokenId}`}
+            alt={infoName || name}
             style={{ background: (infoBack || background) ? `#${(infoBack || background)}` : 'white' }}
           />
         </a>

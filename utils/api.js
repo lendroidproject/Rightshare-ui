@@ -50,6 +50,17 @@ export function getMyAssets(params) {
   })
 }
 
+export function forceFetch({ tokenId, address, owner }) {
+  return request(
+    {
+      url: `https://${
+        MAIN_NETWORK ? 'api' : 'rinkeby-api'
+      }.opensea.io/asset/${address}/${tokenId}/?force_update=true&account_address=${owner}`,
+    },
+    false
+  )
+}
+
 export function fetchMetadata(url) {
   return request({ url }, false)
 }
