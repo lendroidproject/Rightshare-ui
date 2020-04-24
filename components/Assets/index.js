@@ -17,6 +17,7 @@ const Items = styled(FlexWrap)`
 
 export default connect((state) => state)(function ({ children, data, loadMore, onTab, ...props }) {
   const {
+    dispatch,
     methods: {
       addresses: { getName },
       FRight: { isFrozen, isUnfreezable, isIMintable, metadata },
@@ -76,6 +77,10 @@ export default connect((state) => state)(function ({ children, data, loadMore, o
                   setSuccess(reason)
               }
             } else {
+              dispatch({
+                type: 'RESET_ASSETS',
+                payload: {},
+              })
               loadMore(true)
             }
           }}
@@ -85,6 +90,10 @@ export default connect((state) => state)(function ({ children, data, loadMore, o
       {success && (
         <SuccessModal
           onClose={() => {
+            dispatch({
+              type: 'RESET_ASSETS',
+              payload: {},
+            })
             switch (success) {
               default:
                 onTab(0)

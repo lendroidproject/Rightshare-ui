@@ -41,7 +41,6 @@ export const fetchInfos = (assets, owner) =>
           forceFetch({ tokenId, address, owner })
             .then(({ data }) => resolve({ ...asset, image_url: asset.image_url || data.image_url }))
             .catch((err) => {
-              console.error(err)
               resolve(asset)
             })
         })
@@ -57,10 +56,10 @@ export default connect((state) => state)(function ({ children, onTab, ...props }
     dispatch,
     assets = [],
   } = props
-  const [page, setPage] = useState({ offset: 0, limit: PAGE_LIMIT })
-  const [loading, setLoading] = useState(true)
-  const [end, setEnd] = useState(false)
-  const [refresh, setRefresh] = useState(true)
+  const [page, setPage] = useState({ offset: assets.length, limit: PAGE_LIMIT })
+  const [loading, setLoading] = useState(owner !== props.owner || !props.assets)
+  const [end, setEnd] = useState(!assets.length || assets.length % PAGE_LIMIT !== 0)
+  const [refresh, setRefresh] = useState(false)
 
   const myAssets = (query, refresh = false) => {
     setLoading(true)
@@ -73,7 +72,7 @@ export default connect((state) => state)(function ({ children, onTab, ...props }
       .then(({ assets: newAssets }) => {
         dispatch({
           type: 'GET_MY_ASSETS',
-          payload: { assets: newAssets, refresh },
+          payload: { assets: newAssets, refresh, owner: query.owner },
         })
         setPage({ offset: query.offset + PAGE_LIMIT, limit: PAGE_LIMIT })
         setEnd(newAssets.length < query.limit)
@@ -87,7 +86,7 @@ export default connect((state) => state)(function ({ children, onTab, ...props }
       .catch((error) => {
         dispatch({
           type: 'GET_MY_ASSETS',
-          payload: { assets: [], refresh },
+          payload: { assets: [], refresh, owner: query.owner },
           error,
         })
         setEnd(true)
@@ -109,7 +108,7 @@ export default connect((state) => state)(function ({ children, onTab, ...props }
   const handleRefresh = (refresh = true) => loadMore(refresh, { owner })
 
   useEffect(() => {
-    if (owner) {
+    if (owner !== props.owner || !props.assets) {
       myAssets(
         {
           offset: 0,

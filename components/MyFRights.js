@@ -11,26 +11,27 @@ const MAIN_NETWORK = process.env.MAIN_NETWORK
 const Wrapper = styled.div``
 
 export const fetchInfos = (assets, tokenURI) =>
-Promise.all(
-  assets.map(
-    (asset) =>
-      new Promise((resolve) => {
-        tokenURI(asset.token_id)
-          .then((uri) => {
-            fetchMetadata(uri)
-              .then(({ data: tokenInfo }) => resolve({ ...asset, tokenInfo }))
-              .catch((err) => {
-                console.error(err)
-                resolve(asset)
-              })
-          })
-          .catch((err) => {
-            console.error(err)
-            resolve(asset)
-          })
-      })
+  Promise.all(
+    assets.map(
+      (asset) =>
+        new Promise((resolve) => {
+          if (asset.image_url) return resolve(asset)
+          tokenURI(asset.token_id)
+            .then((uri) => {
+              fetchMetadata(uri)
+                .then(({ data: tokenInfo }) => resolve({ ...asset, tokenInfo }))
+                .catch((err) => {
+                  console.error(err)
+                  resolve(asset)
+                })
+            })
+            .catch((err) => {
+              console.error(err)
+              resolve(asset)
+            })
+        })
+    )
   )
-)
 
 export default connect((state) => state)(function ({ children, onTab, ...props }) {
   const {
@@ -43,10 +44,10 @@ export default connect((state) => state)(function ({ children, onTab, ...props }
       FRight: { tokenURI },
     },
   } = props
-  const [page, setPage] = useState({ offset: 0, limit: PAGE_LIMIT })
-  const [loading, setLoading] = useState(true)
-  const [end, setEnd] = useState(false)
-  const [refresh, setRefresh] = useState(true)
+  const [page, setPage] = useState({ offset: assets.length, limit: PAGE_LIMIT })
+  const [loading, setLoading] = useState(owner !== props.owner || !props.fRights)
+  const [end, setEnd] = useState(!assets.length || assets.length % PAGE_LIMIT !== 0)
+  const [refresh, setRefresh] = useState(false)
 
   const myAssets = (query, refresh = false) => {
     setLoading(true)
@@ -56,7 +57,7 @@ export default connect((state) => state)(function ({ children, onTab, ...props }
       .then(({ assets: newAssets }) => {
         dispatch({
           type: 'GET_MY_FRIGHTS',
-          payload: { assets: newAssets, refresh },
+          payload: { assets: newAssets, refresh, owner: query.owner },
         })
         setPage({ offset: query.offset + PAGE_LIMIT, limit: PAGE_LIMIT })
         setEnd(newAssets.length < query.limit)
@@ -70,7 +71,7 @@ export default connect((state) => state)(function ({ children, onTab, ...props }
       .catch((error) => {
         dispatch({
           type: 'GET_MY_FRIGHTS',
-          payload: { assets: [], refresh },
+          payload: { assets: [], refresh, owner: query.owner },
           error,
         })
         setEnd(true)
@@ -92,7 +93,7 @@ export default connect((state) => state)(function ({ children, onTab, ...props }
   const handleRefresh = (refresh = true) => loadMore(refresh, { owner })
 
   useEffect(() => {
-    if (owner) {
+    if (owner !== props.owner || !props.fRights) {
       myAssets(
         {
           offset: 0,

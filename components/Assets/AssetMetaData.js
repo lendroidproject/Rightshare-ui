@@ -16,7 +16,7 @@ export const Table = styled.table`
   }
 `
 
-export default ({ data: { expiry, isExclusive, maxISupply = 1, circulatingISupply, serialNumber } }) => (
+export default ({ data: { expiry, isExclusive, circulatingISupply, serialNumber } }) => (
   <Table cellSpacing="0" borderSpacing="1">
     <tbody>
       <tr>
@@ -26,10 +26,6 @@ export default ({ data: { expiry, isExclusive, maxISupply = 1, circulatingISuppl
       <tr>
         <td>Exclusive :</td>
         <td>{isExclusive ? 'Yes' : 'No'}</td>
-      </tr>
-      <tr>
-        <td>Max Supply :</td>
-        <td>{maxISupply}</td>
       </tr>
       {circulatingISupply && (
         <tr>
