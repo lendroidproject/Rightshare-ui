@@ -110,7 +110,7 @@ export default function () {
       <h3>Tell us what you think</h3>
       <p>
         If you're feeling creative, come talk to us. We'd love to know what you think and spitball some ideas, on{' '}
-        <a href="https://discord.gg/SyHdEbD">Discord </a>
+        <a href="https://discord.gg/SyHdEbD" target="_blank">Discord </a>
       </p>
     </Wrapper>
   )
