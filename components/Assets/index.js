@@ -2,7 +2,6 @@ import { useState } from 'react'
 import styled from 'styled-components'
 import { connect } from 'react-redux'
 
-import { fetchMetadata } from '~/utils/api'
 import { FlexWrap } from '~/components/common/Wrapper'
 
 import AssetDetail from './AssetDetail'
@@ -20,8 +19,8 @@ export default connect((state) => state)(function ({ children, data, loadMore, o
   const {
     methods: {
       addresses: { getName },
-      FRight: { isFrozen, isUnfreezable, isIMintable, metadata, tokenURI },
-      IRight: { metadata: iMetadata, tokenURI: iTokenURI },
+      FRight: { isFrozen, isUnfreezable, isIMintable, metadata },
+      IRight: { metadata: iMetadata },
       RightsDao: { currentFVersion, currentIVersion },
     },
   } = props
@@ -38,29 +37,15 @@ export default connect((state) => state)(function ({ children, data, loadMore, o
     const type = getName(address)
     switch (type) {
       case 'FRight':
-        Promise.all([tokenURI(tokenId), metadata(tokenId), isIMintable(tokenId), isUnfreezable(tokenId)]).then(
-          ([tokenURI, metadata, isIMintable, isUnfreezable]) => {
-            fetchMetadata(tokenURI)
-              .then(({ data: tokenInfo }) => {
-                setItem({ ...item, type, tokenInfo, metadata, isIMintable, isUnfreezable })
-              })
-              .catch((err) => {
-                console.error(err)
-                setItem({ ...item, type, tokenInfo: {}, metadata, isIMintable, isUnfreezable })
-              })
+        Promise.all([metadata(tokenId), isIMintable(tokenId), isUnfreezable(tokenId)]).then(
+          ([metadata, isIMintable, isUnfreezable]) => {
+            setItem({ ...item, type, metadata, isIMintable, isUnfreezable })
           }
         )
         break
       case 'IRight':
-        Promise.all([iTokenURI(tokenId), iMetadata(tokenId)]).then(([tokenURI, metadata]) => {
-          fetchMetadata(tokenURI)
-            .then(({ data: tokenInfo }) => {
-              setItem({ ...item, type, tokenInfo, metadata })
-            })
-            .catch((err) => {
-              console.error(err)
-              setItem({ ...item, type, tokenInfo: {}, metadata })
-            })
+        Promise.all([iMetadata(tokenId)]).then(([metadata]) => {
+          setItem({ ...item, type, metadata })
         })
         break
       default:

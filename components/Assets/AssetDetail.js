@@ -25,7 +25,7 @@ export const ItemDetail = styled(FlexInline)`
   background: white;
   max-width: 80%;
   position: relative;
-  max-height: 80vh;
+  max-height: 100vh;
   overflow: auto;
 
   @media all and (max-width: 767px) {
@@ -44,6 +44,7 @@ export const ItemDetail = styled(FlexInline)`
     justify-content: center;
     align-items: center;
     overflow: auto;
+    padding: 0;
 
     img {
       height: auto;
@@ -235,10 +236,10 @@ export default ({ item, onReload, onClose, ...props }) => {
     approve(address)(approveAddress, tokenId, { from: owner })
       .then((receipt) => {
         console.log(0, receipt)
-        const { expiryDate, expiryTime, maxISupply, fVersion, iVersion } = freezeForm
+        const { expiryDate, expiryTime, isExclusive, maxISupply, fVersion, iVersion } = freezeForm
         const [year, month, day] = expiryDate.split('-')
         const expiry = parseInt(new Date(Date.UTC(year, month - 1, day, ...expiryTime.split(':'))).getTime() / 1000)
-        freeze(address, tokenId, expiry, [maxISupply, fVersion, iVersion], { from: owner })
+        freeze(address, tokenId, expiry, [isExclusive ? 1 : maxISupply, fVersion, iVersion], { from: owner })
           .then((receipt) => {
             console.log(1, receipt)
             onReload('freeze')
@@ -328,9 +329,13 @@ export default ({ item, onReload, onClose, ...props }) => {
       <ItemDetail onClick={(e) => e.stopPropagation()}>
         <a href={permalink} className="external" target="_blank">
           <img
-            src={(infoImage || image) ? (infoImage || image) : `https://via.placeholder.com/512/FFFFFF/000000?text=%23${tokenId}`}
+            src={
+              infoImage || image
+                ? infoImage || image
+                : `https://via.placeholder.com/512/FFFFFF/000000?text=%23${tokenId}`
+            }
             alt={infoName || name}
-            style={{ background: (infoBack || background) ? `#${(infoBack || background)}` : 'white' }}
+            style={{ background: infoBack || background ? `#${infoBack || background}` : 'white' }}
           />
         </a>
         <div className="info">
@@ -390,7 +395,7 @@ export default ({ item, onReload, onClose, ...props }) => {
               errors={errors}
             />
           )}
-          {type === 'FRight' && isIMintable && (
+          {type === 'FRight' && isIMintable && !freezeForm.isExclusive && (
             <IMintForm
               {...{
                 form: mintForm,
@@ -406,13 +411,13 @@ export default ({ item, onReload, onClose, ...props }) => {
                 {status && status.start === 'freeze' && <img src="/spinner.svg" />}
               </button>
             )}
-            {isUnfreezable === true && (
+            {isUnfreezable && (
               <button disabled={!!status} onClick={handleUnfreeze}>
                 Unfreeze
                 {status && status.start === 'unfreeze' && <img src="/spinner.svg" />}
               </button>
             )}
-            {isIMintable === true && (
+            {isIMintable && !freezeForm.isExclusive && (
               <button disabled={!!status} onClick={handleIssueI}>
                 Mint iRight
                 {status && status.start === 'issueI' && <img src="/spinner.svg" />}

@@ -16,7 +16,7 @@ export const Table = styled.table`
   }
 `
 
-export default ({ data: { expiry, isExclusive, maxISupply, circulatingISupply, serialNumber } }) => (
+export default ({ data: { expiry, isExclusive, maxISupply = 1, circulatingISupply, serialNumber } }) => (
   <Table cellSpacing="0" borderSpacing="1">
     <tbody>
       <tr>
