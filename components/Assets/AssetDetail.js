@@ -338,105 +338,111 @@ export default ({ item, onReload, onClose, ...props }) => {
             style={{ background: infoBack || background ? `#${infoBack || background}` : 'white' }}
           />
         </a>
-        <div className="info">
-          <Close onClick={handleClose} />
-          <div className="heading">
-            <p>{assetName}</p>
-          </div>
-          <h2>{infoName || name}</h2>
-          <div className="owner">
-            <img src={avatar} alt={userName} />
-            <span>
-              Owned by <b>{userName.length > 20 ? `${userName.substr(0, 17)}...` : userName}</b>
-            </span>
-          </div>
-          <p className="desc">{infoDesc || description}</p>
-          <div className="price">Price: {price ? price : 0}</div>
-          {!type &&
-            (!!freezeForm ? (
-              <AssetForm
+        {!metadata || metadata.baseAssetAddress !== '0x0000000000000000000000000000000000000000' ? (
+          <div className="info">
+            <Close onClick={handleClose} />
+            <div className="heading">
+              <p>{assetName}</p>
+            </div>
+            <h2>{infoName || name}</h2>
+            <div className="owner">
+              <img src={avatar} alt={userName} />
+              <span>
+                Owned by <b>{userName.length > 20 ? `${userName.substr(0, 17)}...` : userName}</b>
+              </span>
+            </div>
+            <p className="desc">{infoDesc || description}</p>
+            <div className="price">Price: {price ? price : 0}</div>
+            {!type &&
+              (!!freezeForm ? (
+                <AssetForm
+                  {...{
+                    form: freezeForm,
+                    setForm: handleFreezeForm,
+                    readOnly: type === 'FRight',
+                    data: { fVersion, iVersion },
+                  }}
+                  errors={errors}
+                />
+              ) : (
+                <div className="buttons">
+                  {isFrozen === false && (
+                    <button
+                      onClick={() =>
+                        handleFreezeForm({
+                          expiryDate: new Date().toISOString().split('T')[0],
+                          expiryTime: new Date().toISOString().split('T')[1].substr(0, 5),
+                          isExclusive: true,
+                          maxISupply: 1,
+                          circulatingISupply: 1,
+                          fVersion: 1,
+                          iVersion: 1,
+                        })
+                      }
+                    >
+                      Initiate Rightshare
+                    </button>
+                  )}
+                </div>
+              ))}
+            {type && !transferForm && <AssetMetaData data={freezeForm} />}
+            {type === 'IRight' && transferForm && (
+              <TransferForm
+                owner={owner}
                 {...{
-                  form: freezeForm,
-                  setForm: handleFreezeForm,
-                  readOnly: type === 'FRight',
-                  data: { fVersion, iVersion },
+                  form: transferForm,
+                  setForm: handleTransferForm,
                 }}
                 errors={errors}
               />
-            ) : (
-              <div className="buttons">
-                {isFrozen === false && (
-                  <button
-                    onClick={() =>
-                      handleFreezeForm({
-                        expiryDate: new Date().toISOString().split('T')[0],
-                        expiryTime: new Date().toISOString().split('T')[1].substr(0, 5),
-                        isExclusive: true,
-                        maxISupply: 1,
-                        circulatingISupply: 1,
-                        fVersion: 1,
-                        iVersion: 1,
-                      })
-                    }
-                  >
-                    Initiate Rightshare
-                  </button>
-                )}
-              </div>
-            ))}
-          {type && !transferForm && <AssetMetaData data={freezeForm} />}
-          {type === 'IRight' && transferForm && (
-            <TransferForm
-              owner={owner}
-              {...{
-                form: transferForm,
-                setForm: handleTransferForm,
-              }}
-              errors={errors}
-            />
-          )}
-          {type === 'FRight' && isIMintable && !freezeForm.isExclusive && (
-            <IMintForm
-              {...{
-                form: mintForm,
-                setForm: handleMintForm,
-                data: { iVersion },
-              }}
-            />
-          )}
-          <div className="buttons">
-            {isFrozen === false && freezeForm && (
-              <button disabled={!!status} onClick={handleFreeze}>
-                Proceed
-                {status && status.start === 'freeze' && <img src="/spinner.svg" />}
-              </button>
             )}
-            {isUnfreezable && (
-              <button disabled={!!status} onClick={handleUnfreeze}>
-                Unfreeze
-                {status && status.start === 'unfreeze' && <img src="/spinner.svg" />}
-              </button>
+            {type === 'FRight' && isIMintable && !freezeForm.isExclusive && (
+              <IMintForm
+                {...{
+                  form: mintForm,
+                  setForm: handleMintForm,
+                  data: { iVersion },
+                }}
+              />
             )}
-            {isIMintable && !freezeForm.isExclusive && (
-              <button disabled={!!status} onClick={handleIssueI}>
-                Mint iRight
-                {status && status.start === 'issueI' && <img src="/spinner.svg" />}
-              </button>
-            )}
-            {type === 'IRight' && (
-              <button disabled={!!status} onClick={handleTransfer}>
-                {transferForm ? 'Proceed' : 'Transfer'}
-                {status && status.start === 'transfer' && <img src="/spinner.svg" />}
-              </button>
-            )}
-            {type === 'IRight' && !transferForm && (
-              <button disabled={!!status} onClick={handleRevoke}>
-                Burn iRIghts
-                {status && status.start === 'revokeI' && <img src="/spinner.svg" />}
-              </button>
-            )}
+            <div className="buttons">
+              {isFrozen === false && freezeForm && (
+                <button disabled={!!status} onClick={handleFreeze}>
+                  Proceed
+                  {status && status.start === 'freeze' && <img src="/spinner.svg" />}
+                </button>
+              )}
+              {isUnfreezable && (
+                <button disabled={!!status} onClick={handleUnfreeze}>
+                  Unfreeze
+                  {status && status.start === 'unfreeze' && <img src="/spinner.svg" />}
+                </button>
+              )}
+              {isIMintable && !freezeForm.isExclusive && (
+                <button disabled={!!status} onClick={handleIssueI}>
+                  Mint iRight
+                  {status && status.start === 'issueI' && <img src="/spinner.svg" />}
+                </button>
+              )}
+              {type === 'IRight' && (
+                <button disabled={!!status} onClick={handleTransfer}>
+                  {transferForm ? 'Proceed' : 'Transfer'}
+                  {status && status.start === 'transfer' && <img src="/spinner.svg" />}
+                </button>
+              )}
+              {type === 'IRight' && !transferForm && (
+                <button disabled={!!status} onClick={handleRevoke}>
+                  Burn iRIghts
+                  {status && status.start === 'revokeI' && <img src="/spinner.svg" />}
+                </button>
+              )}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="info">
+            <h3>Asset is unavailable.</h3>
+          </div>
+        )}
       </ItemDetail>
     </ItemOverlay>
   )
