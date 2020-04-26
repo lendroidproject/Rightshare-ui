@@ -127,6 +127,23 @@ export default function () {
 
   return (
     <Accordion>
+      {MAIN_NETWORK && (
+        <div key="notification" className="notification">
+          While the Rightshare{' '}
+          <a
+            href="https://github.com/lendroidproject/Rightshare-contracts/blob/master/audit-report.pdf"
+            target="_blank"
+          >
+            audited smart contracts
+          </a>{' '}
+          are being integrated directly into Crypto Voxels, we have restricted their usage to only whitelisted ETH
+          addresses. We encourage you to try Rightshare out on the{' '}
+          <a href="https://rinkeby-rightshare.lendroid.com" target="_blank">
+            Rinkeby testnet
+          </a>{' '}
+          which not only has nil restrictions, but also supports crypto collectibles besides Crypto Voxels. Thank you!
+        </div>
+      )}
       <Tabs>
         {tabLabels.map((label, index) => (
           <Tab key={index} label={label} active={active === index} onSelect={() => setActive(index)} />
