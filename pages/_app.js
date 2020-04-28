@@ -81,9 +81,9 @@ class RightshareApp extends App {
             RightsDao: '0xb7998D58EEa7c462cDc2d27e66ADde325f388FE0',
           }
         : {
-            FRight: '0xa38e9EcFB9c3354Ad1CFdcE46f746fAB2963c50c',
-            IRight: '0x707c3AAee9FD99495e946925655b82C6F0D6B1a1',
-            RightsDao: '0x9A4cB3f40Ef5eD8A3368231eC073C44e3418D31D',
+            FRight: '0xefC727FE2Ba2157820990f66955019A62Fa3Cc6d',
+            IRight: '0xf73B07252629fb493F721AA7A28945334fea62C7',
+            RightsDao: '0x8066E491b1100b86A9a41a93fc2d218D43552563',
           },
     })
     store.dispatch({
