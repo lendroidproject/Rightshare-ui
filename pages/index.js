@@ -127,7 +127,7 @@ export default function () {
 
   return (
     <Accordion>
-      {MAIN_NETWORK && (
+      {/* {MAIN_NETWORK && (
         <div key="notification" className="notification">
           While the Rightshare{' '}
           <a
@@ -143,7 +143,7 @@ export default function () {
           </a>{' '}
           which not only has nil restrictions, but also supports crypto collectibles besides Crypto Voxels. Thank you!
         </div>
-      )}
+      )} */}
       <Tabs>
         {tabLabels.map((label, index) => (
           <Tab key={index} label={label} active={active === index} onSelect={() => setActive(index)} />
