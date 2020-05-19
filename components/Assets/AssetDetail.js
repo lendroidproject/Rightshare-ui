@@ -31,7 +31,9 @@ export const ItemDetail = styled(FlexInline)`
   overflow: auto;
 
   @media all and (max-width: 767px) {
-    flex-direction: column;
+    flex-wrap: wrap;
+    max-width: 90%;
+    max-height: 90vh;
   }
 
   > * {

@@ -17,6 +17,7 @@ export const Wrapper = styled.div`
 export const PAGE_LIMIT = 20
 export const NoData = styled.p`
   text-align: center;
+  margin: 30px 20px;
 `
 export const Refresh = styled.div`
   position: absolute;
@@ -27,6 +28,9 @@ export const Refresh = styled.div`
   line-height: 1;
   cursor: pointer;
   transition: all 0.2s;
+  @media all and (max-width: 767px) {
+    top: 0;
+  }
 
   &:hover {
     color: #27a0f7;

@@ -56,6 +56,9 @@ const Accordion = styled.div`
     padding: 20px;
     background-color: white;
     position: relative;
+    @media all and (max-width: 767px) {
+      padding: 10px 0;
+    }
   }
 `
 
@@ -71,6 +74,7 @@ const Tabs = styled(FlexCenter)`
     > div {
       width: 50%;
       text-align: center;
+      white-space: nowrap;
     }
   }
 
