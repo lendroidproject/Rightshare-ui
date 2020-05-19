@@ -15,7 +15,14 @@ const Items = styled(FlexWrap)`
   margin-bottom: 15px;
 `
 
-export default connect((state) => state)(function ({ children, data, loadMore, onTab, ...props }) {
+export default connect((state) => state)(function ({
+  children,
+  data,
+  loadMore,
+  onTab,
+  onParent,
+  ...props
+}) {
   const {
     dispatch,
     methods: {
@@ -27,6 +34,7 @@ export default connect((state) => state)(function ({ children, data, loadMore, o
   } = props
   const [item, setItem] = useState(null)
   const [success, setSuccess] = useState(null)
+  const [loading, setLoading] = useState(false)
 
   const handleSelect = (item) => {
     const {
@@ -34,27 +42,35 @@ export default connect((state) => state)(function ({ children, data, loadMore, o
       asset_contract: { address },
     } = item
     setItem(item)
+    setLoading(true)
 
     const type = getName(address)
     switch (type) {
       case 'FRight':
-        Promise.all([metadata(tokenId), isIMintable(tokenId), isUnfreezable(tokenId)]).then(
-          ([metadata, isIMintable, isUnfreezable]) => {
-            setItem({ ...item, type, metadata, isIMintable, isUnfreezable })
-          }
-        )
+        Promise.all([
+          metadata(tokenId),
+          isIMintable(tokenId),
+          isUnfreezable(tokenId),
+        ]).then(([metadata, isIMintable, isUnfreezable]) => {
+          setItem({ ...item, type, metadata, isIMintable, isUnfreezable })
+          setLoading(false)
+        })
         break
       case 'IRight':
         Promise.all([iMetadata(tokenId)]).then(([metadata]) => {
           setItem({ ...item, type, metadata })
+          setLoading(false)
         })
         break
       default:
-        Promise.all([isFrozen(address, tokenId), currentFVersion(), currentIVersion()]).then(
-          ([isFrozen, fVersion, iVersion]) => {
-            setItem({ ...item, isFrozen, fVersion, iVersion })
-          }
-        )
+        Promise.all([
+          isFrozen(address, tokenId),
+          currentFVersion(),
+          currentIVersion(),
+        ]).then(([isFrozen, fVersion, iVersion]) => {
+          setItem({ ...item, isFrozen, fVersion, iVersion })
+          setLoading(false)
+        })
     }
   }
 
@@ -68,7 +84,7 @@ export default connect((state) => state)(function ({ children, data, loadMore, o
       {item && (
         <AssetDetail
           item={item}
-          {...props}
+          loading={loading}
           onReload={(reason) => {
             setItem(null)
             if (reason) {
@@ -85,6 +101,7 @@ export default connect((state) => state)(function ({ children, data, loadMore, o
             }
           }}
           onClose={() => setItem(null)}
+          {...props}
         />
       )}
       {success && (
@@ -96,7 +113,7 @@ export default connect((state) => state)(function ({ children, data, loadMore, o
             })
             switch (success) {
               default:
-                onTab(0)
+                onParent(2)
             }
             setSuccess(null)
           }}

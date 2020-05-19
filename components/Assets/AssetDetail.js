@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
+
 import { validate } from '~/utils/validation'
 import { FlexCenter, FlexInline } from '~/components/common/Wrapper'
+import Spinner from '~/components/common/Spinner'
 
 import AssetForm from './AssetForm'
 import AssetMetaData from './AssetMetaData'
@@ -39,6 +41,11 @@ export const ItemDetail = styled(FlexInline)`
     padding: 10px;
   }
 
+  .actions {
+    position: relative;
+    min-height: 60px;
+  }
+
   .external {
     display: flex;
     justify-content: center;
@@ -53,6 +60,8 @@ export const ItemDetail = styled(FlexInline)`
   }
 
   .info {
+    position: relative;
+
     .heading {
       display: flex;
       justify-content: space-between;
@@ -150,7 +159,7 @@ const transformFreeze = ({ expiry, endTime, isExclusive, maxISupply, circulating
   serialNumber,
 })
 
-export default ({ item, onReload, onClose, ...props }) => {
+export default ({ item, loading, onReload, onClose, ...props }) => {
   const {
     address: owner,
     methods: {
@@ -223,6 +232,24 @@ export default ({ item, onReload, onClose, ...props }) => {
   const userName = user ? user.username : '---'
   const freezeForm = metadata ? transformFreeze({ ...metadata, expiry: infoExpiry }) : originFreezeForm
 
+  const [txStatus, setTxStatus] = useState('')
+  const handleTransaction = (transaction) => {
+    setTxStatus('Waiting for sign transaction...')
+    return new Promise((resolve, reject) => {
+      transaction
+        .on('transactionHash', function (hash) {
+          console.log(hash)
+          setTxStatus('Waiting for confirmation...')
+        })
+        .on('receipt', function (receipt) {
+          console.log(receipt)
+          setTxStatus('Transaction confirmed!')
+          setTimeout(() => resolve(receipt), 100)
+        })
+        .on('error', reject)
+    })
+  }
+
   const handleFreeze = (e) => {
     e.preventDefault()
 
@@ -233,37 +260,35 @@ export default ({ item, onReload, onClose, ...props }) => {
     }
 
     setStatus({ start: 'freeze' })
-    approve(address)(approveAddress, tokenId, { from: owner })
-      .then((receipt) => {
-        console.log(0, receipt)
+    handleTransaction(approve(address)(approveAddress, tokenId, { from: owner }))
+      .then(() => {
         const { expiryDate, expiryTime, isExclusive, maxISupply, fVersion, iVersion } = freezeForm
         const [year, month, day] = expiryDate.split('-')
         const expiry = parseInt(new Date(Date.UTC(year, month - 1, day, ...expiryTime.split(':'))).getTime() / 1000)
-        freeze(address, tokenId, expiry, [isExclusive ? 1 : maxISupply, fVersion, iVersion], { from: owner })
-          .then((receipt) => {
-            console.log(1, receipt)
+        handleTransaction(
+          freeze(address, tokenId, expiry, [isExclusive ? 1 : maxISupply, fVersion, iVersion], {
+            from: owner,
+          })
+        )
+          .then(() => {
             onReload('freeze')
           })
-          .catch((error, receipt) => {
-            console.log(-2, error, receipt)
+          .catch(() => {
             setStatus(null)
           })
       })
-      .catch((error, receipt) => {
-        console.log(-1, error, receipt)
+      .catch(() => {
         setStatus(null)
       })
   }
   const handleUnfreeze = (e) => {
     e.preventDefault()
     setStatus({ start: 'unfreeze' })
-    unfreeze(tokenId, { from: owner })
-      .then((receipt) => {
-        console.log(0, receipt)
+    handleTransaction(unfreeze(tokenId, { from: owner }))
+      .then(() => {
         onReload()
       })
-      .catch((error, receipt) => {
-        console.log(-1, error, receipt)
+      .catch(() => {
         setStatus(null)
       })
   }
@@ -271,27 +296,23 @@ export default ({ item, onReload, onClose, ...props }) => {
     e.preventDefault()
     setStatus({ start: 'issueI' })
     const { iVersion } = mintForm
-    issueI([metadata.tokenId, Number(metadata.endTime), iVersion], { from: owner })
-      .then((receipt) => {
-        console.log(0, receipt)
+    handleTransaction(issueI([metadata.tokenId, Number(metadata.endTime), iVersion], { from: owner }))
+      .then(() => {
         handleMintForm({ iVersion: 1 })
         onReload()
       })
-      .catch((error, receipt) => {
-        console.log(-1, error, receipt)
+      .catch(() => {
         setStatus(null)
       })
   }
   const handleRevoke = (e) => {
     e.preventDefault()
     setStatus({ start: 'revokeI' })
-    revokeI(metadata.tokenId, { from: owner })
-      .then((receipt) => {
-        console.log(0, receipt)
+    handleTransaction(revokeI(metadata.tokenId, { from: owner }))
+      .then(() => {
         onReload()
       })
-      .catch((error, receipt) => {
-        console.log(-1, error, receipt)
+      .catch(() => {
         setStatus(null)
       })
   }
@@ -308,13 +329,11 @@ export default ({ item, onReload, onClose, ...props }) => {
     }
 
     setStatus({ start: 'transfer' })
-    transfer(owner, transferForm.to, metadata.tokenId, { from: owner })
-      .then((receipt) => {
-        console.log(0, receipt)
+    handleTransaction(transfer(owner, transferForm.to, metadata.tokenId, { from: owner }))
+      .then(() => {
         onReload()
       })
-      .catch((error, receipt) => {
-        console.log(-1, error, receipt)
+      .catch(() => {
         setStatus(null)
       })
   }
@@ -335,7 +354,9 @@ export default ({ item, onReload, onClose, ...props }) => {
                 : `https://via.placeholder.com/512/FFFFFF/000000?text=%23${tokenId}`
             }
             alt={infoName || name}
-            style={{ background: infoBack || background ? `#${infoBack || background}` : 'white' }}
+            style={{
+              background: infoBack || background ? `#${infoBack || background}` : 'white',
+            }}
           />
         </a>
         {!metadata || metadata.baseAssetAddress !== '0x0000000000000000000000000000000000000000' ? (
@@ -353,90 +374,103 @@ export default ({ item, onReload, onClose, ...props }) => {
             </div>
             <p className="desc">{infoDesc || description}</p>
             <div className="price">Price: {price ? price : 0}</div>
-            {!type &&
-              (!!freezeForm ? (
-                <AssetForm
-                  {...{
-                    form: freezeForm,
-                    setForm: handleFreezeForm,
-                    readOnly: type === 'FRight',
-                    data: { fVersion, iVersion },
-                  }}
-                  errors={errors}
-                />
+            <div className="actions">
+              {loading ? (
+                <Spinner />
               ) : (
-                <div className="buttons">
-                  {isFrozen === false && (
-                    <button
-                      onClick={() =>
-                        handleFreezeForm({
-                          expiryDate: new Date().toISOString().split('T')[0],
-                          expiryTime: new Date().toISOString().split('T')[1].substr(0, 5),
-                          isExclusive: true,
-                          maxISupply: 1,
-                          circulatingISupply: 1,
-                          fVersion: 1,
-                          iVersion: 1,
-                        })
-                      }
-                    >
-                      Initiate Rightshare
-                    </button>
+                <>
+                  {!type &&
+                    (!!freezeForm ? (
+                      <AssetForm
+                        {...{
+                          form: freezeForm,
+                          setForm: handleFreezeForm,
+                          readOnly: type === 'FRight',
+                          data: { fVersion, iVersion },
+                        }}
+                        errors={errors}
+                      />
+                    ) : (
+                      <div className="buttons">
+                        {isFrozen === false && (
+                          <button
+                            onClick={() =>
+                              handleFreezeForm({
+                                expiryDate: new Date().toISOString().split('T')[0],
+                                expiryTime: new Date().toISOString().split('T')[1].substr(0, 5),
+                                isExclusive: true,
+                                maxISupply: 1,
+                                circulatingISupply: 1,
+                                fVersion: 1,
+                                iVersion: 1,
+                              })
+                            }
+                          >
+                            Initiate Rightshare
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  {type && !transferForm && <AssetMetaData data={freezeForm} />}
+                  {type === 'IRight' && transferForm && (
+                    <TransferForm
+                      owner={owner}
+                      {...{
+                        form: transferForm,
+                        setForm: handleTransferForm,
+                      }}
+                      errors={errors}
+                    />
                   )}
-                </div>
-              ))}
-            {type && !transferForm && <AssetMetaData data={freezeForm} />}
-            {type === 'IRight' && transferForm && (
-              <TransferForm
-                owner={owner}
-                {...{
-                  form: transferForm,
-                  setForm: handleTransferForm,
-                }}
-                errors={errors}
-              />
-            )}
-            {type === 'FRight' && isIMintable && !freezeForm.isExclusive && (
-              <IMintForm
-                {...{
-                  form: mintForm,
-                  setForm: handleMintForm,
-                  data: { iVersion },
-                }}
-              />
-            )}
-            <div className="buttons">
-              {isFrozen === false && freezeForm && (
-                <button disabled={!!status} onClick={handleFreeze}>
-                  Proceed
-                  {status && status.start === 'freeze' && <img src="/spinner.svg" />}
-                </button>
-              )}
-              {isUnfreezable && (
-                <button disabled={!!status} onClick={handleUnfreeze}>
-                  Unfreeze
-                  {status && status.start === 'unfreeze' && <img src="/spinner.svg" />}
-                </button>
-              )}
-              {isIMintable && !freezeForm.isExclusive && (
-                <button disabled={!!status} onClick={handleIssueI}>
-                  Mint iRight
-                  {status && status.start === 'issueI' && <img src="/spinner.svg" />}
-                </button>
-              )}
-              {type === 'IRight' && (
-                <button disabled={!!status} onClick={handleTransfer}>
-                  {transferForm ? 'Proceed' : 'Transfer'}
-                  {status && status.start === 'transfer' && <img src="/spinner.svg" />}
-                </button>
-              )}
-              {type === 'IRight' && !transferForm && (
-                <button disabled={!!status} onClick={handleRevoke}>
-                  Burn iRIghts
-                  {status && status.start === 'revokeI' && <img src="/spinner.svg" />}
-                </button>
+                  {type === 'FRight' && isIMintable && !freezeForm.isExclusive && (
+                    <IMintForm
+                      {...{
+                        form: mintForm,
+                        setForm: handleMintForm,
+                        data: { iVersion },
+                      }}
+                    />
+                  )}
+                  <div className="buttons">
+                    {isFrozen === false && freezeForm && (
+                      <button disabled={!!status} onClick={handleFreeze}>
+                        Proceed
+                        {status && status.start === 'freeze' && <img src="/spinner.svg" />}
+                      </button>
+                    )}
+                    {isUnfreezable && (
+                      <button disabled={!!status} onClick={handleUnfreeze}>
+                        Unfreeze
+                        {status && status.start === 'unfreeze' && <img src="/spinner.svg" />}
+                      </button>
+                    )}
+                    {isIMintable && !freezeForm.isExclusive && (
+                      <button disabled={!!status} onClick={handleIssueI}>
+                        Mint iRight
+                        {status && status.start === 'issueI' && <img src="/spinner.svg" />}
+                      </button>
+                    )}
+                    {type === 'IRight' && (
+                      <button disabled={!!status} onClick={handleTransfer}>
+                        {transferForm ? 'Proceed' : 'Transfer'}
+                        {status && status.start === 'transfer' && <img src="/spinner.svg" />}
+                      </button>
+                    )}
+                    {type === 'IRight' && !transferForm && (
+                      <button disabled={!!status} onClick={handleRevoke}>
+                        Burn iRIghts
+                        {status && status.start === 'revokeI' && <img src="/spinner.svg" />}
+                      </button>
+                    )}
+                  </div>
+                </>
               )}
             </div>
+            {status && status.start && (
+              <Spinner>
+                <div className="message">{txStatus || '...'}</div>
+              </Spinner>
+            )}
           </div>
         ) : (
           <div className="info">

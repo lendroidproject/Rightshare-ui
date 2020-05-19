@@ -2,12 +2,9 @@ import { useState } from 'react'
 import styled from 'styled-components'
 
 import { FlexCenter } from '~/components/common/Wrapper'
+import Parcels from '~components/Parcels'
+import NFTs from '~components/NFTs'
 import Intro from '~components/Intro'
-import MyAssets from '~components/MyAssets'
-import MyFRights from '~components/MyFRights'
-import MyIRights from '~components/MyIRights'
-
-const MAIN_NETWORK = process.env.MAIN_NETWORK
 
 const Accordion = styled.div`
   background: white;
@@ -60,12 +57,6 @@ const Accordion = styled.div`
     background-color: white;
     position: relative;
   }
-
-  .notification {
-    background-color: #900;
-    padding: 10px;
-    color: #ccc;
-  }
 `
 
 const Tabs = styled(FlexCenter)`
@@ -103,20 +94,16 @@ const Tab = ({ label, active, onSelect }) => (
 
 const tabs = [
   {
+    label: 'CryptoVoxels Parcels',
+    Component: Parcels,
+  },
+  {
+    label: 'Other NFTs',
+    Component: NFTs,
+  },
+  {
     label: 'How it works',
     Component: Intro,
-  },
-  {
-    label: MAIN_NETWORK ? 'My Parcels' : 'My Assets',
-    Component: MyAssets,
-  },
-  {
-    label: 'My fRights',
-    Component: MyFRights,
-  },
-  {
-    label: 'My iRights',
-    Component: MyIRights,
   },
 ]
 
@@ -127,23 +114,6 @@ export default function () {
 
   return (
     <Accordion>
-      {/* {MAIN_NETWORK && (
-        <div key="notification" className="notification">
-          While the Rightshare{' '}
-          <a
-            href="https://github.com/lendroidproject/Rightshare-contracts/blob/master/audit-report.pdf"
-            target="_blank"
-          >
-            audited smart contracts
-          </a>{' '}
-          are being integrated directly into Crypto Voxels, we have restricted their usage to only whitelisted ETH
-          addresses. We encourage you to try Rightshare out on the{' '}
-          <a href="https://rinkeby-rightshare.lendroid.com" target="_blank">
-            Rinkeby testnet
-          </a>{' '}
-          which not only has nil restrictions, but also supports crypto collectibles besides Crypto Voxels. Thank you!
-        </div>
-      )} */}
       <Tabs>
         {tabLabels.map((label, index) => (
           <Tab key={index} label={label} active={active === index} onSelect={() => setActive(index)} />

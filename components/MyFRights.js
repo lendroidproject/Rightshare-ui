@@ -1,23 +1,26 @@
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import { connect } from 'react-redux'
 
 import { getMyAssets, fetchMetadata } from '~/utils/api'
 import Spinner from '~/components/common/Spinner'
 import Assets from '~/components/Assets'
 import { PAGE_LIMIT, NoData, Refresh } from './MyAssets'
 
+import { filterBase, filterCV, CV_ADDR } from './Parcels'
+
 const MAIN_NETWORK = process.env.MAIN_NETWORK
 const Wrapper = styled.div``
 
-export const fetchInfos = (assets, tokenURI) =>
+export const fetchInfos = (assets, [baseAsset, tokenURI]) =>
   Promise.all(
     assets.map(
       (asset) =>
         new Promise((resolve) => {
-          if (asset.image_url) return resolve(asset)
-          tokenURI(asset.token_id)
-            .then((uri) => {
+          Promise.all([baseAsset(asset.token_id), tokenURI(asset.token_id)])
+            .then(([base, uri]) => {
+              asset.base = base
+              asset.isCV = base[0].toLowerCase() === CV_ADDR
+              if (asset.image_url) return resolve(asset)
               fetchMetadata(uri)
                 .then(({ data: tokenInfo }) => resolve({ ...asset, tokenInfo }))
                 .catch((err) => {
@@ -26,14 +29,14 @@ export const fetchInfos = (assets, tokenURI) =>
                 })
             })
             .catch((err) => {
-              console.error(err)
+              console.error(err, asset)
               resolve(asset)
             })
         })
     )
   )
 
-export default connect((state) => state)(function ({ children, onTab, ...props }) {
+export default function ({ isCV = false, children, onTab, onParent, ...props }) {
   const {
     address: owner,
     dispatch,
@@ -41,7 +44,8 @@ export default connect((state) => state)(function ({ children, onTab, ...props }
     fRights: assets = [],
     addresses: { FRight: asset_contract_address },
     methods: {
-      FRight: { tokenURI },
+      addresses: { getName },
+      FRight: { tokenURI, baseAsset },
     },
   } = props
   const [page, setPage] = useState({ offset: assets.length, limit: PAGE_LIMIT })
@@ -61,7 +65,7 @@ export default connect((state) => state)(function ({ children, onTab, ...props }
         })
         setPage({ offset: query.offset + PAGE_LIMIT, limit: PAGE_LIMIT })
         setEnd(newAssets.length < query.limit)
-        fetchInfos(newAssets, tokenURI).then((data) =>
+        fetchInfos(newAssets, [baseAsset, tokenURI]).then((data) =>
           dispatch({
             type: 'GET_ASSET_INFO',
             payload: { data, type: 'fRights' },
@@ -114,7 +118,10 @@ export default connect((state) => state)(function ({ children, onTab, ...props }
     const isVisible = elemTop >= 0 && elemBottom <= window.innerHeight
     if (isVisible) {
       el.setAttribute('data-loading', true)
-      loadMore(false, { offset: Number(el.dataset.offset), owner: el.dataset.owner })
+      loadMore(false, {
+        offset: Number(el.dataset.offset),
+        owner: el.dataset.owner,
+      })
     }
   }
 
@@ -123,21 +130,29 @@ export default connect((state) => state)(function ({ children, onTab, ...props }
     return () => window.removeEventListener('scroll', isScrolledIntoView, false)
   }, [])
 
+  const filteredRights = (rights || []).filter(filterCV(isCV, getName))
+  const filtered = assets.filter(filterBase(isCV))
+
   return (
     <Wrapper>
-      {!refresh && <Assets data={assets} loadMore={handleRefresh} onTab={onTab} />}
+      {!refresh && <Assets data={filtered} loadMore={handleRefresh} onTab={onTab} onParent={onParent} />}
       {loading ? (
         <Spinner />
       ) : (
         <>
           <Refresh onClick={handleRefresh}>&#8634;</Refresh>
-          {assets.length === 0 && (
+          {filtered.length === 0 && (
             <NoData>
-              {rights && rights.length === 0 ? (
+              {rights && filteredRights.length === 0 ? (
                 <>
-                  No digital collectibles available in your wallet. Purchase some from{' '}
+                  No digital collectibles available in your wallet. Purchase some
+                  from{' '}
                   <a
-                    href={MAIN_NETWORK ? 'https://opensea.io/assets/cryptovoxels' : 'https://opensea.io'}
+                    href={
+                      MAIN_NETWORK
+                        ? `https://opensea.io/assets/${isCV ? 'cryptovoxels' : ''}`
+                        : 'https://rinkeby.opensea.io/'
+                    }
                     target="_blank"
                   >
                     OpenSea
@@ -146,12 +161,13 @@ export default connect((state) => state)(function ({ children, onTab, ...props }
                 </>
               ) : (
                 <>
-                  No fRights available in your wallet. Freeze a digital collectible from your{' '}
+                  No fRights available in your wallet. Freeze a digital collectible
+                  from your{' '}
                   <a
                     href="#"
                     onClick={(e) => {
                       e.preventDefault()
-                      onTab(1)
+                      onTab(0)
                     }}
                   >
                     Assets
@@ -161,9 +177,15 @@ export default connect((state) => state)(function ({ children, onTab, ...props }
               )}
             </NoData>
           )}
-          {!end && <Spinner className="load-more" data-offset={page.offset} data-owner={owner} />}
+          {!end && (
+            <Spinner
+              className="load-more"
+              data-offset={page.offset}
+              data-owner={owner}
+            />
+          )}
         </>
       )}
     </Wrapper>
   )
-})
+}

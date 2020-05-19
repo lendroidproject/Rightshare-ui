@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import { connect } from 'react-redux'
 
 import { getMyAssets, forceFetch } from '~/utils/api'
 import Spinner from '~/components/common/Spinner'
 import Assets from '~/components/Assets'
+
+import { filterCV } from './Parcels'
 
 const MAIN_NETWORK = process.env.MAIN_NETWORK
 const Wrapper = styled.div``
@@ -14,8 +15,8 @@ export const NoData = styled.p`
   text-align: center;
 `
 export const Refresh = styled.div`
-  position: absolute !important;
-  right: 20px;
+  position: absolute;
+  right: 0;
   top: 20px;
   font-size: 1.5em;
   margin-top: 0;
@@ -33,13 +34,18 @@ export const fetchInfos = (assets, owner) =>
     assets.map(
       (asset) =>
         new Promise((resolve) => {
-          if (asset.image_url) return resolve(asset)
+          if (asset.image_url || true) return resolve(asset)
           const {
             token_id: tokenId,
             asset_contract: { address },
           } = asset
           forceFetch({ tokenId, address, owner })
-            .then(({ data }) => resolve({ ...asset, image_url: asset.image_url || data.image_url }))
+            .then(({ data }) =>
+              resolve({
+                ...asset,
+                image_url: asset.image_url || data.image_url,
+              })
+            )
             .catch((err) => {
               resolve(asset)
             })
@@ -47,7 +53,7 @@ export const fetchInfos = (assets, owner) =>
     )
   )
 
-export default connect((state) => state)(function ({ children, onTab, ...props }) {
+export default function ({ isCV = false, children, onTab, onParent, ...props }) {
   const {
     address: owner,
     methods: {
@@ -64,10 +70,7 @@ export default connect((state) => state)(function ({ children, onTab, ...props }
   const myAssets = (query, refresh = false) => {
     setLoading(true)
     setRefresh(refresh)
-    ;(MAIN_NETWORK
-      ? getMyAssets({ ...query, asset_contract_address: '0x79986af15539de2db9a5086382daeda917a9cf0c' })
-      : getMyAssets(query)
-    )
+    getMyAssets(query)
       .then((response) => response.data)
       .then(({ assets: newAssets }) => {
         dispatch({
@@ -129,7 +132,10 @@ export default connect((state) => state)(function ({ children, onTab, ...props }
     const isVisible = elemTop >= 0 && elemBottom <= window.innerHeight
     if (isVisible) {
       el.setAttribute('data-loading', true)
-      loadMore(false, { offset: Number(el.dataset.offset), owner: el.dataset.owner })
+      loadMore(false, {
+        offset: Number(el.dataset.offset),
+        owner: el.dataset.owner,
+      })
     }
   }
 
@@ -138,32 +144,41 @@ export default connect((state) => state)(function ({ children, onTab, ...props }
     return () => window.removeEventListener('scroll', isScrolledIntoView, false)
   }, [])
 
+  const filtered = assets.filter(filterCV(isCV, getName))
+
   return (
     <Wrapper>
-      {!refresh && (
-        <Assets
-          data={assets.filter(({ asset_contract: { address } }) => !['FRight', 'IRight'].includes(getName(address)))}
-          loadMore={handleRefresh}
-          onTab={onTab}
-        />
-      )}
+      {!refresh && <Assets data={filtered} loadMore={handleRefresh} onTab={onTab} onParent={onParent} />}
       {loading ? (
         <Spinner />
       ) : (
         <>
           <Refresh onClick={handleRefresh}>&#8634;</Refresh>
-          {assets.length === 0 && (
+          {filtered.length === 0 && (
             <NoData>
               No digital collectibles available in your wallet. Purchase some from{' '}
-              <a href={MAIN_NETWORK ? 'https://opensea.io/assets/cryptovoxels' : 'https://opensea.io'} target="_blank">
+              <a
+                href={
+                  MAIN_NETWORK
+                    ? `https://opensea.io/assets/${isCV ? 'cryptovoxels' : ''}`
+                    : 'https://rinkeby.opensea.io/'
+                }
+                target="_blank"
+              >
                 OpenSea
               </a>
               .
             </NoData>
           )}
-          {!end && <Spinner className="load-more" data-offset={page.offset} data-owner={owner} />}
+          {!end && (
+            <Spinner
+              className="load-more"
+              data-offset={page.offset}
+              data-owner={owner}
+            />
+          )}
         </>
       )}
     </Wrapper>
   )
-})
+}
