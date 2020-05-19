@@ -2,19 +2,18 @@ import { useState } from 'react'
 import styled from 'styled-components'
 import { connect } from 'react-redux'
 
-import { FlexCenter } from '~/components/common/Wrapper'
+import { intlTabs } from '~utils/translation'
+import { FlexCenter } from '~components/common/Wrapper'
 import MyAssets from '~components/MyAssets'
 import MyFRights from '~components/MyFRights'
 import MyIRights from '~components/MyIRights'
-import Spinner from '~/components/common/Spinner'
+import Spinner from '~components/common/Spinner'
 
 export const CV_ADDR = '0x79986af15539de2db9a5086382daeda917a9cf0c'
 
 export const filterCV = (isCV, getName) => ({ asset_contract: { address } }) =>
-  !['FRight', 'IRight'].includes(getName(address)) &&
-  (address.toLowerCase() === CV_ADDR) === isCV
-export const filterBase = (isCV) => ({ base }) =>
-  (base && base[0].toLowerCase() === CV_ADDR) === isCV
+  !['FRight', 'IRight'].includes(getName(address)) && (address.toLowerCase() === CV_ADDR) === isCV
+export const filterBase = (isCV) => ({ base }) => (base && base[0].toLowerCase() === CV_ADDR) === isCV
 
 export const Accordion = styled.div`
   .panel {
@@ -58,10 +57,12 @@ export const Tab = ({ label, active, onSelect }) => (
   </div>
 )
 
+const lang = 'CV'
+const intl = intlTabs(lang)
 const tabs = [
-  { label: 'My Parcels', Component: MyAssets },
-  { label: 'My Landlord Tokens', Component: MyFRights },
-  { label: 'My Rental Tokens', Component: MyIRights },
+  { label: intl.MyAssets, Component: MyAssets },
+  { label: intl.MyFRights, Component: MyFRights },
+  { label: intl.MyIRights, Component: MyIRights },
 ]
 
 export default connect((state) => state)(function ({ onTab, ...props }) {
@@ -73,20 +74,11 @@ export default connect((state) => state)(function ({ onTab, ...props }) {
     <Accordion>
       <Tabs>
         {tabLabels.map((label, index) => (
-          <Tab
-            key={index}
-            label={label}
-            active={active === index}
-            onSelect={() => setActive(index)}
-          />
+          <Tab key={index} label={label} active={active === index} onSelect={() => setActive(index)} />
         ))}
       </Tabs>
       <div className="panel">
-        {props.addresses ? (
-          <Component onParent={onTab} onTab={setActive} {...props} isCV />
-        ) : (
-          <Spinner />
-        )}
+        {props.addresses ? <Component onParent={onTab} onTab={setActive} lang={lang} {...props} isCV /> : <Spinner />}
       </div>
     </Accordion>
   )

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import styled from 'styled-components'
 import { connect } from 'react-redux'
 
-import { FlexWrap } from '~/components/common/Wrapper'
+import { FlexWrap } from '~components/common/Wrapper'
 
 import AssetDetail from './AssetDetail'
 import AssetItem from './AssetItem'
@@ -15,14 +15,7 @@ const Items = styled(FlexWrap)`
   margin-bottom: 15px;
 `
 
-export default connect((state) => state)(function ({
-  children,
-  data,
-  loadMore,
-  onTab,
-  onParent,
-  ...props
-}) {
+export default connect((state) => state)(function ({ children, data, loadMore, onTab, onParent, lang, ...props }) {
   const {
     dispatch,
     methods: {
@@ -47,14 +40,12 @@ export default connect((state) => state)(function ({
     const type = getName(address)
     switch (type) {
       case 'FRight':
-        Promise.all([
-          metadata(tokenId),
-          isIMintable(tokenId),
-          isUnfreezable(tokenId),
-        ]).then(([metadata, isIMintable, isUnfreezable]) => {
-          setItem({ ...item, type, metadata, isIMintable, isUnfreezable })
-          setLoading(false)
-        })
+        Promise.all([metadata(tokenId), isIMintable(tokenId), isUnfreezable(tokenId)]).then(
+          ([metadata, isIMintable, isUnfreezable]) => {
+            setItem({ ...item, type, metadata, isIMintable, isUnfreezable })
+            setLoading(false)
+          }
+        )
         break
       case 'IRight':
         Promise.all([iMetadata(tokenId)]).then(([metadata]) => {
@@ -63,14 +54,12 @@ export default connect((state) => state)(function ({
         })
         break
       default:
-        Promise.all([
-          isFrozen(address, tokenId),
-          currentFVersion(),
-          currentIVersion(),
-        ]).then(([isFrozen, fVersion, iVersion]) => {
-          setItem({ ...item, isFrozen, fVersion, iVersion })
-          setLoading(false)
-        })
+        Promise.all([isFrozen(address, tokenId), currentFVersion(), currentIVersion()]).then(
+          ([isFrozen, fVersion, iVersion]) => {
+            setItem({ ...item, isFrozen, fVersion, iVersion })
+            setLoading(false)
+          }
+        )
     }
   }
 
@@ -83,6 +72,7 @@ export default connect((state) => state)(function ({
       </Items>
       {item && (
         <AssetDetail
+          lang={lang}
           item={item}
           loading={loading}
           onReload={(reason) => {

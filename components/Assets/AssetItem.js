@@ -1,6 +1,6 @@
 import styled from 'styled-components'
-import Spinner from '~/components/common/Spinner'
-import { Flex } from '~/components/common/Wrapper'
+import Spinner from '~components/common/Spinner'
+import { Flex } from '~components/common/Wrapper'
 
 const ItemWrapper = styled.div`
   width: 100%;

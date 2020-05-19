@@ -57,7 +57,7 @@ export const Form = styled.form`
   }
 `
 
-export default ({ form, setForm, readOnly, data, children, errors }) => (
+export default ({ form, setForm, readOnly, children, errors }) => (
   <Form onSubmit={(e) => e.preventDefault()}>
     <p>Set Expiry (UTC)</p>
     <div className="inputs">
@@ -117,38 +117,6 @@ export default ({ form, setForm, readOnly, data, children, errors }) => (
         </div>
       </div>
     )}
-    <div className="inputs">
-      <div>
-        <label>
-          <b>F</b> Version
-        </label>
-        <select
-          type="number"
-          value={form.fVersion}
-          onChange={(e) => setForm({ ...form, fVersion: Number(e.target.value) })}
-          readOnly={readOnly}
-        >
-          {new Array(data.fVersion || 1).fill(null).map((_, idx) => (
-            <option key={idx + 1}>{idx + 1}</option>
-          ))}
-        </select>
-      </div>
-      <div>
-        <label>
-          <b>I</b> Version
-        </label>
-        <select
-          type="number"
-          value={form.iVersion}
-          onChange={(e) => setForm({ ...form, iVersion: Number(e.target.value) })}
-          readOnly={readOnly}
-        >
-          {new Array(data.iVersion || 1).fill(null).map((_, idx) => (
-            <option key={idx + 1}>{idx + 1}</option>
-          ))}
-        </select>
-      </div>
-    </div>
     {children}
   </Form>
 )

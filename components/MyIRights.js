@@ -1,18 +1,17 @@
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 
-import { getMyAssets } from '~/utils/api'
-import Spinner from '~/components/common/Spinner'
-import Assets from '~/components/Assets'
-import { PAGE_LIMIT, NoData, Refresh } from './MyAssets'
+import { getMyAssets } from '~utils/api'
+import Spinner from '~components/common/Spinner'
+import Assets from '~components/Assets'
+import { PAGE_LIMIT, NoData, Refresh, Wrapper } from './MyAssets'
 import { fetchInfos } from './MyFRights'
 
 import { filterBase, filterCV } from './Parcels'
 
 const MAIN_NETWORK = process.env.MAIN_NETWORK
-const Wrapper = styled.div``
 
-export default function ({ isCV = false, children, onTab, onParent, ...props }) {
+export default function ({ isCV = false, children, onTab, onParent, lang, ...props }) {
   const {
     address: owner,
     dispatch,
@@ -113,7 +112,7 @@ export default function ({ isCV = false, children, onTab, onParent, ...props }) 
 
   return (
     <Wrapper>
-      {!refresh && <Assets data={filtered} loadMore={handleRefresh} onTab={onTab} onParent={onParent} />}
+      {!refresh && <Assets data={filtered} loadMore={handleRefresh} onTab={onTab} onParent={onParent} lang={lang} />}
       {loading ? (
         <Spinner />
       ) : (
@@ -123,8 +122,7 @@ export default function ({ isCV = false, children, onTab, onParent, ...props }) 
             <NoData>
               {rights && filteredRights.length === 0 ? (
                 <>
-                  No digital collectibles available in your wallet. Purchase some
-                  from{' '}
+                  No digital collectibles available in your wallet. Purchase some from{' '}
                   <a
                     href={
                       MAIN_NETWORK
@@ -139,8 +137,7 @@ export default function ({ isCV = false, children, onTab, onParent, ...props }) 
                 </>
               ) : !rights || (fRights && filteredFRights.length === 0) ? (
                 <>
-                  No iRights available in your wallet. Freeze a digital collectible
-                  from your{' '}
+                  No iRights available in your wallet. Freeze a digital collectible from your{' '}
                   <a
                     href="#"
                     onClick={(e) => {
@@ -154,8 +151,7 @@ export default function ({ isCV = false, children, onTab, onParent, ...props }) 
                 </>
               ) : (
                 <>
-                  No iRights available in your wallet. Mint an iRight from one of
-                  your{' '}
+                  No iRights available in your wallet. Mint an iRight from one of your{' '}
                   <a
                     href="#"
                     onClick={(e) => {
@@ -170,13 +166,7 @@ export default function ({ isCV = false, children, onTab, onParent, ...props }) 
               )}
             </NoData>
           )}
-          {!end && (
-            <Spinner
-              className="load-more"
-              data-offset={page.offset}
-              data-owner={owner}
-            />
-          )}
+          {!end && <Spinner className="load-more" data-offset={page.offset} data-owner={owner} />}
         </>
       )}
     </Wrapper>

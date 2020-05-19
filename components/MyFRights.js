@@ -1,15 +1,14 @@
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 
-import { getMyAssets, fetchMetadata } from '~/utils/api'
-import Spinner from '~/components/common/Spinner'
-import Assets from '~/components/Assets'
-import { PAGE_LIMIT, NoData, Refresh } from './MyAssets'
+import { getMyAssets, fetchMetadata } from '~utils/api'
+import Spinner from '~components/common/Spinner'
+import Assets from '~components/Assets'
+import { PAGE_LIMIT, NoData, Refresh, Wrapper } from './MyAssets'
 
 import { filterBase, filterCV, CV_ADDR } from './Parcels'
 
 const MAIN_NETWORK = process.env.MAIN_NETWORK
-const Wrapper = styled.div``
 
 export const fetchInfos = (assets, [baseAsset, tokenURI]) =>
   Promise.all(
@@ -36,7 +35,7 @@ export const fetchInfos = (assets, [baseAsset, tokenURI]) =>
     )
   )
 
-export default function ({ isCV = false, children, onTab, onParent, ...props }) {
+export default function ({ isCV = false, children, onTab, onParent, lang, ...props }) {
   const {
     address: owner,
     dispatch,
@@ -135,7 +134,7 @@ export default function ({ isCV = false, children, onTab, onParent, ...props }) 
 
   return (
     <Wrapper>
-      {!refresh && <Assets data={filtered} loadMore={handleRefresh} onTab={onTab} onParent={onParent} />}
+      {!refresh && <Assets data={filtered} loadMore={handleRefresh} onTab={onTab} onParent={onParent} lang={lang} />}
       {loading ? (
         <Spinner />
       ) : (

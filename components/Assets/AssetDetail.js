@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 
-import { validate } from '~/utils/validation'
-import { FlexCenter, FlexInline } from '~/components/common/Wrapper'
-import Spinner from '~/components/common/Spinner'
+import { intlActions } from '~utils/translation'
+import { validate } from '~utils/validation'
+import { FlexCenter, FlexInline } from '~components/common/Wrapper'
+import Spinner from '~components/common/Spinner'
 
 import AssetForm from './AssetForm'
 import AssetMetaData from './AssetMetaData'
 import TransferForm from './TransferForm'
-import IMintForm from './IMintForm'
 
 export const ItemOverlay = styled(FlexCenter)`
   background: rgba(0, 0, 0, 0.7);
@@ -95,9 +95,11 @@ export const ItemDetail = styled(FlexInline)`
 
   .buttons {
     margin: 0 -6px -12px;
+    display: flex;
 
     button {
       margin: 12px 6px;
+      font-size: 13px;
     }
   }
 `
@@ -159,7 +161,8 @@ const transformFreeze = ({ expiry, endTime, isExclusive, maxISupply, circulating
   serialNumber,
 })
 
-export default ({ item, loading, onReload, onClose, ...props }) => {
+export default ({ lang, item, loading, onReload, onClose, ...props }) => {
+  const intl = intlActions(lang)
   const {
     address: owner,
     methods: {
@@ -386,7 +389,6 @@ export default ({ item, loading, onReload, onClose, ...props }) => {
                           form: freezeForm,
                           setForm: handleFreezeForm,
                           readOnly: type === 'FRight',
-                          data: { fVersion, iVersion },
                         }}
                         errors={errors}
                       />
@@ -406,7 +408,7 @@ export default ({ item, loading, onReload, onClose, ...props }) => {
                               })
                             }
                           >
-                            Initiate Rightshare
+                            {intl.freeze}
                           </button>
                         )}
                       </div>
@@ -422,43 +424,34 @@ export default ({ item, loading, onReload, onClose, ...props }) => {
                       errors={errors}
                     />
                   )}
-                  {type === 'FRight' && isIMintable && !freezeForm.isExclusive && (
-                    <IMintForm
-                      {...{
-                        form: mintForm,
-                        setForm: handleMintForm,
-                        data: { iVersion },
-                      }}
-                    />
-                  )}
                   <div className="buttons">
                     {isFrozen === false && freezeForm && (
                       <button disabled={!!status} onClick={handleFreeze}>
-                        Proceed
+                        {intl.submit}
                         {status && status.start === 'freeze' && <img src="/spinner.svg" />}
                       </button>
                     )}
                     {isUnfreezable && (
                       <button disabled={!!status} onClick={handleUnfreeze}>
-                        Unfreeze
+                        {intl.unfreeze}
                         {status && status.start === 'unfreeze' && <img src="/spinner.svg" />}
                       </button>
                     )}
                     {isIMintable && !freezeForm.isExclusive && (
                       <button disabled={!!status} onClick={handleIssueI}>
-                        Mint iRight
+                        {intl.issueI}
                         {status && status.start === 'issueI' && <img src="/spinner.svg" />}
                       </button>
                     )}
                     {type === 'IRight' && (
                       <button disabled={!!status} onClick={handleTransfer}>
-                        {transferForm ? 'Proceed' : 'Transfer'}
+                        {transferForm ? intl.submit : intl.transfer}
                         {status && status.start === 'transfer' && <img src="/spinner.svg" />}
                       </button>
                     )}
                     {type === 'IRight' && !transferForm && (
                       <button disabled={!!status} onClick={handleRevoke}>
-                        Burn iRIghts
+                        {intl.revokeI}
                         {status && status.start === 'revokeI' && <img src="/spinner.svg" />}
                       </button>
                     )}

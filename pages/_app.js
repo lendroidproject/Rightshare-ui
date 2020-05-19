@@ -6,9 +6,9 @@ import RightshareJS from 'rightshare-js'
 
 import { Provider } from 'react-redux'
 import withRedux from 'next-redux-wrapper'
-import configureStore from '~/store'
+import configureStore from '~store'
 
-import Layout from '~/layouts'
+import Layout from '~layouts'
 
 const MAIN_NETWORK = process.env.MAIN_NETWORK
 const OPENSEA_API_KEY = process.env.OPENSEA_API_KEY

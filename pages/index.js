@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import styled from 'styled-components'
 
-import { FlexCenter } from '~/components/common/Wrapper'
+import { FlexCenter } from '~components/common/Wrapper'
 import Parcels from '~components/Parcels'
 import NFTs from '~components/NFTs'
 import Intro from '~components/Intro'

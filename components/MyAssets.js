@@ -1,14 +1,18 @@
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 
-import { getMyAssets, forceFetch } from '~/utils/api'
-import Spinner from '~/components/common/Spinner'
-import Assets from '~/components/Assets'
+import { getMyAssets, forceFetch } from '~utils/api'
+import Spinner from '~components/common/Spinner'
+import Assets from '~components/Assets'
 
 import { filterCV } from './Parcels'
 
 const MAIN_NETWORK = process.env.MAIN_NETWORK
-const Wrapper = styled.div``
+export const Wrapper = styled.div`
+  .load-more {
+    position: relative;
+  }
+`
 
 export const PAGE_LIMIT = 20
 export const NoData = styled.p`
@@ -53,7 +57,7 @@ export const fetchInfos = (assets, owner) =>
     )
   )
 
-export default function ({ isCV = false, children, onTab, onParent, ...props }) {
+export default function ({ isCV = false, children, onTab, onParent, lang, ...props }) {
   const {
     address: owner,
     methods: {
@@ -148,7 +152,7 @@ export default function ({ isCV = false, children, onTab, onParent, ...props }) 
 
   return (
     <Wrapper>
-      {!refresh && <Assets data={filtered} loadMore={handleRefresh} onTab={onTab} onParent={onParent} />}
+      {!refresh && <Assets data={filtered} loadMore={handleRefresh} onTab={onTab} onParent={onParent} lang={lang} />}
       {loading ? (
         <Spinner />
       ) : (
@@ -170,13 +174,7 @@ export default function ({ isCV = false, children, onTab, onParent, ...props }) 
               .
             </NoData>
           )}
-          {!end && (
-            <Spinner
-              className="load-more"
-              data-offset={page.offset}
-              data-owner={owner}
-            />
-          )}
+          {!end && <Spinner className="load-more" data-offset={page.offset} data-owner={owner} />}
         </>
       )}
     </Wrapper>
