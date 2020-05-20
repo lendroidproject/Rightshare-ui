@@ -1,17 +1,16 @@
 import { useEffect, useState } from 'react'
-import styled from 'styled-components'
 
 import { getMyAssets } from '~utils/api'
 import Spinner from '~components/common/Spinner'
 import Assets from '~components/Assets'
-import { PAGE_LIMIT, NoData, Refresh, Wrapper } from './MyAssets'
+import { PAGE_LIMIT, NoData, Refresh, Info, Wrapper } from './MyAssets'
 import { fetchInfos } from './MyFRights'
 
-import { filterBase, filterCV } from './Parcels'
+import { filterBase, filterCV } from '~components/Parcels'
 
 const MAIN_NETWORK = process.env.MAIN_NETWORK
 
-export default function ({ isCV = false, children, onTab, onParent, lang, ...props }) {
+export default function ({ lang, isCV = false, info, onTab, onParent, children, ...props }) {
   const {
     address: owner,
     dispatch,
@@ -109,15 +108,32 @@ export default function ({ isCV = false, children, onTab, onParent, lang, ...pro
   const filteredRights = (rights || []).filter(filterCV(isCV, getName))
   const filteredFRights = (fRights || []).filter(filterBase(isCV))
   const filtered = assets.filter(filterBase(isCV))
+  const assetsProps = {
+    lang,
+    data: filtered,
+    loadMore: handleRefresh,
+    onTab,
+    onParent,
+  }
 
   return (
     <Wrapper>
-      {!refresh && <Assets data={filtered} loadMore={handleRefresh} onTab={onTab} onParent={onParent} lang={lang} />}
+      {!refresh && <Assets {...assetsProps} />}
       {loading ? (
         <Spinner />
       ) : (
         <>
           <Refresh onClick={handleRefresh}>&#8634;</Refresh>
+          <Info>
+            <div className="icon">&#9432;</div>
+            <div className="tooltip">
+              <ol>
+                {info.map((txt, idx) => (
+                  <li key={idx}>{txt}</li>
+                ))}
+              </ol>
+            </div>
+          </Info>
           {filtered.length === 0 && (
             <NoData>
               {rights && filteredRights.length === 0 ? (

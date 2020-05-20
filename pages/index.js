@@ -16,6 +16,8 @@ const Accordion = styled.div`
   overflow: hidden;
   @media all and (max-width: 767px) {
     min-height: calc(100vh - 208px);
+    margin: 0;
+    width: 100%;
   }
 
   * {

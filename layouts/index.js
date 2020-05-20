@@ -25,7 +25,7 @@ const Content = styled.div`
 const Footer = styled.div`
   display: flex;
   justify-content: center;
-  margin-bottom: 15px;
+  margin: 15px;
 
   a {
     margin: 0 10px;
@@ -61,6 +61,10 @@ const Discord = styled.div`
   position: fixed;
   bottom: 30px;
   right: 30px;
+  @media all and (max-width: 767px) {
+    bottom: 15px;
+    right: 15px;
+  }
 
   a {
     display: flex;

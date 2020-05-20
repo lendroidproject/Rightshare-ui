@@ -387,6 +387,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                   {!type &&
                     (!!freezeForm ? (
                       <AssetForm
+                        lang={lang}
                         {...{
                           form: freezeForm,
                           setForm: handleFreezeForm,

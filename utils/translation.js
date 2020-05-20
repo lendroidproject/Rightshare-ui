@@ -14,6 +14,20 @@ export const intlTabs = (lang) =>
     },
   }[lang || defaultLang])
 
+export const intlForm = (lang) =>
+  ({
+    CV: {
+      exclusive: 'Exclusive',
+      nonExclusive: 'Non-Exclusive',
+      maxISupply: 'Max Supply - Rentals?',
+    },
+    NFT: {
+      exclusive: 'Exclusive',
+      nonExclusive: 'Non-Exclusive',
+      maxISupply: 'Max Supply - iRights?',
+    },
+  }[lang || defaultLang])
+
 export const intlActions = (lang) =>
   ({
     CV: {
@@ -33,3 +47,33 @@ export const intlActions = (lang) =>
       submit: 'Proceed',
     },
   }[lang || defaultLang])
+
+export const intlUnits = (lang) =>
+  ({
+    CV: {
+      asset: 'CryptoVoxel',
+      fRight: 'Land',
+      iRight: 'Rental',
+    },
+    NFT: {
+      asset: 'NFT',
+      fRight: 'fRight',
+      iRight: 'iRight',
+    },
+  }[lang || defaultLang])
+
+export const intlInfo = (lang) => {
+  const units = intlUnits(lang)
+
+  return {
+    fRight: [
+      `1. You can retrieve the original ${units.asset} only if you hold its ${units.fRight} Token.`,
+      `2. Transferring the ${units.fRight} Token, in essence, means transferring your ownership of the original ${units.asset} itself.`,
+      `3. Whatever you do, please do not transfer your ${units.fRight} Token to a smart contract, as it would mean you would permanently lose your original ${units.asset} itself. Please do not transfer your ${units.fRight} Token to a Smart contract`,
+    ],
+    iRight: [
+      `1. You can retrieve the original ${units.asset} if either all its ${units.iRight} Tokens have been burned / expired, or if its ${units.fRight} Token has expired.`,
+      `2. Transferring the ${units.iRight} Token, in essence, means transferring your access to the original ${units.asset}.`,
+    ],
+  }
+}

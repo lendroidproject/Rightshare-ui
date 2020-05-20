@@ -1,79 +1,154 @@
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 
-import { getMyAssets, fetchMetadata } from '~utils/api'
+import { getMyAssets, forceFetch } from '~utils/api'
 import Spinner from '~components/common/Spinner'
 import Assets from '~components/Assets'
-import { PAGE_LIMIT, NoData, Refresh, Wrapper } from './MyAssets'
 
-import { filterBase, filterCV, CV_ADDR } from './Parcels'
+import { filterCV } from '~components/Parcels'
 
 const MAIN_NETWORK = process.env.MAIN_NETWORK
 
-export const fetchInfos = (assets, [baseAsset, tokenURI]) =>
+export const Wrapper = styled.div`
+  .load-more {
+    position: relative;
+  }
+
+  @keyframes fadein {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+`
+
+export const PAGE_LIMIT = 20
+export const NoData = styled.p`
+  text-align: center;
+  margin: 30px 20px;
+`
+export const Refresh = styled.div`
+  position: absolute;
+  right: 0;
+  top: 10px;
+  font-size: 1.5em;
+  margin-top: 0;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.2s;
+  opacity: 0;
+  animation: fadein 0.5s;
+  animation-fill-mode: forwards;
+  @media all and (max-width: 767px) {
+    top: 5px;
+    right: 5px;
+  }
+
+  &:hover {
+    color: #27a0f7;
+  }
+`
+export const Info = styled(Refresh)`
+  left: 0;
+  right: unset;
+  @media all and (max-width: 767px) {
+    left: 5px;
+  }
+
+  .tooltip ol {
+    margin: 5px auto;
+    font-size: 15px;
+    list-style: none;
+    max-width: 360px;
+    padding: 5px 15px;
+    background: url(/bg.jpg);
+    border-radius: 5px;
+    box-shadow: 0 0 5px #cdad72;
+
+    li {
+      margin: 7px 0;
+      line-height: 1.5;
+    }
+  }
+
+  .tooltip {
+    display: none;
+    animation: fadein 0.5s;
+    cursor: initial;
+  }
+
+  .icon {
+    color: #27a0f7;
+    font-weight: bold;
+  }
+
+  &:hover .tooltip {
+    display: block;
+  }
+`
+
+export const fetchInfos = (assets, owner) =>
   Promise.all(
     assets.map(
       (asset) =>
         new Promise((resolve) => {
-          Promise.all([baseAsset(asset.token_id), tokenURI(asset.token_id)])
-            .then(([base, uri]) => {
-              asset.base = base
-              asset.isCV = base[0].toLowerCase() === CV_ADDR
-              if (asset.image_url) return resolve(asset)
-              fetchMetadata(uri)
-                .then(({ data: tokenInfo }) => resolve({ ...asset, tokenInfo }))
-                .catch((err) => {
-                  console.error(err)
-                  resolve(asset)
-                })
-            })
+          if (asset.image_url || true) return resolve(asset)
+          const {
+            token_id: tokenId,
+            asset_contract: { address },
+          } = asset
+          forceFetch({ tokenId, address, owner })
+            .then(({ data }) =>
+              resolve({
+                ...asset,
+                image_url: asset.image_url || data.image_url,
+              })
+            )
             .catch((err) => {
-              console.error(err, asset)
               resolve(asset)
             })
         })
     )
   )
 
-export default function ({ isCV = false, children, onTab, onParent, lang, ...props }) {
+export default function ({ lang, isCV = false, onTab, onParent, children, ...props }) {
   const {
     address: owner,
-    dispatch,
-    assets: rights,
-    fRights: assets = [],
-    addresses: { FRight: asset_contract_address },
     methods: {
       addresses: { getName },
-      FRight: { tokenURI, baseAsset },
     },
+    dispatch,
+    assets = [],
   } = props
   const [page, setPage] = useState({ offset: assets.length, limit: PAGE_LIMIT })
-  const [loading, setLoading] = useState(owner !== props.owner || !props.fRights)
+  const [loading, setLoading] = useState(owner !== props.owner || !props.assets)
   const [end, setEnd] = useState(!assets.length || assets.length % PAGE_LIMIT !== 0)
   const [refresh, setRefresh] = useState(false)
 
   const myAssets = (query, refresh = false) => {
     setLoading(true)
     setRefresh(refresh)
-    getMyAssets({ ...query, asset_contract_address })
+    getMyAssets(query)
       .then((response) => response.data)
       .then(({ assets: newAssets }) => {
         dispatch({
-          type: 'GET_MY_FRIGHTS',
+          type: 'GET_MY_ASSETS',
           payload: { assets: newAssets, refresh, owner: query.owner },
         })
         setPage({ offset: query.offset + PAGE_LIMIT, limit: PAGE_LIMIT })
         setEnd(newAssets.length < query.limit)
-        fetchInfos(newAssets, [baseAsset, tokenURI]).then((data) =>
+        fetchInfos(newAssets, owner).then((data) =>
           dispatch({
             type: 'GET_ASSET_INFO',
-            payload: { data, type: 'fRights' },
+            payload: { data, type: 'assets' },
           })
         )
       })
       .catch((error) => {
         dispatch({
-          type: 'GET_MY_FRIGHTS',
+          type: 'GET_MY_ASSETS',
           payload: { assets: [], refresh, owner: query.owner },
           error,
         })
@@ -96,7 +171,7 @@ export default function ({ isCV = false, children, onTab, onParent, lang, ...pro
   const handleRefresh = (refresh = true) => loadMore(refresh, { owner })
 
   useEffect(() => {
-    if (owner !== props.owner || !props.fRights) {
+    if (owner !== props.owner || !props.assets) {
       myAssets(
         {
           offset: 0,
@@ -129,12 +204,18 @@ export default function ({ isCV = false, children, onTab, onParent, lang, ...pro
     return () => window.removeEventListener('scroll', isScrolledIntoView, false)
   }, [])
 
-  const filteredRights = (rights || []).filter(filterCV(isCV, getName))
-  const filtered = assets.filter(filterBase(isCV))
+  const filtered = assets.filter(filterCV(isCV, getName))
+  const assetsProps = {
+    lang,
+    data: filtered,
+    loadMore: handleRefresh,
+    onTab,
+    onParent,
+  }
 
   return (
     <Wrapper>
-      {!refresh && <Assets data={filtered} loadMore={handleRefresh} onTab={onTab} onParent={onParent} lang={lang} />}
+      {!refresh && <Assets {...assetsProps} />}
       {loading ? (
         <Spinner />
       ) : (
@@ -142,47 +223,21 @@ export default function ({ isCV = false, children, onTab, onParent, lang, ...pro
           <Refresh onClick={handleRefresh}>&#8634;</Refresh>
           {filtered.length === 0 && (
             <NoData>
-              {rights && filteredRights.length === 0 ? (
-                <>
-                  No digital collectibles available in your wallet. Purchase some
-                  from{' '}
-                  <a
-                    href={
-                      MAIN_NETWORK
-                        ? `https://opensea.io/assets/${isCV ? 'cryptovoxels' : ''}`
-                        : 'https://rinkeby.opensea.io/'
-                    }
-                    target="_blank"
-                  >
-                    OpenSea
-                  </a>
-                  .
-                </>
-              ) : (
-                <>
-                  No fRights available in your wallet. Freeze a digital collectible
-                  from your{' '}
-                  <a
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault()
-                      onTab(0)
-                    }}
-                  >
-                    Assets
-                  </a>
-                  .
-                </>
-              )}
+              No digital collectibles available in your wallet. Purchase some from{' '}
+              <a
+                href={
+                  MAIN_NETWORK
+                    ? `https://opensea.io/assets/${isCV ? 'cryptovoxels' : ''}`
+                    : 'https://rinkeby.opensea.io/'
+                }
+                target="_blank"
+              >
+                OpenSea
+              </a>
+              .
             </NoData>
           )}
-          {!end && (
-            <Spinner
-              className="load-more"
-              data-offset={page.offset}
-              data-owner={owner}
-            />
-          )}
+          {!end && <Spinner className="load-more" data-offset={page.offset} data-owner={owner} />}
         </>
       )}
     </Wrapper>
