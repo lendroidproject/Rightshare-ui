@@ -220,8 +220,8 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
     description,
     type,
     isFrozen,
-    fVersion,
-    iVersion,
+    // fVersion,
+    // iVersion,
     metadata,
     isUnfreezable,
     isIMintable,
@@ -234,7 +234,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
       image: infoImage,
     } = {},
   } = item
-  const userName = user ? user.username : '---'
+  const userName = (user && user.username) || '---'
   const freezeForm = metadata ? transformFreeze({ ...metadata, expiry: infoExpiry }) : originFreezeForm
 
   const [txStatus, setTxStatus] = useState('')
