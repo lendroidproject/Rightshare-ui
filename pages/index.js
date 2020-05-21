@@ -62,7 +62,7 @@ const Accordion = styled.div`
     background-color: white;
     position: relative;
     @media all and (max-width: 767px) {
-      padding: 10px 0;
+      padding: 10px;
     }
   }
 `
