@@ -3,8 +3,11 @@ import styled from 'styled-components'
 
 import { FlexCenter } from '~components/common/Wrapper'
 import Parcels from '~components/Parcels'
+import ENSs from '~components/ENSs'
 import NFTs from '~components/NFTs'
 import Intro from '~components/Intro'
+
+const MAIN_NETWORK = process.env.MAIN_NETWORK
 
 const Accordion = styled.div`
   background: white;
@@ -54,8 +57,8 @@ const Accordion = styled.div`
     transition: 0.4s;
   }
 
-  .panel {
-    padding: 20px;
+  > .panel {
+    padding: 10px 20px;
     background-color: white;
     position: relative;
     @media all and (max-width: 767px) {
@@ -104,9 +107,17 @@ const tabs = [
     Component: Parcels,
   },
   {
-    label: 'Other NFTs',
-    Component: NFTs,
+    label: 'Ethereum Name Service',
+    Component: ENSs,
   },
+  ...(MAIN_NETWORK
+    ? []
+    : [
+        {
+          label: 'Other NFTs',
+          Component: NFTs,
+        },
+      ]),
   {
     label: 'How it works',
     Component: Intro,

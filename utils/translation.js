@@ -7,6 +7,11 @@ export const intlTabs = (lang) =>
       MyFRights: 'My Land Tokens',
       MyIRights: 'My Rental Tokens',
     },
+    ENS: {
+      MyAssets: 'My Domains',
+      MyFRights: 'My Domain NFTs',
+      MyIRights: 'My Rental NFTs',
+    },
     NFT: {
       MyAssets: 'My Assets',
       MyFRights: 'My fRights',
@@ -17,6 +22,11 @@ export const intlTabs = (lang) =>
 export const intlForm = (lang) =>
   ({
     CV: {
+      exclusive: 'Exclusive',
+      nonExclusive: 'Non-Exclusive',
+      maxISupply: 'Max Supply - Rentals?',
+    },
+    ENS: {
       exclusive: 'Exclusive',
       nonExclusive: 'Non-Exclusive',
       maxISupply: 'Max Supply - Rentals?',
@@ -38,6 +48,14 @@ export const intlActions = (lang) =>
       unfreeze: 'Deactivate Rental',
       submit: 'Proceed',
     },
+    ENS: {
+      freeze: 'Activate Domain Rental',
+      issueI: 'Create a new Rental Token',
+      transfer: 'Transfer Rental Token',
+      revokeI: 'Burn Rental Token',
+      unfreeze: 'Deactivate Domain Rental',
+      submit: 'Proceed',
+    },
     NFT: {
       freeze: 'Initiate Rightshare',
       issueI: 'Mint iRight',
@@ -54,6 +72,11 @@ export const intlUnits = (lang) =>
       asset: 'CryptoVoxel',
       fRight: 'Land',
       iRight: 'Rental',
+    },
+    ENS: {
+      asset: 'ENS Domain',
+      fRight: 'Frozen Domain Token',
+      iRight: 'Rental Token',
     },
     NFT: {
       asset: 'NFT',

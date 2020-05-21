@@ -4,6 +4,9 @@ import App from 'next/app'
 import { ThemeProvider } from 'styled-components'
 import RightshareJS from 'rightshare-js'
 
+import Web3 from 'web3'
+import Fortmatic from 'fortmatic'
+
 import { Provider } from 'react-redux'
 import withRedux from 'next-redux-wrapper'
 import configureStore from '~store'
@@ -12,6 +15,7 @@ import Layout from '~layouts'
 
 const MAIN_NETWORK = process.env.MAIN_NETWORK
 const OPENSEA_API_KEY = process.env.OPENSEA_API_KEY
+const FORTMATIC_API_KEY = process.env.FORTMATIC_API_KEY
 
 const theme = {
   primary: 'default',
@@ -23,6 +27,8 @@ class RightshareApp extends App {
     balance: '',
     addressTimer: null,
     balanceTimer: null,
+    provider: 'metamask',
+    fortmatic: null,
   }
 
   static async getInitialProps({ Component, ctx }) {
@@ -30,77 +36,116 @@ class RightshareApp extends App {
     return { pageProps }
   }
 
-  async componentDidMount() {
-    if (window.ethereum) {
-      if (ethereum._metamask.isEnabled() && (await ethereum._metamask.isUnlocked())) {
-        this.initMetamask()
+  componentDidMount() {
+    const fortmatic = new Fortmatic(FORTMATIC_API_KEY)
+    this.setState({ fortmatic }, async () => {
+      if (window.ethereum) {
+        window.web3 = new Web3(window.ethereum)
+        if (ethereum._metamask.isEnabled() && (await ethereum._metamask.isUnlocked())) {
+          this.initMetamask()
+        } else {
+          ethereum.enable().then(() => this.initMetamask())
+        }
       } else {
-        ethereum.enable().then(() => this.initMetamask())
+        window.web3 = new Web3(fortmatic.getProvider())
+        this.initMetamask()
       }
-    }
+    })
   }
 
   componentWillUnmount() {
+    this.releaseTimer()
+  }
+
+  handleProvider(type) {
+    const { provider, fortmatic, address, balance } = this.state
+    if (type === provider) return
+    this.releaseTimer()
+    switch (type) {
+      case 'fortmatic':
+        window.web3 = new Web3(fortmatic.getProvider())
+        web3.eth.getAccounts((err, accounts) => {
+          if (!err) {
+            this.setState({ provider: 'fortmatic' }, () => this.initMetamask({ address: accounts[0] }))
+          } else {
+            window.web3 = new Web3(window.ethereum)
+            this.setState({ provider: 'metamask' }, () => this.initMetamask({ address, balance }))
+          }
+        })
+        break
+      default:
+        this.setState({ provider: 'metamask' }, () => this.initMetamask())
+        window.web3 = new Web3(window.ethereum)
+        break
+    }
+  }
+
+  releaseTimer() {
     const { addressTimer, balanceTimer } = this.state
     if (addressTimer) clearTimeout(addressTimer)
     if (balanceTimer) clearTimeout(balanceTimer)
   }
 
-  initMetamask() {
-    const addressTimer = setInterval(() => {
+  initMetamask(defaults) {
+    const addressTimer = setInterval(async () => {
       const { address } = this.state
-      if (address !== ethereum.selectedAddress) {
-        return this.saveMetamask({ address: ethereum.selectedAddress }, () => this.getBalance())
+      const [selectedAddress] = await web3.eth.getAccounts()
+      if (address !== selectedAddress) {
+        return this.saveMetamask({ address: selectedAddress }, () => this.getBalance())
       }
     }, 1 * 1000)
-    const balanceTimer = setInterval(() => {
+    const balanceTimer = setInterval(async () => {
       const { address } = this.state
-      if (address !== ethereum.selectedAddress) {
-        return this.saveMetamask({ address: ethereum.selectedAddress }, () => this.getBalance())
+      const [selectedAddress] = await web3.eth.getAccounts()
+      if (address !== selectedAddress) {
+        return this.saveMetamask({ address: selectedAddress }, () => this.getBalance())
       }
       this.getBalance()
     }, 15 * 1000)
-    this.saveMetamask({ address: ethereum.selectedAddress, balanceTimer, addressTimer }, () => this.getBalance())
+    this.saveMetamask({ address: '', balance: 0, balanceTimer, addressTimer, ...defaults }, () => this.getBalance())
 
     const { store } = this.props
-    const handleMessage = (type, payload, error) => {
-      store.dispatch({
-        type,
-        payload,
-        error,
+    if (!this.props.store.getState().web3) {
+      const handleMessage = (type, payload, error) => {
+        store.dispatch({
+          type,
+          payload,
+          error,
+        })
+      }
+      const library = RightshareJS(web3.currentProvider, {
+        onEvent: handleMessage,
+        apiURL: MAIN_NETWORK ? 'https://api.opensea.io/api/v1' : 'https://rinkeby-api.opensea.io/api/v1',
+        apiKey: OPENSEA_API_KEY,
+        addresses: MAIN_NETWORK
+          ? {
+              FRight: '0x9D53045Dd70FD31381A4934baF5502a1B50F2D23',
+              IRight: '0x235be84dB0AF8DDeDB759ad48663623A71575022',
+              RightsDao: '0x986179DfeCE47344F80e7b9B603914AaCC750493',
+            }
+          : {
+              FRight: '0xefC727FE2Ba2157820990f66955019A62Fa3Cc6d',
+              IRight: '0xf73B07252629fb493F721AA7A28945334fea62C7',
+              RightsDao: '0x8066E491b1100b86A9a41a93fc2d218D43552563',
+            },
       })
+      store.dispatch({
+        type: 'INIT_CONTRACTS',
+        payload: library,
+      })
+    } else {
+      //
     }
-    const library = RightshareJS(ethereum, {
-      onEvent: handleMessage,
-      apiURL: MAIN_NETWORK ? 'https://api.opensea.io/api/v1' : 'https://rinkeby-api.opensea.io/api/v1',
-      apiKey: OPENSEA_API_KEY,
-      addresses: MAIN_NETWORK
-        ? {
-            FRight: '0x9D53045Dd70FD31381A4934baF5502a1B50F2D23',
-            IRight: '0x235be84dB0AF8DDeDB759ad48663623A71575022',
-            RightsDao: '0x986179DfeCE47344F80e7b9B603914AaCC750493',
-          }
-        : {
-            FRight: '0xefC727FE2Ba2157820990f66955019A62Fa3Cc6d',
-            IRight: '0xf73B07252629fb493F721AA7A28945334fea62C7',
-            RightsDao: '0x8066E491b1100b86A9a41a93fc2d218D43552563',
-          },
-    })
-    store.dispatch({
-      type: 'INIT_CONTRACTS',
-      payload: library,
-    })
   }
 
   saveMetamask(metamask, callback) {
     const { store } = this.props
-    if (metamask.address) {
+    if (metamask.address !== undefined) {
       store.dispatch({
         type: 'METAMASK_ADDRESS',
-        payload: metamask.address,
+        payload: metamask,
       })
-    }
-    if (metamask.balance !== undefined) {
+    } else if (metamask.balance !== undefined) {
       store.dispatch({
         type: 'METAMASK_BALANCE',
         payload: metamask.balance,
@@ -114,7 +159,7 @@ class RightshareApp extends App {
     if (address) {
       web3.eth.getBalance(address, (err, res) => {
         if (!err) {
-          const balance = Number(web3._extend.utils.fromWei(res))
+          const balance = Number(web3.utils.fromWei(res))
           if (origin !== balance) this.saveMetamask({ balance })
         }
       })
@@ -124,6 +169,7 @@ class RightshareApp extends App {
   render() {
     const {
       props: { Component, pageProps, store },
+      state: { provider },
     } = this
 
     return (
@@ -209,7 +255,7 @@ class RightshareApp extends App {
         </Head>
         <ThemeProvider theme={theme}>
           <Provider store={store}>
-            <Layout mainNetwork={MAIN_NETWORK}>
+            <Layout mainNetwork={MAIN_NETWORK} provider={provider} onProvider={this.handleProvider.bind(this)}>
               <Component {...pageProps} />
             </Layout>
           </Provider>

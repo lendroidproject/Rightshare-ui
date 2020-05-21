@@ -23,6 +23,7 @@
   "dependencies": {
     "axios": "^0.19.2",
     "dotenv": "^8.2.0",
+    "fortmatic": "^2.0.6",
     "next": "^9.4.1",
     "next-cookies": "^2.0.3",
     "next-images": "^1.4.0",

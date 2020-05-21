@@ -3,7 +3,7 @@ import { createStore } from 'redux'
 const reducer = (state, action) => {
   switch (action.type) {
     case 'METAMASK_ADDRESS':
-      return { ...state, address: action.payload }
+      return { ...state, address: action.payload.address, balance: action.payload.balance || 0 }
     case 'METAMASK_BALANCE':
       return { ...state, balance: action.payload }
     case 'INIT_CONTRACTS':

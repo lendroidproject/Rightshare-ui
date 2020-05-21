@@ -6,11 +6,11 @@ import Assets from '~components/Assets'
 import { PAGE_LIMIT, NoData, Refresh, Info, Wrapper } from './MyAssets'
 import { fetchInfos } from './MyFRights'
 
-import { filterBase, filterCV } from '~components/Parcels'
+import { filterBase, filterPlatform, platforms } from '~components/Parcels'
 
 const MAIN_NETWORK = process.env.MAIN_NETWORK
 
-export default function ({ lang, isCV = false, info, onTab, onParent, children, ...props }) {
+export default function ({ lang, info, onTab, onParent, children, ...props }) {
   const {
     address: owner,
     dispatch,
@@ -105,9 +105,9 @@ export default function ({ lang, isCV = false, info, onTab, onParent, children, 
     return () => window.removeEventListener('scroll', isScrolledIntoView, false)
   }, [])
 
-  const filteredRights = (rights || []).filter(filterCV(isCV, getName))
-  const filteredFRights = (fRights || []).filter(filterBase(isCV))
-  const filtered = assets.filter(filterBase(isCV))
+  const filteredRights = (rights || []).filter(filterPlatform(lang, getName))
+  const filteredFRights = (fRights || []).filter(filterBase(lang))
+  const filtered = assets.filter(filterBase(lang))
   const assetsProps = {
     lang,
     data: filtered,
@@ -118,22 +118,23 @@ export default function ({ lang, isCV = false, info, onTab, onParent, children, 
 
   return (
     <Wrapper>
+      {filtered.length > 0 && (
+        <Info>
+          <div className="tooltip">
+            <ol>
+              {info.map((txt, idx) => (
+                <li key={idx}>{txt}</li>
+              ))}
+            </ol>
+          </div>
+        </Info>
+      )}
       {!refresh && <Assets {...assetsProps} />}
       {loading ? (
         <Spinner />
       ) : (
         <>
           <Refresh onClick={handleRefresh}>&#8634;</Refresh>
-          <Info>
-            <div className="icon">&#9432;</div>
-            <div className="tooltip">
-              <ol>
-                {info.map((txt, idx) => (
-                  <li key={idx}>{txt}</li>
-                ))}
-              </ol>
-            </div>
-          </Info>
           {filtered.length === 0 && (
             <NoData>
               {rights && filteredRights.length === 0 ? (
@@ -142,7 +143,7 @@ export default function ({ lang, isCV = false, info, onTab, onParent, children, 
                   <a
                     href={
                       MAIN_NETWORK
-                        ? `https://opensea.io/assets/${isCV ? 'cryptovoxels' : ''}`
+                        ? `https://opensea.io/assets/${platforms[lang]}`
                         : 'https://rinkeby.opensea.io/'
                     }
                     target="_blank"

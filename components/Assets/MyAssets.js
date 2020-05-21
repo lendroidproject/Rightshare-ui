@@ -5,7 +5,7 @@ import { getMyAssets, forceFetch } from '~utils/api'
 import Spinner from '~components/common/Spinner'
 import Assets from '~components/Assets'
 
-import { filterCV } from '~components/Parcels'
+import { filterPlatform, platforms } from '~components/Parcels'
 
 const MAIN_NETWORK = process.env.MAIN_NETWORK
 
@@ -32,7 +32,7 @@ export const NoData = styled.p`
 export const Refresh = styled.div`
   position: absolute;
   right: 0;
-  top: 10px;
+  top: -30px;
   font-size: 1.5em;
   margin-top: 0;
   line-height: 1;
@@ -50,42 +50,22 @@ export const Refresh = styled.div`
     color: #27a0f7;
   }
 `
-export const Info = styled(Refresh)`
-  left: 0;
-  right: unset;
-  @media all and (max-width: 767px) {
-    left: 5px;
-  }
+export const Info = styled.div`
+  margin-bottom: 15px;
 
   .tooltip ol {
-    margin: 5px auto;
+    margin: 0 15px;
     font-size: 15px;
     list-style: none;
-    max-width: 360px;
-    padding: 5px 15px;
+    padding: 10px 15px;
     background: url(/bg.jpg);
     border-radius: 5px;
     box-shadow: 0 0 5px #cdad72;
 
     li {
-      margin: 7px 0;
+      margin: 3px 0;
       line-height: 1.5;
     }
-  }
-
-  .tooltip {
-    display: none;
-    animation: fadein 0.5s;
-    cursor: initial;
-  }
-
-  .icon {
-    color: #27a0f7;
-    font-weight: bold;
-  }
-
-  &:hover .tooltip {
-    display: block;
   }
 `
 
@@ -113,7 +93,7 @@ export const fetchInfos = (assets, owner) =>
     )
   )
 
-export default function ({ lang, isCV = false, onTab, onParent, children, ...props }) {
+export default function ({ lang, onTab, onParent, children, ...props }) {
   const {
     address: owner,
     methods: {
@@ -204,7 +184,7 @@ export default function ({ lang, isCV = false, onTab, onParent, children, ...pro
     return () => window.removeEventListener('scroll', isScrolledIntoView, false)
   }, [])
 
-  const filtered = assets.filter(filterCV(isCV, getName))
+  const filtered = assets.filter(filterPlatform(lang, getName))
   const assetsProps = {
     lang,
     data: filtered,
@@ -227,7 +207,7 @@ export default function ({ lang, isCV = false, onTab, onParent, children, ...pro
               <a
                 href={
                   MAIN_NETWORK
-                    ? `https://opensea.io/assets/${isCV ? 'cryptovoxels' : ''}`
+                    ? `https://opensea.io/assets/${platforms[lang]}`
                     : 'https://rinkeby.opensea.io/'
                 }
                 target="_blank"

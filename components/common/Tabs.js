@@ -13,6 +13,7 @@ export const Accordion = styled.div`
   .panel {
     padding: 10px 0;
     min-height: 100px;
+    position: relative;
   }
 `
 
@@ -55,8 +56,7 @@ const Tab = ({ active, label, onSelect }) => (
   </div>
 )
 
-export default connect((state) => state)(function ({ isCV, onTab, ...props }) {
-  const lang = isCV ? 'CV' : 'NFT'
+export default connect((state) => state)(function ({ lang, onTab, ...props }) {
   const intl = intlTabs(lang)
   const info = intlInfo(lang)
   const tabs = [
@@ -70,7 +70,6 @@ export default connect((state) => state)(function ({ isCV, onTab, ...props }) {
 
   const tabProps = {
     lang,
-    isCV,
     info: tabs[active].info,
     onParent: onTab,
     onTab: setActive,
@@ -83,7 +82,7 @@ export default connect((state) => state)(function ({ isCV, onTab, ...props }) {
           <Tab key={index} active={active === index} label={label} onSelect={() => setActive(index)} />
         ))}
       </Tabs>
-      <div className="panel">{props.addresses ? <Component {...tabProps} {...props} /> : <Spinner />}</div>
+      <div className="panel">{props.web3 && props.address ? <Component {...tabProps} {...props} /> : <Spinner />}</div>
     </Accordion>
   )
 })

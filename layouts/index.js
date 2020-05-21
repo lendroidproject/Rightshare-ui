@@ -5,11 +5,12 @@ const Wrapper = styled.div`
   width: 100%;
 `
 
-const Account = styled.p`
+const Account = styled.div`
   margin: 0;
   padding: 30px 20px 20px;
   text-align: center;
   word-break: break-all;
+  position: relative;
 
   .logo {
     height: 60px;
@@ -87,7 +88,31 @@ const Discord = styled.div`
   }
 `
 
-export default connect((state) => state)(function ({ children, ...props }) {
+const AccountProvider = styled.div`
+  position: absolute;
+  display: flex;
+  height: 40px;
+  right: 20px;
+  top: 20px;
+
+  img {
+    height: 100%;
+    margin: 0 10px;
+    cursor: pointer;
+    border-radius: 50%;
+    filter: grayscale(1);
+
+    &.fortmatic {
+      background: #f7f6ff;
+    }
+
+    &.active {
+      filter: grayscale(0);
+    }
+  }
+`
+
+export default connect((state) => state)(function ({ provider, onProvider, children, ...props }) {
   const { address, balance, mainNetwork } = props
 
   return (
@@ -95,6 +120,18 @@ export default connect((state) => state)(function ({ children, ...props }) {
       <Account>
         <img src={mainNetwork ? '/logo.png' : '/logo_rinkeby.png'} className="logo" />
         {address || '---'} : {balance || '0'}
+        <AccountProvider>
+          <img
+            src="/brands/Metamask.svg"
+            className={`metamask ${provider === 'metamask' ? 'active' : ''}`}
+            onClick={() => onProvider('metamask')}
+          />
+          <img
+            src="/brands/Fortmatic.svg"
+            className={`fortmatic ${provider === 'fortmatic' ? 'active' : ''}`}
+            onClick={() => onProvider('fortmatic')}
+          />
+        </AccountProvider>
       </Account>
       <Content>{children}</Content>
       <Footer>
