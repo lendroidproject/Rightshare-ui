@@ -691,11 +691,10 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                     </div>
                   ))}
                 </div>
-                <div className="message">{txStatus || '...'}</div>
                 {txHash && (
                   <div className="tx-hash">
                     <a href={`${ETHERSCAN}${txHash}`} target="_blank">
-                      View on Etherscan
+                      View transaction on Etherscan
                     </a>
                   </div>
                 )}
