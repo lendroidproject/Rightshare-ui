@@ -137,7 +137,7 @@ export default function () {
         ))}
       </Tabs>
       <div className="panel">
-        <Component onTab={setActive} />
+        <Component onTab={() => setActive(tabs.length - 1)} />
       </div>
     </Accordion>
   )
