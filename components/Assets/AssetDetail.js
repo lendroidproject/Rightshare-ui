@@ -1,7 +1,7 @@
-import { useEffect, useState, Component } from 'react'
+import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 
-import { intlActions } from '~utils/translation'
+import { intlActions, intlTransactions } from '~utils/translation'
 import { validate } from '~utils/validation'
 import { FlexCenter, FlexInline } from '~components/common/Wrapper'
 import Spinner from '~components/common/Spinner'
@@ -105,6 +105,10 @@ export const ItemDetail = styled(FlexInline)`
     align-items: flex-start;
     font-size: 13px;
 
+    button {
+      min-width: 145px;
+    }
+
     .tooltip {
       margin: 12px 6px;
       position: relative;
@@ -126,6 +130,24 @@ export const ItemDetail = styled(FlexInline)`
       button {
         margin-top: 0;
       }
+    }
+  }
+
+  .tx-info {
+    margin-bottom: 15px;
+    padding: 0 15px;
+
+    &.solid {
+      text-align: center;
+    }
+
+    h3 {
+      text-align: center;
+      margin: 15px 0;
+    }
+
+    &__item {
+      font-size: 13px;
     }
   }
 `
@@ -189,6 +211,7 @@ const transformFreeze = ({ expiry, endTime, isExclusive, maxISupply, circulating
 
 export default ({ lang, item, loading, onReload, onClose, ...props }) => {
   const intl = intlActions(lang)
+  const intlTx = intlTransactions(lang)
   const {
     address: owner,
     methods: {
@@ -204,6 +227,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
   const [transferForm, setTransferForm] = useState(null)
   const [status, setStatus] = useState(null)
   const [errors, setErrors] = useState({})
+  const [txInfo, setTxInfo] = useState([])
   const [txStatus, setTxStatus] = useState('')
 
   const handleFreezeForm = (form) => {
@@ -221,7 +245,9 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
     estimateTransfer(form)
   }
 
-  const handleTransaction = ({ send }) => {
+  const handleTransaction = ({ send }, [name, ...args]) => {
+    const isFunc = typeof intlTx[name] === 'function'
+    setTxInfo(isFunc ? intlTx[name](...args) : intlTx[name])
     setTxStatus('Waiting for sign transaction...')
     return new Promise((resolve, reject) => {
       send()
@@ -234,10 +260,13 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
           setTxStatus('Transaction confirmed!')
           setTimeout(() => resolve(receipt), 100)
         })
-        .on('error', reject)
+        .on('error', (err) => {
+          setTxStatus('Transaction failed or declined!')
+          reject(err)
+        })
     })
   }
-
+  console.log(txInfo)
   const handleEstimate = ([type, { estimate }]) =>
     new Promise((resolve) =>
       estimate()
@@ -371,7 +400,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
     e.preventDefault()
     if (!freezeForm) {
       setStatus({ start: 'approve' })
-      handleTransaction(approve(address)(approveAddress, tokenId, { from: owner }))
+      handleTransaction(approve(address)(approveAddress, tokenId, { from: owner }), ['approve'])
         .then(() => {
           const date = new Date(Date.now() + 1000 * 3600 * 24)
           handleFreezeForm({
@@ -382,6 +411,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
             circulatingISupply: 1,
           })
         })
+        .catch((err) => console.log(err))
         .finally(() => {
           setStatus(null)
         })
@@ -401,23 +431,26 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
     handleTransaction(
       freeze(address, tokenId, expiry, [isExclusive ? 1 : maxISupply, F_VERSION, I_VERSION], {
         from: owner,
-      })
+      }),
+      ['freeze']
     )
       .then(() => {
         onReload('freeze')
       })
-      .catch(() => {
+      .catch((err) => console.log(err))
+      .finally(() => {
         setStatus(null)
       })
   }
   const handleUnfreeze = (e) => {
     e.preventDefault()
     setStatus({ start: 'unfreeze' })
-    handleTransaction(unfreeze(tokenId, { from: owner }))
+    handleTransaction(unfreeze(tokenId, { from: owner }), ['unfreeze'])
       .then(() => {
         onReload()
       })
-      .catch(() => {
+      .catch((err) => console.log(err))
+      .finally(() => {
         setStatus(null)
       })
   }
@@ -425,22 +458,24 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
     e.preventDefault()
 
     setStatus({ start: 'issueI' })
-    handleTransaction(issueI([metadata.tokenId, Number(metadata.endTime), I_VERSION], { from: owner }))
+    handleTransaction(issueI([metadata.tokenId, Number(metadata.endTime), I_VERSION], { from: owner }), ['issueI'])
       .then(() => {
         onReload()
       })
-      .catch(() => {
+      .catch((err) => console.log(err))
+      .finally(() => {
         setStatus(null)
       })
   }
   const handleRevoke = (e) => {
     e.preventDefault()
     setStatus({ start: 'revokeI' })
-    handleTransaction(revokeI(metadata.tokenId, { from: owner }))
+    handleTransaction(revokeI(metadata.tokenId, { from: owner }), ['revokeI'])
       .then(() => {
         onReload()
       })
-      .catch(() => {
+      .catch((err) => console.log(err))
+      .finally(() => {
         setStatus(null)
       })
   }
@@ -457,11 +492,15 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
     }
 
     setStatus({ start: 'transfer' })
-    handleTransaction(transfer(owner, transferForm.to, metadata.tokenId, { from: owner }))
+    handleTransaction(transfer(owner, transferForm.to, metadata.tokenId, { from: owner }), [
+      'transfer',
+      transferForm.to,
+    ])
       .then(() => {
         onReload()
       })
-      .catch(() => {
+      .catch((err) => console.log(err))
+      .finally(() => {
         setStatus(null)
       })
   }
@@ -470,6 +509,8 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
     if (status) return
     onClose(e)
   }
+
+  const [txTitle, ...txInfos] = txInfo
 
   return (
     <ItemOverlay onClick={handleClose}>
@@ -624,6 +665,14 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
             </div>
             {status && status.start && (
               <Spinner>
+                <div className={`tx-info ${txInfos.length > 1 ? '' : 'solid'}`}>
+                  <h3>{txTitle}</h3>
+                  {txInfos.map((txt, idx) => (
+                    <div className="tx-info__item" key={idx}>
+                      {txt}
+                    </div>
+                  ))}
+                </div>
                 <div className="message">{txStatus || '...'}</div>
               </Spinner>
             )}

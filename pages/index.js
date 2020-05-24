@@ -3,7 +3,7 @@ import styled from 'styled-components'
 
 import { FlexCenter } from '~components/common/Wrapper'
 import Parcels from '~components/Parcels'
-import ENSs from '~components/ENSs'
+// import ENSs from '~components/ENSs'
 import NFTs from '~components/NFTs'
 import Intro from '~components/Intro'
 

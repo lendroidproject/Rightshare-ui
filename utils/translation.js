@@ -72,16 +72,19 @@ export const intlActions = (lang) =>
 export const intlUnits = (lang) =>
   ({
     CV: {
+      contract: 'DAO',
       asset: 'CryptoVoxel',
       fRight: 'Land',
       iRight: 'Rental',
     },
     ENS: {
+      contract: 'DAO',
       asset: 'ENS Domain',
-      fRight: 'Frozen Domain Token',
-      iRight: 'Rental Token',
+      fRight: 'Frozen Domain',
+      iRight: 'Rental',
     },
     NFT: {
+      contract: 'DAO',
       asset: 'NFT',
       fRight: 'fRight',
       iRight: 'iRight',
@@ -101,5 +104,34 @@ export const intlInfo = (lang) => {
       `1. You can retrieve the original ${units.asset} if either all its ${units.iRight} Tokens have been burned / expired, or if its ${units.fRight} Token has expired.`,
       `2. Transferring the ${units.iRight} Token, in essence, means transferring your access to the original ${units.asset}.`,
     ],
+  }
+}
+
+export const intlTransactions = (lang) => {
+  const titles = intlActions(lang)
+  const units = intlUnits(lang)
+
+  return {
+    approve: [
+      titles.approve,
+      `Please wait while the ${units.contract} contract acknowledges your authorization to store your ${units.asset}`,
+    ],
+    freeze: [
+      titles.freeze,
+      'Please wait while',
+      `a) Your ${units.asset} is sent to the ${units.contract},`,
+      `b) an ${units.fRight} Token is minted to your address,`,
+      `c) An ${units.iRight} Token is minted to your address`,
+    ],
+    issueI: [titles.issueI, `Please wait while a new ${units.iRight} Token is being minted to your address`],
+    transfer: (to) => [titles.transfer, `Please wait while ${units.iRight} is being transferred to ${to}`],
+    revokeI: [titles.revokeI, `Please wait while ${units.iRight} being burnt from your address.`],
+    unfreeze: [
+      titles.unfreeze,
+      'Please wait while',
+      `a) Your ${units.fRight} Token is being burnt from your address`,
+      `b) Your ${units.asset} is being sent to your address`,
+    ],
+    submit: 'Proceed',
   }
 }
