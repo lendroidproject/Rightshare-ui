@@ -41,6 +41,7 @@ export const intlForm = (lang) =>
 export const intlActions = (lang) =>
   ({
     CV: {
+      approve: 'Approve',
       freeze: 'Activate Rental',
       issueI: 'Create a new Rental Token',
       transfer: 'Transfer Rental Token',
@@ -49,6 +50,7 @@ export const intlActions = (lang) =>
       submit: 'Proceed',
     },
     ENS: {
+      approve: 'Approve',
       freeze: 'Activate Domain Rental',
       issueI: 'Create a new Rental Token',
       transfer: 'Transfer Rental Token',
@@ -57,6 +59,7 @@ export const intlActions = (lang) =>
       submit: 'Proceed',
     },
     NFT: {
+      approve: 'Approve',
       freeze: 'Initiate Rightshare',
       issueI: 'Mint iRight',
       transfer: 'Transfer iRight',

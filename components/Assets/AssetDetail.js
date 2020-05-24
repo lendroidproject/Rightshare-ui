@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Component } from 'react'
 import styled from 'styled-components'
+import ReactTooltip from 'react-tooltip'
 
 import { intlActions } from '~utils/translation'
 import { validate } from '~utils/validation'
@@ -9,6 +10,10 @@ import Spinner from '~components/common/Spinner'
 import AssetForm from './AssetForm'
 import AssetMetaData from './AssetMetaData'
 import TransferForm from './TransferForm'
+
+const GAS_LIMIT = 5000000
+const F_VERSION = 1
+const I_VERSION = 1
 
 export const ItemOverlay = styled(FlexCenter)`
   background: rgba(0, 0, 0, 0.7);
@@ -96,12 +101,32 @@ export const ItemDetail = styled(FlexInline)`
   }
 
   .buttons {
-    margin: 0 -6px -12px;
+    margin: 0 -6px;
     display: flex;
+    align-items: flex-start;
+    font-size: 13px;
 
-    button {
+    .tooltip {
       margin: 12px 6px;
-      font-size: 13px;
+      position: relative;
+
+      &__info {
+        padding: 3px 5px;
+        text-align: center;
+        font-size: 11px;
+
+        position: absolute;
+        white-space: nowrap;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: center;
+        text-align: center;
+      }
+
+      button {
+        margin-top: 0;
+      }
     }
   }
 `
@@ -174,36 +199,144 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
     },
     addresses: { RightsDao: approveAddress },
   } = props
+
+  const [availables, setAvailables] = useState({})
   const [originFreezeForm, setFreezeForm] = useState(null)
-  const [status, setStatus] = useState(null)
   const [transferForm, setTransferForm] = useState(null)
-  const [mintForm, setMintForm] = useState({ iVersion: 1 })
+  const [status, setStatus] = useState(null)
   const [errors, setErrors] = useState({})
+  const [txStatus, setTxStatus] = useState('')
 
   const handleFreezeForm = (form) => {
     if (Object.keys(errors).length) {
       setErrors({})
     }
     setFreezeForm(form)
+    estimateFreeze(form)
   }
   const handleTransferForm = (form) => {
     if (Object.keys(errors).length) {
       setErrors({})
     }
     setTransferForm(form)
+    estimateTransfer(form)
   }
-  const handleMintForm = (form) => {
-    if (Object.keys(errors).length) {
-      setErrors({})
+
+  const handleTransaction = ({ send }) => {
+    setTxStatus('Waiting for sign transaction...')
+    return new Promise((resolve, reject) => {
+      send()
+        .on('transactionHash', function (hash) {
+          console.log(hash)
+          setTxStatus('Waiting for confirmation...')
+        })
+        .on('receipt', function (receipt) {
+          console.log(receipt)
+          setTxStatus('Transaction confirmed!')
+          setTimeout(() => resolve(receipt), 100)
+        })
+        .on('error', reject)
+    })
+  }
+
+  const handleEstimate = ([type, { estimate }]) =>
+    new Promise((resolve) =>
+      estimate()
+        .then((gasLimit) => resolve({ [type]: gasLimit }))
+        .catch(() => resolve({ [type]: -1 }))
+    )
+  const estimateGas = () => {
+    const transansactions = []
+    if (!type) transansactions.push(['approve', approve(address)(approveAddress, tokenId, { from: owner })])
+    if (isUnfreezable) transansactions.push(['unfreeze', unfreeze(tokenId, { from: owner })])
+    if (isIMintable && !freezeForm.isExclusive)
+      transansactions.push(['issueI', issueI([metadata.tokenId, Number(metadata.endTime), I_VERSION], { from: owner })])
+    if (type === 'IRight') transansactions.push(['revokeI', revokeI(metadata.tokenId, { from: owner })])
+    const init = {}
+    transansactions.forEach(([key]) => (init[key] = 0))
+    setAvailables(init)
+    Promise.all(transansactions.map(handleEstimate))
+      .then((availables) => {
+        setAvailables(availables.reduce((a, c) => ({ ...a, ...c }), {}))
+      })
+      .catch((err) => console.error(err))
+  }
+  const estimateFreeze = (freezeForm) => {
+    if (!freezeForm) return
+    setAvailables({ ...availables, freeze: 0 })
+    const transansactions = []
+    const validations = ['expiryDate', 'expiryTime', 'maxISupply']
+    const [isValid] = validate(freezeForm, validations)
+    if (isValid) {
+      const { expiryDate, expiryTime, isExclusive, maxISupply } = freezeForm
+      const [year, month, day] = expiryDate.split('-')
+      const expiry = parseInt(new Date(Date.UTC(year, month - 1, day, ...expiryTime.split(':'))).getTime() / 1000)
+      transansactions.push([
+        'freeze',
+        freeze(address, tokenId, expiry, [isExclusive ? 1 : maxISupply, F_VERSION, I_VERSION], {
+          from: owner,
+        }),
+      ])
+      Promise.all(transansactions.map(handleEstimate))
+        .then((inputs) => {
+          setAvailables({ ...availables, ...inputs.reduce((a, c) => ({ ...a, ...c }), {}) })
+        })
+        .catch((err) => {
+          console.error(err)
+          setAvailables({ ...availables, freeze: -1 })
+        })
     }
-    setMintForm(form)
   }
+  const estimateTransfer = (transferForm) => {
+    if (!transferForm) return
+    setAvailables({ ...availables, transfer: 0 })
+    const transansactions = []
+    const validations = ['to']
+    const [isValid] = validate(transferForm, validations)
+    if (isValid) {
+      transansactions.push(['transfer', transfer(owner, transferForm.to, metadata.tokenId, { from: owner })])
+      Promise.all(transansactions.map(handleEstimate))
+        .then((inputs) => {
+          setAvailables({ ...availables, ...inputs.reduce((a, c) => ({ ...a, ...c }), {}) })
+        })
+        .catch((err) => {
+          console.error(err)
+          setAvailables({ ...availables, transfer: -1 })
+        })
+    }
+  }
+
+  const colors = (gasLimit) => {
+    if (!gasLimit) return 'black'
+    if (gasLimit === -1) return '#c30000'
+    if (gasLimit >= GAS_LIMIT) return '#f9a825'
+    return '#1b5e20'
+  }
+  const tooltips = (gasLimit) => {
+    let ret = gasLimit
+    if (gasLimit === -1) ret = 'unknown'
+    if (!gasLimit) ret = '...'
+    return `Gas Limit: ${ret}`
+  }
+  const WithToolTip = (element, type) => (
+    <div className="tooltip">
+      {element}
+      <div className="tooltip__info" style={{ color: colors(availables[type]) }}>
+        {tooltips(availables[type])}
+      </div>
+    </div>
+  )
 
   useEffect(() => {
     if (item) {
       handleFreezeForm(null)
       handleTransferForm(null)
-      handleMintForm({ iVersion: 1 })
+      estimateGas()
+    }
+
+    return () => {
+      handleFreezeForm(null)
+      handleTransferForm(null)
     }
   }, [item])
 
@@ -220,8 +353,6 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
     description,
     type,
     isFrozen,
-    // fVersion,
-    // iVersion,
     metadata,
     isUnfreezable,
     isIMintable,
@@ -237,26 +368,26 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
   const userName = (user && user.username) || '---'
   const freezeForm = metadata ? transformFreeze({ ...metadata, expiry: infoExpiry }) : originFreezeForm
 
-  const [txStatus, setTxStatus] = useState('')
-  const handleTransaction = (transaction) => {
-    setTxStatus('Waiting for sign transaction...')
-    return new Promise((resolve, reject) => {
-      transaction
-        .on('transactionHash', function (hash) {
-          console.log(hash)
-          setTxStatus('Waiting for confirmation...')
-        })
-        .on('receipt', function (receipt) {
-          console.log(receipt)
-          setTxStatus('Transaction confirmed!')
-          setTimeout(() => resolve(receipt), 100)
-        })
-        .on('error', reject)
-    })
-  }
-
   const handleFreeze = (e) => {
     e.preventDefault()
+    if (!freezeForm) {
+      setStatus({ start: 'approve' })
+      handleTransaction(approve(address)(approveAddress, tokenId, { from: owner }))
+        .then(() => {
+          const date = new Date(Date.now() + 1000 * 3600 * 24)
+          handleFreezeForm({
+            expiryDate: date.toISOString().split('T')[0],
+            expiryTime: date.toISOString().split('T')[1].substr(0, 5),
+            isExclusive: true,
+            maxISupply: 1,
+            circulatingISupply: 1,
+          })
+        })
+        .finally(() => {
+          setStatus(null)
+        })
+      return
+    }
 
     const validations = ['expiryDate', 'expiryTime', 'maxISupply']
     const [isValid, errors] = validate(freezeForm, validations)
@@ -265,22 +396,16 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
     }
 
     setStatus({ start: 'freeze' })
-    handleTransaction(approve(address)(approveAddress, tokenId, { from: owner }))
+    const { expiryDate, expiryTime, isExclusive, maxISupply } = freezeForm
+    const [year, month, day] = expiryDate.split('-')
+    const expiry = parseInt(new Date(Date.UTC(year, month - 1, day, ...expiryTime.split(':'))).getTime() / 1000)
+    handleTransaction(
+      freeze(address, tokenId, expiry, [isExclusive ? 1 : maxISupply, F_VERSION, I_VERSION], {
+        from: owner,
+      })
+    )
       .then(() => {
-        const { expiryDate, expiryTime, isExclusive, maxISupply, fVersion, iVersion } = freezeForm
-        const [year, month, day] = expiryDate.split('-')
-        const expiry = parseInt(new Date(Date.UTC(year, month - 1, day, ...expiryTime.split(':'))).getTime() / 1000)
-        handleTransaction(
-          freeze(address, tokenId, expiry, [isExclusive ? 1 : maxISupply, fVersion, iVersion], {
-            from: owner,
-          })
-        )
-          .then(() => {
-            onReload('freeze')
-          })
-          .catch(() => {
-            setStatus(null)
-          })
+        onReload('freeze')
       })
       .catch(() => {
         setStatus(null)
@@ -299,11 +424,10 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
   }
   const handleIssueI = (e) => {
     e.preventDefault()
+
     setStatus({ start: 'issueI' })
-    const { iVersion } = mintForm
-    handleTransaction(issueI([metadata.tokenId, Number(metadata.endTime), iVersion], { from: owner }))
+    handleTransaction(issueI([metadata.tokenId, Number(metadata.endTime), I_VERSION], { from: owner }))
       .then(() => {
-        handleMintForm({ iVersion: 1 })
         onReload()
       })
       .catch(() => {
@@ -322,10 +446,10 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
       })
   }
   const handleTransfer = (e) => {
+    e.preventDefault()
     if (!transferForm) {
       return handleTransferForm({ to: '' })
     }
-    e.preventDefault()
 
     const validations = ['to']
     const [isValid, errors] = validate(transferForm, validations)
@@ -391,29 +515,22 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                         {...{
                           form: freezeForm,
                           setForm: handleFreezeForm,
-                          readOnly: type === 'FRight',
                         }}
                         errors={errors}
                       />
                     ) : (
                       <div className="buttons">
-                        {isFrozen === false && (
-                          <button
-                            onClick={() =>
-                              handleFreezeForm({
-                                expiryDate: new Date().toISOString().split('T')[0],
-                                expiryTime: new Date().toISOString().split('T')[1].substr(0, 5),
-                                isExclusive: true,
-                                maxISupply: 1,
-                                circulatingISupply: 1,
-                                fVersion: 1,
-                                iVersion: 1,
-                              })
-                            }
-                          >
-                            {intl.freeze}
-                          </button>
-                        )}
+                        {isFrozen === false &&
+                          WithToolTip(
+                            <button
+                              onClick={handleFreeze}
+                              data-for="approve"
+                              data-tip={tooltips(availables['approve'], 'approve')}
+                            >
+                              {intl.freeze}
+                            </button>,
+                            'approve'
+                          )}
                       </div>
                     ))}
                   {type && !transferForm && <AssetMetaData data={freezeForm} />}
@@ -428,36 +545,80 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                     />
                   )}
                   <div className="buttons">
-                    {isFrozen === false && freezeForm && (
-                      <button disabled={!!status} onClick={handleFreeze}>
-                        {intl.submit}
-                        {status && status.start === 'freeze' && <img src="/spinner.svg" />}
-                      </button>
-                    )}
-                    {isUnfreezable && (
-                      <button disabled={!!status} onClick={handleUnfreeze}>
-                        {intl.unfreeze}
-                        {status && status.start === 'unfreeze' && <img src="/spinner.svg" />}
-                      </button>
-                    )}
-                    {isIMintable && !freezeForm.isExclusive && (
-                      <button disabled={!!status} onClick={handleIssueI}>
-                        {intl.issueI}
-                        {status && status.start === 'issueI' && <img src="/spinner.svg" />}
-                      </button>
-                    )}
-                    {type === 'IRight' && (
-                      <button disabled={!!status} onClick={handleTransfer}>
-                        {transferForm ? intl.submit : intl.transfer}
-                        {status && status.start === 'transfer' && <img src="/spinner.svg" />}
-                      </button>
-                    )}
-                    {type === 'IRight' && !transferForm && (
-                      <button disabled={!!status} onClick={handleRevoke}>
-                        {intl.revokeI}
-                        {status && status.start === 'revokeI' && <img src="/spinner.svg" />}
-                      </button>
-                    )}
+                    {isFrozen === false &&
+                      freezeForm &&
+                      WithToolTip(
+                        <button
+                          disabled={!!status}
+                          onClick={handleFreeze}
+                          data-for="freeze"
+                          data-tip={tooltips(availables['freeze'])}
+                        >
+                          {intl.submit}
+                          {status && status.start === 'freeze' && <img src="/spinner.svg" />}
+                        </button>,
+                        'freeze'
+                      )}
+                    {isUnfreezable &&
+                      WithToolTip(
+                        <button
+                          disabled={!!status}
+                          onClick={handleUnfreeze}
+                          data-for="unfreeze"
+                          data-tip={tooltips(availables['unfreeze'])}
+                        >
+                          {intl.unfreeze}
+                          {status && status.start === 'unfreeze' && <img src="/spinner.svg" />}
+                        </button>,
+                        'unfreeze'
+                      )}
+                    {isIMintable &&
+                      !freezeForm.isExclusive &&
+                      WithToolTip(
+                        <button
+                          disabled={!!status}
+                          onClick={handleIssueI}
+                          data-for="issueI"
+                          data-tip={tooltips(availables['issueI'])}
+                        >
+                          {intl.issueI}
+                          {status && status.start === 'issueI' && <img src="/spinner.svg" />}
+                        </button>,
+                        'issueI'
+                      )}
+                    {type === 'IRight' &&
+                      (transferForm ? (
+                        WithToolTip(
+                          <button
+                            disabled={!!status}
+                            onClick={handleTransfer}
+                            data-for="transfer"
+                            data-tip={tooltips(availables['transfer'])}
+                          >
+                            {intl.submit}
+                            {status && status.start === 'transfer' && <img src="/spinner.svg" />}
+                          </button>,
+                          'transfer'
+                        )
+                      ) : (
+                        <button disabled={!!status} onClick={handleTransfer}>
+                          {intl.transfer}
+                        </button>
+                      ))}
+                    {type === 'IRight' &&
+                      !transferForm &&
+                      WithToolTip(
+                        <button
+                          disabled={!!status}
+                          onClick={handleRevoke}
+                          data-for="revokeI"
+                          data-tip={tooltips(availables['revokeI'])}
+                        >
+                          {intl.revokeI}
+                          {status && status.start === 'revokeI' && <img src="/spinner.svg" />}
+                        </button>,
+                        'revokeI'
+                      )}
                   </div>
                 </>
               )}

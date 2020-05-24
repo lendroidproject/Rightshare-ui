@@ -106,10 +106,10 @@ const tabs = [
     label: 'CryptoVoxels Parcels',
     Component: Parcels,
   },
-  {
-    label: 'Ethereum Name Service',
-    Component: ENSs,
-  },
+  // {
+  //   label: 'Ethereum Name Service',
+  //   Component: ENSs,
+  // },
   ...(MAIN_NETWORK
     ? []
     : [
