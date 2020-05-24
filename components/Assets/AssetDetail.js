@@ -10,6 +10,9 @@ import AssetForm from './AssetForm'
 import AssetMetaData from './AssetMetaData'
 import TransferForm from './TransferForm'
 
+const MAIN_NETWORK = process.env.MAIN_NETWORK
+const ETHERSCAN = MAIN_NETWORK ? 'https://etherscan.io/tx/' : 'https://rinkeby.etherscan.io/tx/'
+
 const GAS_LIMIT = 5000000
 const F_VERSION = 1
 const I_VERSION = 1
@@ -150,6 +153,19 @@ export const ItemDetail = styled(FlexInline)`
       font-size: 13px;
     }
   }
+
+  .message {
+    margin-bottom: 10px;
+    font-size: 15px;
+  }
+
+  .tx-hash {
+    a {
+      color: #27a0f7;
+      text-decoration: none;
+      font-size: 15px;
+    }
+  }
 `
 
 const Close = styled.div`
@@ -228,6 +244,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
   const [status, setStatus] = useState(null)
   const [errors, setErrors] = useState({})
   const [txInfo, setTxInfo] = useState([])
+  const [txHash, setTxHash] = useState('')
   const [txStatus, setTxStatus] = useState('')
 
   const handleFreezeForm = (form) => {
@@ -248,11 +265,13 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
   const handleTransaction = ({ send }, [name, ...args]) => {
     const isFunc = typeof intlTx[name] === 'function'
     setTxInfo(isFunc ? intlTx[name](...args) : intlTx[name])
+    setTxHash('')
     setTxStatus('Waiting for sign transaction...')
     return new Promise((resolve, reject) => {
       send()
         .on('transactionHash', function (hash) {
           console.log(hash)
+          setTxHash(hash)
           setTxStatus('Waiting for confirmation...')
         })
         .on('receipt', function (receipt) {
@@ -266,7 +285,6 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
         })
     })
   }
-  console.log(txInfo)
   const handleEstimate = ([type, { estimate }]) =>
     new Promise((resolve) =>
       estimate()
@@ -674,6 +692,13 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                   ))}
                 </div>
                 <div className="message">{txStatus || '...'}</div>
+                {txHash && (
+                  <div className="tx-hash">
+                    <a href={`${ETHERSCAN}${txHash}`} target="_blank">
+                      View on Etherscan
+                    </a>
+                  </div>
+                )}
               </Spinner>
             )}
           </div>
