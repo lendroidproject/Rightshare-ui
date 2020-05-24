@@ -1,6 +1,5 @@
 import { useEffect, useState, Component } from 'react'
 import styled from 'styled-components'
-import ReactTooltip from 'react-tooltip'
 
 import { intlActions } from '~utils/translation'
 import { validate } from '~utils/validation'

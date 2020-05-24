@@ -59,11 +59,14 @@ class RightshareApp extends App {
 
   handleProvider(type) {
     const { provider, fortmatic, address, balance } = this.state
+    const { store } = this.props
     if (type === provider) return
     this.releaseTimer()
+    const { methods } = store.getState()
     switch (type) {
       case 'fortmatic':
         window.web3 = new Web3(fortmatic.getProvider())
+        methods.web3.setProvider(fortmatic.getProvider())
         web3.eth.getAccounts((err, accounts) => {
           if (!err) {
             this.setState({ provider: 'fortmatic' }, () => this.initMetamask({ address: accounts[0] }))
@@ -76,6 +79,7 @@ class RightshareApp extends App {
       default:
         this.setState({ provider: 'metamask' }, () => this.initMetamask())
         window.web3 = new Web3(window.ethereum)
+        methods.web3.setProvider(window.ethereum)
         break
     }
   }
