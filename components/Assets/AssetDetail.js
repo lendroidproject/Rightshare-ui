@@ -315,7 +315,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
     let ret = gasLimit
     if (gasLimit === -1) ret = 'unknown'
     if (!gasLimit) ret = '...'
-    return `Gas Limit: ${ret}`
+    return `Estimated gas cost: ${ret}`
   }
   const WithToolTip = (element, type) => (
     <div className="tooltip">
