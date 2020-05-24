@@ -34,7 +34,7 @@
     "react-redux": "^7.1.3",
     "react-tooltip": "^4.2.6",
     "redux": "^4.0.5",
-    "rightshare-js": "^1.0.8",
+    "rightshare-js": "^1.0.9",
     "styled-components": "^4.4.1",
     "web3": "^1.2.7"
   },
