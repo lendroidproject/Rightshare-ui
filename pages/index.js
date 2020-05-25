@@ -3,7 +3,7 @@ import styled from 'styled-components'
 
 import { FlexCenter } from '~components/common/Wrapper'
 import Parcels from '~components/Parcels'
-// import ENSs from '~components/ENSs'
+import ENSs from '~components/ENSs'
 import NFTs from '~components/NFTs'
 import Intro from '~components/Intro'
 
@@ -106,10 +106,10 @@ const tabs = [
     label: 'CryptoVoxels Parcels',
     Component: Parcels,
   },
-  // {
-  //   label: 'Ethereum Name Service',
-  //   Component: ENSs,
-  // },
+  {
+    label: 'Ethereum Name Service',
+    Component: ENSs,
+  },
   ...(MAIN_NETWORK
     ? []
     : [
