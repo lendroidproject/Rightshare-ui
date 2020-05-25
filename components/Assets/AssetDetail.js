@@ -359,8 +359,8 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
     return '#1b5e20'
   }
   const tooltips = (gasLimit) => {
+    if (gasLimit === -1) return '(Not available)'
     let ret = gasLimit
-    if (gasLimit === -1) ret = 'unknown'
     if (!gasLimit) ret = '...'
     return `Estimated gas cost: ${ret}`
   }
@@ -584,6 +584,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                               onClick={handleFreeze}
                               data-for="approve"
                               data-tip={tooltips(availables['approve'], 'approve')}
+                              disabled={availables['approve'] === -1}
                             >
                               {intl.freeze}
                             </button>,
@@ -607,7 +608,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                       freezeForm &&
                       WithToolTip(
                         <button
-                          disabled={!!status}
+                          disabled={!!status || availables['freeze'] === -1}
                           onClick={handleFreeze}
                           data-for="freeze"
                           data-tip={tooltips(availables['freeze'])}
@@ -620,7 +621,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                     {isUnfreezable &&
                       WithToolTip(
                         <button
-                          disabled={!!status}
+                          disabled={!!status || availables['unfreeze'] === -1}
                           onClick={handleUnfreeze}
                           data-for="unfreeze"
                           data-tip={tooltips(availables['unfreeze'])}
@@ -634,7 +635,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                       !freezeForm.isExclusive &&
                       WithToolTip(
                         <button
-                          disabled={!!status}
+                          disabled={!!status || availables['issueI'] === -1}
                           onClick={handleIssueI}
                           data-for="issueI"
                           data-tip={tooltips(availables['issueI'])}
@@ -648,7 +649,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                       (transferForm ? (
                         WithToolTip(
                           <button
-                            disabled={!!status}
+                            disabled={!!status || availables['transfer'] === -1}
                             onClick={handleTransfer}
                             data-for="transfer"
                             data-tip={tooltips(availables['transfer'])}
@@ -659,7 +660,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                           'transfer'
                         )
                       ) : (
-                        <button disabled={!!status} onClick={handleTransfer}>
+                        <button onClick={handleTransfer}>
                           {intl.transfer}
                         </button>
                       ))}
@@ -667,7 +668,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                       !transferForm &&
                       WithToolTip(
                         <button
-                          disabled={!!status}
+                          disabled={!!status || availables['revokeI'] === -1}
                           onClick={handleRevoke}
                           data-for="revokeI"
                           data-tip={tooltips(availables['revokeI'])}
