@@ -1,6 +1,7 @@
 import React from 'react'
 import Head from 'next/head'
 import App from 'next/app'
+import ReactGA from 'react-ga'
 import { ThemeProvider } from 'styled-components'
 import RightshareJS from 'rightshare-js'
 
@@ -37,6 +38,20 @@ class RightshareApp extends App {
   }
 
   componentDidMount() {
+    window.dataLayer = window.dataLayer || []
+    function gtag() {
+      dataLayer.push(arguments)
+    }
+    gtag('js', new Date())
+    gtag('config', 'UA-158350923-2')
+
+    ReactGA.initialize(process.env.GA_TRACKING_ID, {
+      gaOptions: {
+        js: Date.now(),
+        config: process.env.GA_TRACKING_ID,
+      },
+    })
+
     const fortmatic = new Fortmatic(FORTMATIC_API_KEY)
     this.setState({ fortmatic }, async () => {
       if (window.ethereum) {

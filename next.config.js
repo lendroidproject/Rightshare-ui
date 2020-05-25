@@ -9,6 +9,7 @@ module.exports = withOffline(
       MAIN_NETWORK: process.env.MAIN_NETWORK === 'true',
       OPENSEA_API_KEY: process.env.OPENSEA_API_KEY,
       FORTMATIC_API_KEY: process.env.FORTMATIC_API_KEY,
+      GA_TRACKING_ID: process.env.GA_TRACKING_ID,
     },
   })
 )
