@@ -110,14 +110,10 @@ const tabs = [
     label: 'Ethereum Name Service',
     Component: ENSs,
   },
-  ...(MAIN_NETWORK
-    ? []
-    : [
-        {
-          label: 'Other NFTs',
-          Component: NFTs,
-        },
-      ]),
+  {
+    label: 'Other NFTs',
+    Component: NFTs,
+  },
   {
     label: 'How it works',
     Component: Intro,
