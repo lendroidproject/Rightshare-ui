@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
+import ReactTooltip from 'react-tooltip'
 
 import { intlActions, intlTransactions } from '~utils/translation'
 import { validate } from '~utils/validation'
@@ -118,8 +119,10 @@ export const ItemDetail = styled(FlexInline)`
 
       &__info {
         padding: 3px 5px;
-        text-align: center;
         font-size: 11px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
 
         position: absolute;
         white-space: nowrap;
@@ -128,6 +131,13 @@ export const ItemDetail = styled(FlexInline)`
         display: flex;
         justify-content: center;
         text-align: center;
+
+        .tip {
+          color: #222060;
+          font-weight: bold;
+          margin-left: 5px;
+          cursor: pointer;
+        }
       }
 
       button {
@@ -164,6 +174,18 @@ export const ItemDetail = styled(FlexInline)`
       color: #27a0f7;
       text-decoration: none;
       font-size: 15px;
+    }
+  }
+
+  .__react_component_tooltip {
+    max-width: 260px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-size: 12px;
+    font-weight: normal;
+
+    &.show {
+      opacity: 1;
     }
   }
 `
@@ -246,6 +268,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
   const [txInfo, setTxInfo] = useState([])
   const [txHash, setTxHash] = useState('')
   const [txStatus, setTxStatus] = useState('')
+  const [txErrors, setTxErrors] = useState({})
 
   const handleFreezeForm = (form) => {
     if (Object.keys(errors).length) {
@@ -289,7 +312,11 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
     new Promise((resolve) =>
       estimate()
         .then((gasLimit) => resolve({ [type]: gasLimit }))
-        .catch(() => resolve({ [type]: -1 }))
+        .catch((err) => {
+          const { code, message } = err
+          setTxErrors({ ...txErrors, [type]: `${intl[type]} cannot be performed on this NFT.\n(${code}: ${message})` })
+          resolve({ [type]: -1 })
+        })
     )
   const estimateGas = () => {
     const transansactions = []
@@ -301,11 +328,14 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
     const init = {}
     transansactions.forEach(([key]) => (init[key] = 0))
     setAvailables(init)
+    setTxErrors({ ...txErrors, global: '' })
     Promise.all(transansactions.map(handleEstimate))
       .then((availables) => {
         setAvailables(availables.reduce((a, c) => ({ ...a, ...c }), {}))
       })
-      .catch((err) => console.error(err))
+      .catch((err) => {
+        setTxErrors({ ...txErrors, global: (err && err.message) || 'Something went wrong' })
+      })
   }
   const estimateFreeze = (freezeForm) => {
     if (!freezeForm) return
@@ -323,12 +353,24 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
           from: owner,
         }),
       ])
+      setTxErrors({ ...txErrors, global: '' })
       Promise.all(transansactions.map(handleEstimate))
         .then((inputs) => {
           setAvailables({ ...availables, ...inputs.reduce((a, c) => ({ ...a, ...c }), {}) })
         })
         .catch((err) => {
-          console.error(err)
+          const { arg, code, reason, message } = err
+          if (code) {
+            setTxErrors({
+              ...txErrors,
+              freeze: `${intl.freeze} cannot be performed on this NFT.\n(${code}: "${arg}" ${reason})`,
+            })
+          } else {
+            setTxErrors({
+              ...txErrors,
+              global: message || 'Something went wrong',
+            })
+          }
           setAvailables({ ...availables, freeze: -1 })
         })
     }
@@ -341,25 +383,37 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
     const [isValid] = validate(transferForm, validations)
     if (isValid) {
       transansactions.push(['transfer', transfer(owner, transferForm.to, metadata.tokenId, { from: owner })])
+      setTxErrors({ ...txErrors, global: '' })
       Promise.all(transansactions.map(handleEstimate))
         .then((inputs) => {
           setAvailables({ ...availables, ...inputs.reduce((a, c) => ({ ...a, ...c }), {}) })
         })
         .catch((err) => {
-          console.error(err)
+          const { arg, code, reason, message } = err
+          if (code) {
+            setTxErrors({
+              ...txErrors,
+              transfer: `${intl.transfer} cannot be performed on this NFT.\n(${code}: "${arg}" ${reason})`,
+            })
+          } else {
+            setTxErrors({
+              ...txErrors,
+              global: message || 'Something went wrong',
+            })
+          }
           setAvailables({ ...availables, transfer: -1 })
         })
     }
   }
 
   const colors = (gasLimit) => {
+    if (txErrors.global || gasLimit === -1) return '#c30000'
     if (!gasLimit) return 'black'
-    if (gasLimit === -1) return '#c30000'
     if (gasLimit >= GAS_LIMIT) return '#f9a825'
     return '#1b5e20'
   }
   const tooltips = (gasLimit) => {
-    if (gasLimit === -1) return '(Not available)'
+    if (txErrors.global || gasLimit === -1) return 'Not available'
     let ret = gasLimit
     if (!gasLimit) ret = '...'
     return `Estimated gas cost: ${ret}`
@@ -368,7 +422,17 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
     <div className="tooltip">
       {element}
       <div className="tooltip__info" style={{ color: colors(availables[type]) }}>
-        {tooltips(availables[type])}
+        {tooltips(availables[type])}{' '}
+        {(availables[type] === -1 || txErrors.global) && (
+          <div className="tip">
+            <span data-for={type} data-tip={type} style={{ color: colors(availables[type]) }}>
+              &#9432;
+            </span>
+            <ReactTooltip id={type} effect="solid">
+              {txErrors.global || txErrors[type]}
+            </ReactTooltip>
+          </div>
+        )}
       </div>
     </div>
   )
@@ -560,7 +624,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
               </span>
             </div>
             <p className="desc">{infoDesc || description}</p>
-            <div className="price">Price: {price ? price : 0}</div>
+            {/* <div className="price">Price: {price ? price : 0}</div> */}
             <div className="actions">
               {loading ? (
                 <Spinner />
@@ -660,9 +724,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                           'transfer'
                         )
                       ) : (
-                        <button onClick={handleTransfer}>
-                          {intl.transfer}
-                        </button>
+                        <button onClick={handleTransfer}>{intl.transfer}</button>
                       ))}
                     {type === 'IRight' &&
                       !transferForm &&
