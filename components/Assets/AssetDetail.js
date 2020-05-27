@@ -84,6 +84,7 @@ export const ItemDetail = styled(FlexInline)`
 
     h2 {
       margin: 0 0 10px;
+      font-size: 1.3em;
     }
 
     .owner {
