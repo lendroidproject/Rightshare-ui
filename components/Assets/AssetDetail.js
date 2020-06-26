@@ -568,7 +568,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
         circulatingISupply: 1,
         purpose: '',
         imageUrl: '',
-        termsUrl: 'https://lendroid.com/privacy-policy/',
+        termsUrl: '',
       })
       // setStatus({ start: 'approve' })
       // handleTransaction(approve(address)(approveAddress, tokenId, { from: owner }), ['approve'])
@@ -582,7 +582,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
       //       circulatingISupply: 1,
       //       purpose: '',
       //       imageUrl: '',
-      //       termsUrl: 'https://lendroid.com/privacy-policy/',
+      //       termsUrl: '',
       //     })
       //   })
       //   .catch((err) => console.log(err))
@@ -592,7 +592,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
       return
     }
 
-    const validations = ['expiryDate', 'expiryTime', 'maxISupply']
+    const validations = ['expiryDate', 'expiryTime', 'maxISupply', 'termsUrl']
     const [isValid, errors] = validate(freezeForm, validations)
     if (!isValid) {
       return setErrors(errors)

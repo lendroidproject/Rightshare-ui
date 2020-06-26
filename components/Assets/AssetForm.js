@@ -221,6 +221,17 @@ export default ({ lang, form, setForm, readOnly, children, errors }) => {
           </div>
         </div>
       )} */}
+      <div className="inputs">
+        <div>
+          <label>Terms URL</label>
+          <input
+            value={form.termsUrl}
+            onChange={(e) => setForm({ ...form, termsUrl: e.target.value })}
+            readOnly={readOnly}
+            className={errors.termsUrl ? 'error' : ''}
+            />
+        </div>
+      </div>
       {children}
     </Form>
   )
