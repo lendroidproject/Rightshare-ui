@@ -27,13 +27,13 @@ export const intlForm = (lang) =>
       maxISupply: 'Max Supply - Rentals?',
     },
     ENS: {
-      exclusive: 'Exclusive',
-      nonExclusive: 'Non-Exclusive',
+      exclusive: 'Encumbered',
+      nonExclusive: 'Unencumbered',
       maxISupply: 'Max Supply - Rentals?',
     },
     NFT: {
-      exclusive: 'Exclusive',
-      nonExclusive: 'Non-Exclusive',
+      exclusive: 'Encumbered',
+      nonExclusive: 'Unencumbered',
       maxISupply: 'Max Supply - iRights?',
     },
   }[lang || defaultLang])
