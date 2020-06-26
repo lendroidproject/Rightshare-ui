@@ -48,7 +48,7 @@ const Content = styled.div`
 export default ({ onClose }) => (
   <ItemOverlay onClick={onClose}>
     <Content onClick={(e) => e.stopPropagation()}>
-      <img src="/assets/close.svg" className="close" />
+      <img src="/assets/close.svg" className="close" onClick={onClose} />
       <img src="/assets/tick.svg" className="tick" />
       <h1>Congratulations!</h1>
       <p>
