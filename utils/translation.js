@@ -22,8 +22,8 @@ export const intlTabs = (lang) =>
 export const intlForm = (lang) =>
   ({
     CV: {
-      exclusive: 'Exclusive',
-      nonExclusive: 'Non-Exclusive',
+      exclusive: 'Encumbered',
+      nonExclusive: 'Unencumbered',
       maxISupply: 'Max Supply - Rentals?',
     },
     ENS: {
@@ -42,6 +42,7 @@ export const intlActions = (lang) =>
   ({
     CV: {
       approve: 'Approve',
+      issueUnencumberedI: 'Create Metatoken',
       freeze: 'Activate Rental',
       issueI: 'Create a new Rental Token',
       transfer: 'Transfer Rental Token',
@@ -51,6 +52,7 @@ export const intlActions = (lang) =>
     },
     ENS: {
       approve: 'Approve',
+      issueUnencumberedI: 'Create Metatoken',
       freeze: 'Activate Domain Rental',
       issueI: 'Create a new Rental Token',
       transfer: 'Transfer Rental Token',
@@ -60,6 +62,7 @@ export const intlActions = (lang) =>
     },
     NFT: {
       approve: 'Approve',
+      issueUnencumberedI: 'Create Metatoken',
       freeze: 'Initiate Rightshare',
       issueI: 'Mint iRight',
       transfer: 'Transfer iRight',
@@ -123,6 +126,7 @@ export const intlTransactions = (lang) => {
       `b) ${units.fRight} Token is minted to your address,`,
       `c) ${units.iRight} Token is minted to your address`,
     ],
+    issueUnencumberedI: [titles.issueUnencumberedI, 'Please wait while', 'a) Your Metatoken is minted to your address'],
     issueI: [titles.issueI, `Please wait while a new ${units.iRight} Token is being minted to your address`],
     transfer: (to) => [titles.transfer, `Please wait while the ${units.iRight} Token is being transferred to ${to}`],
     revokeI: [titles.revokeI, `Please wait while the ${units.iRight} Token is being burned from your address.`],

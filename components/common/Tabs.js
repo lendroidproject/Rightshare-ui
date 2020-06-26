@@ -11,7 +11,7 @@ import Spinner from '~components/common/Spinner'
 
 export const Accordion = styled.div`
   .panel {
-    padding: 10px 0;
+    padding: 15px 0;
     min-height: 100px;
     position: relative;
   }

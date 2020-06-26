@@ -31,7 +31,7 @@ const Footer = styled.div`
   a {
     margin: 0 10px;
     text-decoration: none;
-    color: #0a2c79;
+    color: #232160;
     display: flex;
     position: relative;
 

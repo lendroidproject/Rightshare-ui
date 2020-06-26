@@ -28,9 +28,8 @@ export const ItemOverlay = styled(FlexCenter)`
   height: 100vh;
 `
 
-export const ItemDetail = styled(FlexInline)`
-  align-items: stretch;
-  padding: 10px;
+export const Wrapper = styled.div`
+  padding: 15px 25px;
   border-radius: 5px;
   background: white;
   max-width: 80%;
@@ -39,16 +38,36 @@ export const ItemDetail = styled(FlexInline)`
   overflow: auto;
 
   @media all and (max-width: 767px) {
-    flex-wrap: wrap;
     max-width: 90%;
     max-height: 90vh;
   }
 
-  > * {
-    width: 384px;
-    max-width: 100%;
-    align-items: center;
-    padding: 10px;
+  .heading {
+    padding-bottom: 12px;
+    border-bottom: 1px solid #ccc;
+
+    p {
+      margin: 0;
+      font-size: 16px;
+
+      span {
+        color: #232160;
+      }
+    }
+  }
+`
+
+export const ItemDetail = styled(FlexInline)`
+  align-items: stretch;
+  margin: -8px;
+
+  @media all and (max-width: 767px) {
+    flex-wrap: wrap;
+  }
+
+  > div {
+    padding: 20px 8px 8px;
+    margin: 8px;
   }
 
   .actions {
@@ -56,51 +75,62 @@ export const ItemDetail = styled(FlexInline)`
     min-height: 60px;
   }
 
+  .item-view {
+    max-width: 260px;
+
+    .template {
+      position: relative;
+
+      .origin {
+        position: absolute;
+        left: 19%;
+        width: 62%;
+        top: 27%;
+        height: 35%;
+      }
+    }
+  }
+
   .external {
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: auto;
+    overflow: hidden;
     padding: 0;
 
-    img {
+    img.image {
       height: auto;
-      max-height: 384px;
+      max-height: 281px;
     }
   }
 
   .info {
     position: relative;
-
-    .heading {
-      display: flex;
-      justify-content: space-between;
-
-      p {
-        margin: 0;
-        font-size: 14px;
-      }
-    }
-
-    h2 {
-      margin: 0 0 10px;
-      font-size: 1.3em;
-    }
-
-    .owner {
-      display: flex;
-      align-items: center;
-      margin-bottom: 15px;
-
-      img {
-        border-radius: 50%;
-        width: 35px;
-        margin-right: 10px;
-      }
-    }
+    width: 460px;
+    max-width: 100%;
 
     p.desc {
-      font-size: 13px;
+      font-size: 16px;
+      margin-top: 0;
+    }
+  }
+
+  .owner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    font-size: 12px;
+
+    span {
+      color: #232160;
+    }
+
+    img {
+      border-radius: 50%;
+      width: 25px;
+      margin-right: 5px;
     }
   }
 
@@ -172,8 +202,7 @@ export const ItemDetail = styled(FlexInline)`
 
   .tx-hash {
     a {
-      color: #27a0f7;
-      text-decoration: none;
+      color: #123fca;
       font-size: 15px;
     }
   }
@@ -197,29 +226,47 @@ const Close = styled.div`
   top: 15px;
   width: 24px;
   height: 24px;
-  background: lightgrey;
   border-radius: 50%;
   cursor: pointer;
-
-  &:hover {
-    background: grey;
-  }
+  border: 2px solid #e2b224;
+  background: white;
 
   &:before,
   &:after {
     position: absolute;
-    left: 11px;
+    left: 9px;
     top: 4px;
     content: ' ';
-    height: 16px;
+    height: 12px;
     width: 2px;
-    background-color: white;
+    background-color: #e2b224;
+    border-radius: 1px;
   }
   &:before {
     transform: rotate(45deg);
   }
   &:after {
     transform: rotate(-45deg);
+  }
+`
+
+const Template = styled.div`
+  border-radius: 6px;
+  background-color: #ecebeb;
+
+  text-align: center;
+  padding: 14px 16px;
+
+  font-size: 11px;
+  font-weight: 900;
+  text-align: center;
+
+  a {
+    font-size: 12px;
+    color: #123fca;
+    font-weight: 100;
+    margin-top: 3px;
+    display: block;
   }
 `
 
@@ -255,7 +302,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
     address: owner,
     methods: {
       NFT: { approve },
-      RightsDao: { freeze, unfreeze, issueI, revokeI },
+      RightsDao: { freeze, issueUnencumberedI, unfreeze, issueI, revokeI },
       IRight: { transfer },
     },
     addresses: { RightsDao: approveAddress },
@@ -286,8 +333,9 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
     estimateTransfer(form)
   }
 
-  const handleTransaction = ({ send }, [name, ...args]) => {
+  const handleTransaction = ({ send }, [origin, ...args]) => {
     const isFunc = typeof intlTx[name] === 'function'
+    const name = freezeForm && !freezeForm.isExclusive && origin === 'freeze' ? 'issueUnencumberedI' : origin
     setTxInfo(isFunc ? intlTx[name](...args) : intlTx[name])
     setTxHash('')
     setTxStatus('Waiting for sign transaction...')
@@ -312,7 +360,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
   const handleEstimate = ([type, { estimate }]) =>
     new Promise((resolve) =>
       estimate()
-        .then((gasLimit) => resolve({ [type]: gasLimit }))
+        .then((gasLimit) => resolve({ [type]: gasLimit <= 0 ? -1 : gasLimit }))
         .catch((err) => {
           const { code, message } = err
           setTxErrors({ ...txErrors, [type]: `${intl[type]} cannot be performed on this NFT.\n(${code}: ${message})` })
@@ -327,7 +375,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
       transansactions.push(['issueI', issueI([metadata.tokenId, Number(metadata.endTime), I_VERSION], { from: owner })])
     if (type === 'IRight') transansactions.push(['revokeI', revokeI(metadata.tokenId, { from: owner })])
     const init = {}
-    transansactions.forEach(([key]) => (init[key] = 0))
+    transansactions.forEach(([key]) => key !== 'approve' && (init[key] = 0))
     setAvailables(init)
     setTxErrors({ ...txErrors, global: '' })
     Promise.all(transansactions.map(handleEstimate))
@@ -340,19 +388,32 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
   }
   const estimateFreeze = (freezeForm) => {
     if (!freezeForm) return
-    setAvailables({ ...availables, freeze: 0 })
     const transansactions = []
     const validations = ['expiryDate', 'expiryTime', 'maxISupply']
     const [isValid] = validate(freezeForm, validations)
+
+    if (freezeForm.isExclusive && availables.approve !== 0) return
     if (isValid) {
-      const { expiryDate, expiryTime, isExclusive, maxISupply } = freezeForm
+      setAvailables({ ...availables, freeze: 0 })
+      const { expiryDate, expiryTime, isExclusive, maxISupply, purpose, imageUrl, termsUrl } = freezeForm
       const [year, month, day] = expiryDate.split('-')
       const expiry = parseInt(new Date(Date.UTC(year, month - 1, day, ...expiryTime.split(':'))).getTime() / 1000)
       transansactions.push([
         'freeze',
-        freeze(address, tokenId, expiry, [isExclusive ? 1 : maxISupply, F_VERSION, I_VERSION], {
-          from: owner,
-        }),
+        isExclusive
+          ? freeze(
+              address,
+              tokenId,
+              expiry,
+              [isExclusive ? 1 : maxISupply, F_VERSION, I_VERSION],
+              [purpose, imageUrl, termsUrl],
+              {
+                from: owner,
+              }
+            )
+          : issueUnencumberedI(address, [tokenId, expiry, I_VERSION], [purpose, imageUrl, termsUrl], {
+              from: owner,
+            }),
       ])
       setTxErrors({ ...txErrors, global: '' })
       Promise.all(transansactions.map(handleEstimate))
@@ -440,7 +501,11 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
 
   useEffect(() => {
     if (item) {
-      handleFreezeForm(null)
+      if (!type && !freezeForm) {
+        handleFreeze()
+      } else {
+        handleFreezeForm(freezeForm)
+      }
       handleTransferForm(null)
       estimateGas()
     }
@@ -479,25 +544,51 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
   const userName = (user && user.username) || '---'
   const freezeForm = metadata ? transformFreeze({ ...metadata, expiry: infoExpiry }) : originFreezeForm
 
+  const handleApprove = (e) => {
+    e && e.preventDefault()
+    setStatus({ start: 'approve' })
+    handleTransaction(approve(address)(approveAddress, tokenId, { from: owner }), ['approve'])
+      .then(() => {
+        setAvailables({ ...availables, approve: 0 })
+      })
+      .catch((err) => console.log(err))
+      .finally(() => {
+        setStatus(null)
+      })
+  }
   const handleFreeze = (e) => {
-    e.preventDefault()
+    e && e.preventDefault()
     if (!freezeForm) {
-      setStatus({ start: 'approve' })
-      handleTransaction(approve(address)(approveAddress, tokenId, { from: owner }), ['approve'])
-        .then(() => {
-          const date = new Date(Date.now() + 1000 * 3600 * 24)
-          handleFreezeForm({
-            expiryDate: date.toISOString().split('T')[0],
-            expiryTime: date.toISOString().split('T')[1].substr(0, 5),
-            isExclusive: true,
-            maxISupply: 1,
-            circulatingISupply: 1,
-          })
-        })
-        .catch((err) => console.log(err))
-        .finally(() => {
-          setStatus(null)
-        })
+      const date = new Date(Date.now() + 1000 * 3600 * 24)
+      handleFreezeForm({
+        expiryDate: date.toISOString().split('T')[0],
+        expiryTime: date.toISOString().split('T')[1].substr(0, 5),
+        isExclusive: true,
+        maxISupply: 1,
+        circulatingISupply: 1,
+        purpose: '',
+        imageUrl: '',
+        termsUrl: 'https://lendroid.com/privacy-policy/',
+      })
+      // setStatus({ start: 'approve' })
+      // handleTransaction(approve(address)(approveAddress, tokenId, { from: owner }), ['approve'])
+      //   .then(() => {
+      //     const date = new Date(Date.now() + 1000 * 3600 * 24)
+      //     handleFreezeForm({
+      //       expiryDate: date.toISOString().split('T')[0],
+      //       expiryTime: date.toISOString().split('T')[1].substr(0, 5),
+      //       isExclusive: true,
+      //       maxISupply: 1,
+      //       circulatingISupply: 1,
+      //       purpose: '',
+      //       imageUrl: '',
+      //       termsUrl: 'https://lendroid.com/privacy-policy/',
+      //     })
+      //   })
+      //   .catch((err) => console.log(err))
+      //   .finally(() => {
+      //     setStatus(null)
+      //   })
       return
     }
 
@@ -508,13 +599,24 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
     }
 
     setStatus({ start: 'freeze' })
-    const { expiryDate, expiryTime, isExclusive, maxISupply } = freezeForm
+    const { expiryDate, expiryTime, isExclusive, maxISupply, purpose, imageUrl, termsUrl } = freezeForm
     const [year, month, day] = expiryDate.split('-')
     const expiry = parseInt(new Date(Date.UTC(year, month - 1, day, ...expiryTime.split(':'))).getTime() / 1000)
     handleTransaction(
-      freeze(address, tokenId, expiry, [isExclusive ? 1 : maxISupply, F_VERSION, I_VERSION], {
-        from: owner,
-      }),
+      isExclusive
+        ? freeze(
+            address,
+            tokenId,
+            expiry,
+            [isExclusive ? 1 : maxISupply, F_VERSION, I_VERSION],
+            [purpose, imageUrl, termsUrl],
+            {
+              from: owner,
+            }
+          )
+        : issueUnencumberedI(address, [tokenId, expiry, I_VERSION], [purpose, imageUrl, termsUrl], {
+            from: owner,
+          }),
       ['freeze']
     )
       .then(() => {
@@ -595,44 +697,77 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
 
   const [txTitle, ...txInfos] = txInfo
 
+  const onFreeze = !type && freezeForm && !loading
+  console.log(availables)
   return (
     <ItemOverlay onClick={handleClose}>
-      <ItemDetail onClick={(e) => e.stopPropagation()}>
-        <a href={permalink} className="external" target="_blank">
-          <img
-            src={
-              infoImage || image
-                ? infoImage || image
-                : `https://via.placeholder.com/512/FFFFFF/000000?text=%23${tokenId}`
-            }
-            alt={infoName || name}
-            style={{
-              background: infoBack || background ? `#${infoBack || background}` : 'white',
-            }}
-          />
-        </a>
-        {!metadata || metadata.baseAssetAddress !== '0x0000000000000000000000000000000000000000' ? (
-          <div className="info">
-            <Close onClick={handleClose} />
-            <div className="heading">
-              <p>{assetName}</p>
-            </div>
-            <h2>{infoName || name}</h2>
+      <Wrapper>
+        <div className="heading">
+          <p>
+            {assetName}
+            <br />
+            <span>{infoName || name || `#${tokenId}`}</span>
+          </p>
+          <Close onClick={handleClose} />
+        </div>
+        <ItemDetail onClick={(e) => e.stopPropagation()}>
+          <div className="item-view">
+            <a href={permalink} className="external" target="_blank">
+              {onFreeze ? (
+                <div className="template">
+                  <img src={freezeForm.imageUrl || '/templates/template01.png'} className="image" />
+                  <img
+                    src={
+                      infoImage || image
+                        ? infoImage || image
+                        : `https://via.placeholder.com/512/FFFFFF/000000?text=%23${tokenId}`
+                    }
+                    alt={infoName || name}
+                    style={{
+                      background: infoBack || background ? `#${infoBack || background}` : '#f3f3f3',
+                    }}
+                    className="origin"
+                  />
+                </div>
+              ) : (
+                <img
+                  src={
+                    infoImage || image
+                      ? infoImage || image
+                      : `https://via.placeholder.com/512/FFFFFF/000000?text=%23${tokenId}`
+                  }
+                  alt={infoName || name}
+                  style={{
+                    background: infoBack || background ? `#${infoBack || background}` : '#f3f3f3',
+                  }}
+                  className="image"
+                />
+              )}
+            </a>
             <div className="owner">
               <img src={avatar} alt={userName} />
-              <span>
-                Owned by <b>{userName.length > 20 ? `${userName.substr(0, 17)}...` : userName}</b>
-              </span>
+              Owned by&nbsp;<span>{userName.length > 20 ? `${userName.substr(0, 17)}...` : userName}</span>
             </div>
-            <p className="desc">{infoDesc || description}</p>
-            {/* <div className="price">Price: {price ? price : 0}</div> */}
-            <div className="actions">
-              {loading ? (
-                <Spinner />
-              ) : (
-                <>
-                  {!type &&
-                    (!!freezeForm ? (
+            {onFreeze && (
+              <Template>
+                If you are palnning to build your own frame then
+                <br />
+                <a href="/template.zip" download>
+                  Click Here to download PSD template
+                </a>
+              </Template>
+            )}
+          </div>
+          {!metadata || metadata.baseAssetAddress !== '0x0000000000000000000000000000000000000000' ? (
+            <div className="info">
+              {!onFreeze && <p className="desc">{infoDesc || description}</p>}
+              {/* <div className="price">Price: {price ? price : 0}</div> */}
+              <div className="actions">
+                {loading ? (
+                  <Spinner />
+                ) : (
+                  <>
+                    {onFreeze && (
                       <AssetForm
                         lang={lang}
                         {...{
@@ -641,136 +776,133 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                         }}
                         errors={errors}
                       />
-                    ) : (
-                      <div className="buttons">
-                        {isFrozen === false &&
-                          WithToolTip(
+                    )}
+                    {type && !transferForm && <AssetMetaData data={freezeForm} />}
+                    {type === 'IRight' && transferForm && (
+                      <TransferForm
+                        owner={owner}
+                        {...{
+                          form: transferForm,
+                          setForm: handleTransferForm,
+                        }}
+                        errors={errors}
+                      />
+                    )}
+                    <div className="buttons">
+                      {isFrozen === false &&
+                        freezeForm &&
+                        WithToolTip(
+                          freezeForm.isExclusive && availables['approve'] !== 0 ? (
                             <button
-                              onClick={handleFreeze}
+                              onClick={handleApprove}
                               data-for="approve"
-                              data-tip={tooltips(availables['approve'], 'approve')}
-                              disabled={availables['approve'] === -1}
+                              data-tip={tooltips(availables['approve'])}
                             >
-                              {intl.freeze}
-                            </button>,
-                            'approve'
-                          )}
-                      </div>
-                    ))}
-                  {type && !transferForm && <AssetMetaData data={freezeForm} />}
-                  {type === 'IRight' && transferForm && (
-                    <TransferForm
-                      owner={owner}
-                      {...{
-                        form: transferForm,
-                        setForm: handleTransferForm,
-                      }}
-                      errors={errors}
-                    />
-                  )}
-                  <div className="buttons">
-                    {isFrozen === false &&
-                      freezeForm &&
-                      WithToolTip(
-                        <button
-                          disabled={!!status || availables['freeze'] === -1}
-                          onClick={handleFreeze}
-                          data-for="freeze"
-                          data-tip={tooltips(availables['freeze'])}
-                        >
-                          {intl.submit}
-                          {status && status.start === 'freeze' && <img src="/spinner.svg" />}
-                        </button>,
-                        'freeze'
-                      )}
-                    {isUnfreezable &&
-                      WithToolTip(
-                        <button
-                          disabled={!!status || availables['unfreeze'] === -1}
-                          onClick={handleUnfreeze}
-                          data-for="unfreeze"
-                          data-tip={tooltips(availables['unfreeze'])}
-                        >
-                          {intl.unfreeze}
-                          {status && status.start === 'unfreeze' && <img src="/spinner.svg" />}
-                        </button>,
-                        'unfreeze'
-                      )}
-                    {isIMintable &&
-                      !freezeForm.isExclusive &&
-                      WithToolTip(
-                        <button
-                          disabled={!!status || availables['issueI'] === -1}
-                          onClick={handleIssueI}
-                          data-for="issueI"
-                          data-tip={tooltips(availables['issueI'])}
-                        >
-                          {intl.issueI}
-                          {status && status.start === 'issueI' && <img src="/spinner.svg" />}
-                        </button>,
-                        'issueI'
-                      )}
-                    {type === 'IRight' &&
-                      (transferForm ? (
+                              {intl.approve}
+                              {status && status.start === 'approve' && <img src="/spinner.svg" />}
+                            </button>
+                          ) : (
+                            <button
+                              disabled={!!status || availables['freeze'] === -1}
+                              onClick={handleFreeze}
+                              data-for="freeze"
+                              data-tip={tooltips(availables['freeze'])}
+                            >
+                              {intl.submit}
+                              {status && status.start === 'freeze' && <img src="/spinner.svg" />}
+                            </button>
+                          ),
+                          freezeForm.isExclusive && availables['approve'] !== 0 ? 'approve' : 'freeze'
+                        )}
+                      {isUnfreezable &&
                         WithToolTip(
                           <button
-                            disabled={!!status || availables['transfer'] === -1}
-                            onClick={handleTransfer}
-                            data-for="transfer"
-                            data-tip={tooltips(availables['transfer'])}
+                            disabled={!!status || availables['unfreeze'] === -1}
+                            onClick={handleUnfreeze}
+                            data-for="unfreeze"
+                            data-tip={tooltips(availables['unfreeze'])}
                           >
-                            {intl.submit}
-                            {status && status.start === 'transfer' && <img src="/spinner.svg" />}
+                            {intl.unfreeze}
+                            {status && status.start === 'unfreeze' && <img src="/spinner.svg" />}
                           </button>,
-                          'transfer'
-                        )
-                      ) : (
-                        <button onClick={handleTransfer}>{intl.transfer}</button>
-                      ))}
-                    {type === 'IRight' &&
-                      !transferForm &&
-                      WithToolTip(
-                        <button
-                          disabled={!!status || availables['revokeI'] === -1}
-                          onClick={handleRevoke}
-                          data-for="revokeI"
-                          data-tip={tooltips(availables['revokeI'])}
-                        >
-                          {intl.revokeI}
-                          {status && status.start === 'revokeI' && <img src="/spinner.svg" />}
-                        </button>,
-                        'revokeI'
-                      )}
+                          'unfreeze'
+                        )}
+                      {isIMintable &&
+                        !freezeForm.isExclusive &&
+                        WithToolTip(
+                          <button
+                            disabled={!!status || availables['issueI'] === -1}
+                            onClick={handleIssueI}
+                            data-for="issueI"
+                            data-tip={tooltips(availables['issueI'])}
+                          >
+                            {intl.issueI}
+                            {status && status.start === 'issueI' && <img src="/spinner.svg" />}
+                          </button>,
+                          'issueI'
+                        )}
+                      {type === 'IRight' &&
+                        (transferForm ? (
+                          WithToolTip(
+                            <button
+                              disabled={!!status || availables['transfer'] === -1}
+                              onClick={handleTransfer}
+                              data-for="transfer"
+                              data-tip={tooltips(availables['transfer'])}
+                            >
+                              {intl.submit}
+                              {status && status.start === 'transfer' && <img src="/spinner.svg" />}
+                            </button>,
+                            'transfer'
+                          )
+                        ) : (
+                          <button onClick={handleTransfer}>{intl.transfer}</button>
+                        ))}
+                      {type === 'IRight' &&
+                        !transferForm &&
+                        WithToolTip(
+                          <button
+                            disabled={!!status || availables['revokeI'] === -1}
+                            onClick={handleRevoke}
+                            data-for="revokeI"
+                            data-tip={tooltips(availables['revokeI'])}
+                          >
+                            {intl.revokeI}
+                            {status && status.start === 'revokeI' && <img src="/spinner.svg" />}
+                          </button>,
+                          'revokeI'
+                        )}
+                    </div>
+                  </>
+                )}
+              </div>
+              {status && status.start && (
+                <Spinner>
+                  <div className={`tx-info ${txInfos.length > 1 ? '' : 'solid'}`}>
+                    <h3>{txTitle}</h3>
+                    {txInfos.map((txt, idx) => (
+                      <div className="tx-info__item" key={idx}>
+                        {txt}
+                      </div>
+                    ))}
                   </div>
-                </>
+                  {txHash && (
+                    <div className="tx-hash">
+                      <a href={`${ETHERSCAN}${txHash}`} target="_blank">
+                        View transaction on Etherscan
+                      </a>
+                    </div>
+                  )}
+                </Spinner>
               )}
             </div>
-            {status && status.start && (
-              <Spinner>
-                <div className={`tx-info ${txInfos.length > 1 ? '' : 'solid'}`}>
-                  <h3>{txTitle}</h3>
-                  {txInfos.map((txt, idx) => (
-                    <div className="tx-info__item" key={idx}>
-                      {txt}
-                    </div>
-                  ))}
-                </div>
-                {txHash && (
-                  <div className="tx-hash">
-                    <a href={`${ETHERSCAN}${txHash}`} target="_blank">
-                      View transaction on Etherscan
-                    </a>
-                  </div>
-                )}
-              </Spinner>
-            )}
-          </div>
-        ) : (
-          <div className="info">
-            <h3>Asset is unavailable.</h3>
-          </div>
-        )}
-      </ItemDetail>
+          ) : (
+            <div className="info">
+              <h3>Asset is unavailable.</h3>
+            </div>
+          )}
+        </ItemDetail>
+      </Wrapper>
     </ItemOverlay>
   )
 }

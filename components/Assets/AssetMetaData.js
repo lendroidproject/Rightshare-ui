@@ -3,7 +3,7 @@ import styled from 'styled-components'
 export const Table = styled.table`
   margin: 12px 0;
   width: 100%;
-  font-size: 14px;
+  font-size: 16px;
 
   tbody {
     tr td {

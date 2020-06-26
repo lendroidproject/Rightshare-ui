@@ -10,7 +10,7 @@ import SuccessModal from './SuccessModal'
 
 const Wrapper = styled(FlexWrap)``
 const Items = styled(FlexWrap)`
-  margin: -15px;
+  margin: -10px;
   align-items: stretch;
   margin-bottom: 15px;
 `

@@ -143,9 +143,9 @@ class RightshareApp extends App {
               RightsDao: '0x986179DfeCE47344F80e7b9B603914AaCC750493',
             }
           : {
-              FRight: '0xefC727FE2Ba2157820990f66955019A62Fa3Cc6d',
-              IRight: '0xf73B07252629fb493F721AA7A28945334fea62C7',
-              RightsDao: '0x8066E491b1100b86A9a41a93fc2d218D43552563',
+              FRight: '0x7D4d79514b176Ece38927B1429a6C707d0aa5BD6',
+              IRight: '0x54bA1Cd03f4242ed1828aD7a25265207d991BE03',
+              RightsDao: '0x3683E134CF754D9342655Ac53BF5cCC843df2255',
             },
       })
       store.dispatch({
@@ -209,11 +209,7 @@ class RightshareApp extends App {
             />
           )}
           <link href="https://necolas.github.io/normalize.css/latest/normalize.css" rel="stylesheet" type="text/css" />
-          <link
-            href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700"
-            rel="stylesheet"
-            type="text/css"
-          />
+          <link href="/fonts/avenir-lt-std/style.css" rel="stylesheet" type="text/css" />
           <style
             dangerouslySetInnerHTML={{
               __html: `
@@ -233,10 +229,13 @@ class RightshareApp extends App {
                 border: 0;
                 cursor: pointer;
                 margin-top: 12px;
-                background: #0a2c79;
+                background: #232160;
                 color: white;
-                border-radius: 4px;
-                padding: 10px 20px;
+                padding: 15px 20px;
+
+                font-size: 16px;
+                text-transform: uppercase;
+                border-radius: 8px;
               }
 
               p {
@@ -244,7 +243,7 @@ class RightshareApp extends App {
               }
 
               button:disabled {
-                background: #0a2c7999;
+                background: #23216099;
                 cursor: not-allowed;
               }
 
