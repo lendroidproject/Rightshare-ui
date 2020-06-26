@@ -184,7 +184,7 @@ export default ({ lang, form, setForm, readOnly, children, errors }) => {
           />
         </div>
       </div>
-      <label>What kind of metatoken are you in the mood for?</label>
+      {/* <label>What kind of metatoken are you in the mood for?</label>
       <div className="inputs">
         <div className="radio">
           <input
@@ -206,7 +206,7 @@ export default ({ lang, form, setForm, readOnly, children, errors }) => {
           />
           <label onClick={() => setForm({ ...form, isExclusive: false })}>{intl.nonExclusive}</label>
         </div>
-      </div>
+      </div> */}
       {/* {!form.isExclusive && (
         <div className="inputs">
           <div>

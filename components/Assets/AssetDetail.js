@@ -369,7 +369,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
     )
   const estimateGas = () => {
     const transansactions = []
-    if (!type) transansactions.push(['approve', approve(address)(approveAddress, tokenId, { from: owner })])
+    // if (!type) transansactions.push(['approve', approve(address)(approveAddress, tokenId, { from: owner })])
     if (isUnfreezable) transansactions.push(['unfreeze', unfreeze(tokenId, { from: owner })])
     if (isIMintable && !freezeForm.isExclusive)
       transansactions.push(['issueI', issueI([metadata.tokenId, Number(metadata.endTime), I_VERSION], { from: owner })])
@@ -563,7 +563,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
       handleFreezeForm({
         expiryDate: date.toISOString().split('T')[0],
         expiryTime: date.toISOString().split('T')[1].substr(0, 5),
-        isExclusive: true,
+        isExclusive: false,
         maxISupply: 1,
         circulatingISupply: 1,
         purpose: '',
