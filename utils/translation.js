@@ -5,7 +5,7 @@ export const intlTabs = (lang) =>
     CV: {
       MyAssets: 'My Parcels',
       MyFRights: 'My Land Tokens',
-      MyIRights: 'My Rental Tokens',
+      MyIRights: 'My Meta Tokens',
     },
     ENS: {
       MyAssets: 'My Domains',
