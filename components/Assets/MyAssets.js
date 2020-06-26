@@ -108,7 +108,7 @@ export default function ({ lang, onTab, onParent, children, ...props }) {
   const [refresh, setRefresh] = useState(false)
 
   const myAssets = (query, refresh = false) => {
-    setLoading(true)
+    setLoading(refresh)
     setRefresh(refresh)
     getMyAssets(query)
       .then((response) => response.data)
