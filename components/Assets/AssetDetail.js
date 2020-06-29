@@ -7,7 +7,7 @@ import { validate } from '~utils/validation'
 import { FlexCenter, FlexInline } from '~components/common/Wrapper'
 import Spinner from '~components/common/Spinner'
 
-import AssetForm from './AssetForm'
+import AssetForm, { Templates } from './AssetForm'
 import AssetMetaData from './AssetMetaData'
 import TransferForm from './TransferForm'
 
@@ -83,10 +83,11 @@ export const ItemDetail = styled(FlexInline)`
 
       .origin {
         position: absolute;
-        left: 19%;
-        width: 62%;
-        top: 27%;
-        height: 35%;
+        left: 23%;
+        width: 55%;
+        top: 22.5%;
+        height: 41%;
+        border-radius: 4px;
       }
     }
   }
@@ -406,12 +407,12 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
               tokenId,
               expiry,
               [isExclusive ? 1 : maxISupply, F_VERSION, I_VERSION],
-              [purpose, imageUrl, termsUrl],
+              [purpose, imageUrl.replace(/\//g, '|'), termsUrl.replace(/\//g, '|')],
               {
                 from: owner,
               }
             )
-          : issueUnencumberedI(address, [tokenId, expiry, I_VERSION], [purpose, imageUrl, termsUrl], {
+          : issueUnencumberedI(address, [tokenId, expiry, I_VERSION], [purpose, imageUrl.replace(/\//g, '|'), termsUrl.replace(/\//g, '|')], {
               from: owner,
             }),
       ])
@@ -567,7 +568,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
         maxISupply: 1,
         circulatingISupply: 1,
         purpose: '',
-        imageUrl: '',
+        imageUrl: Templates[0],
         termsUrl: '',
       })
       // setStatus({ start: 'approve' })
@@ -581,7 +582,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
       //       maxISupply: 1,
       //       circulatingISupply: 1,
       //       purpose: '',
-      //       imageUrl: '',
+      //       imageUrl: Templates[0],
       //       termsUrl: '',
       //     })
       //   })
@@ -609,12 +610,12 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
             tokenId,
             expiry,
             [isExclusive ? 1 : maxISupply, F_VERSION, I_VERSION],
-            [purpose, imageUrl, termsUrl],
+            [purpose, imageUrl.replace(/\//g, '|'), termsUrl.replace(/\//g, '|')],
             {
               from: owner,
             }
           )
-        : issueUnencumberedI(address, [tokenId, expiry, I_VERSION], [purpose, imageUrl, termsUrl], {
+        : issueUnencumberedI(address, [tokenId, expiry, I_VERSION], [purpose, imageUrl.replace(/\//g, '|'), termsUrl.replace(/\//g, '|')], {
             from: owner,
           }),
       ['freeze']
@@ -715,7 +716,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
             <a href={permalink} className="external" target="_blank">
               {onFreeze ? (
                 <div className="template">
-                  <img src={freezeForm.imageUrl || '/templates/template01.png'} className="image" />
+                  <img src={freezeForm.imageUrl} className="image" />
                   <img
                     src={
                       infoImage || image

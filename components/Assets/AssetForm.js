@@ -124,8 +124,15 @@ const Frames = styled.div`
   }
 `
 
+export const Templates = [
+  'https://tinyurl.com/rs-template-01',
+  'https://tinyurl.com/rs-template-02',
+  'https://tinyurl.com/rs-template-03',
+  // 'https://tinyurl.com/rs-template-04',
+]
+
 export default ({ lang, form, setForm, readOnly, children, errors }) => {
-  const intl = intlForm(lang)
+  // const intl = intlForm(lang)
 
   return (
     <Form onSubmit={(e) => e.preventDefault()}>
@@ -164,13 +171,13 @@ export default ({ lang, form, setForm, readOnly, children, errors }) => {
       <label>Choose Frame Image</label>
       <div className="inputs">
         <Frames>
-          {['template01', 'template02', 'template03'].map((name) => (
+          {Templates.map((url) => (
             <div
-              key={name}
-              className={`frame ${form.imageUrl.includes(name) ? 'active' : ''}`}
-              onClick={() => setForm({ ...form, imageUrl: `/templates/${name}.png` })}
+              key={url}
+              className={`frame ${form.imageUrl === url ? 'active' : ''}`}
+              onClick={() => setForm({ ...form, imageUrl: url })}
             >
-              <img src={`/templates/${name}.png`} />
+              <img src={url} />
             </div>
           ))}
         </Frames>
