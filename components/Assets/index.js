@@ -13,6 +13,7 @@ const Items = styled(FlexWrap)`
   margin: -10px;
   align-items: stretch;
   margin-bottom: 15px;
+  width: 100%;
 `
 
 export default connect((state) => state)(function ({ children, data, loadMore, onTab, onParent, lang, ...props }) {
