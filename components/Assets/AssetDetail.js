@@ -4,6 +4,7 @@ import ReactTooltip from 'react-tooltip'
 
 import { intlActions, intlTransactions } from '~utils/translation'
 import { validate } from '~utils/validation'
+import { tinyURL } from '~utils/api'
 import { FlexCenter, FlexInline } from '~components/common/Wrapper'
 import Spinner from '~components/common/Spinner'
 
@@ -32,14 +33,14 @@ export const Wrapper = styled.div`
   padding: 15px 25px;
   border-radius: 5px;
   background: white;
-  max-width: 80%;
+  max-width: 90%;
   position: relative;
   max-height: 100vh;
   overflow: auto;
 
   @media all and (max-width: 767px) {
-    max-width: 90%;
     max-height: 90vh;
+    padding: 15px 15px;
   }
 
   .heading {
@@ -63,6 +64,7 @@ export const ItemDetail = styled(FlexInline)`
 
   @media all and (max-width: 767px) {
     flex-wrap: wrap;
+    margin: 0;
   }
 
   > div {
@@ -77,9 +79,17 @@ export const ItemDetail = styled(FlexInline)`
 
   .item-view {
     max-width: 260px;
+    @media all and (max-width: 767px) {
+      max-width: unset;
+      width: 100%;
+      margin: 0;
+      padding: 8px;
+    }
 
     .template {
       position: relative;
+      height: 281px;
+      min-width: 213px;
 
       .origin {
         position: absolute;
@@ -102,6 +112,7 @@ export const ItemDetail = styled(FlexInline)`
     img.image {
       height: auto;
       max-height: 281px;
+      max-width: 100%;
     }
   }
 
@@ -140,14 +151,27 @@ export const ItemDetail = styled(FlexInline)`
     display: flex;
     align-items: flex-start;
     font-size: 13px;
+    @media all and (max-width: 767px) {
+      flex-direction: column;
+      margin: 0 0;
+    }
 
     button {
       min-width: 145px;
+      @media all and (max-width: 767px) {
+        width: 100%;
+        padding: 8px 15px;
+        font-size: 100%;
+      }
     }
 
     .tooltip {
       margin: 12px 6px;
       position: relative;
+      @media all and (max-width: 767px) {
+        width: 100%;
+        margin: 12px 0;
+      }
 
       &__info {
         padding: 3px 5px;
@@ -412,9 +436,14 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                 from: owner,
               }
             )
-          : issueUnencumberedI(address, [tokenId, expiry, I_VERSION], [purpose, imageUrl.replace(/\//g, '|'), termsUrl.replace(/\//g, '|')], {
-              from: owner,
-            }),
+          : issueUnencumberedI(
+              address,
+              [tokenId, expiry, I_VERSION],
+              [purpose, imageUrl.replace(/\//g, '|'), termsUrl.replace(/\//g, '|')],
+              {
+                from: owner,
+              }
+            ),
       ])
       setTxErrors({ ...txErrors, global: '' })
       Promise.all(transansactions.map(handleEstimate))
@@ -593,40 +622,49 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
       return
     }
 
-    const validations = ['expiryDate', 'expiryTime', 'maxISupply', 'termsUrl']
+    const validations = ['expiryDate', 'expiryTime', 'maxISupply']
     const [isValid, errors] = validate(freezeForm, validations)
     if (!isValid) {
       return setErrors(errors)
     }
 
-    setStatus({ start: 'freeze' })
-    const { expiryDate, expiryTime, isExclusive, maxISupply, purpose, imageUrl, termsUrl } = freezeForm
+    const { expiryDate, expiryTime, isExclusive, maxISupply, purpose, imageUrl: originImage, termsUrl } = freezeForm
     const [year, month, day] = expiryDate.split('-')
     const expiry = parseInt(new Date(Date.UTC(year, month - 1, day, ...expiryTime.split(':'))).getTime() / 1000)
-    handleTransaction(
-      isExclusive
-        ? freeze(
-            address,
-            tokenId,
-            expiry,
-            [isExclusive ? 1 : maxISupply, F_VERSION, I_VERSION],
-            [purpose, imageUrl.replace(/\//g, '|'), termsUrl.replace(/\//g, '|')],
-            {
-              from: owner,
-            }
-          )
-        : issueUnencumberedI(address, [tokenId, expiry, I_VERSION], [purpose, imageUrl.replace(/\//g, '|'), termsUrl.replace(/\//g, '|')], {
-            from: owner,
-          }),
-      ['freeze']
-    )
-      .then(() => {
-        onReload('freeze')
+    tinyURL(originImage)
+      .then((imageUrl) => {
+        setStatus({ start: 'freeze' })
+        handleTransaction(
+          isExclusive
+            ? freeze(
+                address,
+                tokenId,
+                expiry,
+                [isExclusive ? 1 : maxISupply, F_VERSION, I_VERSION],
+                [purpose, imageUrl.replace(/\//g, '|'), termsUrl.replace(/\//g, '|')],
+                {
+                  from: owner,
+                }
+              )
+            : issueUnencumberedI(
+                address,
+                [tokenId, expiry, I_VERSION],
+                [purpose, imageUrl.replace(/\//g, '|'), termsUrl.replace(/\//g, '|')],
+                {
+                  from: owner,
+                }
+              ),
+          ['freeze']
+        )
+          .then(() => {
+            onReload('freeze')
+          })
+          .catch((err) => console.log(err))
+          .finally(() => {
+            setStatus(null)
+          })
       })
-      .catch((err) => console.log(err))
-      .finally(() => {
-        setStatus(null)
-      })
+      .catch(console.log)
   }
   const handleUnfreeze = (e) => {
     e.preventDefault()

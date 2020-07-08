@@ -7,8 +7,6 @@ import ENSs from '~components/ENSs'
 import NFTs from '~components/NFTs'
 import Intro from '~components/Intro'
 
-const MAIN_NETWORK = process.env.MAIN_NETWORK
-
 const Accordion = styled.div`
   background: white;
   min-height: calc(100vh - 190px);
@@ -19,8 +17,6 @@ const Accordion = styled.div`
   overflow: hidden;
   @media all and (max-width: 767px) {
     min-height: calc(100vh - 208px);
-    margin: 0;
-    width: 100%;
   }
 
   * {
@@ -73,17 +69,7 @@ const Tabs = styled(FlexCenter)`
   top: 0;
   background: white;
 
-  @media all and (max-width: 767px) {
-    flex-wrap: wrap;
-
-    > div {
-      width: 50%;
-      text-align: center;
-      white-space: nowrap;
-    }
-  }
-
-  > div {
+  .tab {
     padding: 10px;
     cursor: pointer;
 
@@ -93,10 +79,55 @@ const Tabs = styled(FlexCenter)`
       color: white;
     }
   }
+
+  .pop-up {
+    display: none;
+  }
+
+  @media all and (max-width: 767px) {
+    flex-direction: column;
+
+    .tab {
+      width: 100%;
+      text-align: center;
+      white-space: nowrap;
+      display: none;
+
+      &.active {
+        display: block;
+      }
+    }
+
+    .pop-up {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+
+      .tab {
+        display: block;
+
+        &.active {
+          display: none;
+        }
+      }
+
+      transition: all 0.2s;
+      &.hide {
+        display: none;
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      &.show {
+        display: flex;
+        opacity: 1;
+        transform: translateY(0px);
+      }
+    }
+  }
 `
 
 const Tab = ({ label, active, onSelect }) => (
-  <div key={label} className={active ? 'active' : ''} onClick={onSelect}>
+  <div key={label} className={`tab ${active ? 'active' : ''}`} onClick={onSelect}>
     {label}
   </div>
 )
@@ -121,16 +152,32 @@ const tabs = [
 ]
 
 export default function () {
-  const [active, setActive] = useState(0)
+  const [show, setShow] = useState(false)
+  const [active, setActive] = useState(2)
   const { Component } = tabs[active]
   const tabLabels = tabs.map(({ label }) => label)
+
+  const handleActive = (active) => {
+    setActive(active)
+    setShow(false)
+  }
 
   return (
     <Accordion>
       <Tabs>
         {tabLabels.map((label, index) => (
-          <Tab key={index} label={label} active={active === index} onSelect={() => setActive(index)} />
+          <Tab
+            key={index}
+            label={label}
+            active={active === index}
+            onSelect={() => (active === index ? setShow(!show) : handleActive(index))}
+          />
         ))}
+        <div className={`pop-up ${show ? 'show' : 'hide'}`}>
+          {tabLabels.map((label, index) => (
+            <Tab key={index} label={label} active={active === index} onSelect={() => handleActive(index)} />
+          ))}
+        </div>
       </Tabs>
       <div className="panel">
         <Component onTab={() => setActive(tabs.length - 1)} />

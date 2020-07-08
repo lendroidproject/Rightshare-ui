@@ -4,6 +4,9 @@ export const Table = styled.table`
   margin: 12px 0;
   width: 100%;
   font-size: 16px;
+  @media all and (max-width: 767px) {
+    font-size: 14px;
+  }
 
   tbody {
     tr td {

@@ -17,6 +17,12 @@ const Account = styled.div`
     display: block;
     margin: 0 auto 10px;
   }
+
+  @media all and (max-width: 767px) {
+    .account-info {
+      display: none;
+    }
+  }
 `
 
 const Content = styled.div`
@@ -62,6 +68,7 @@ const Discord = styled.div`
   position: fixed;
   bottom: 30px;
   right: 30px;
+  z-index: 101;
   @media all and (max-width: 767px) {
     bottom: 15px;
     right: 15px;
@@ -89,11 +96,12 @@ const Discord = styled.div`
 `
 
 const AccountProvider = styled.div`
-  position: absolute;
+  position: fixed;
   display: flex;
   height: 40px;
   right: 20px;
   top: 20px;
+  z-index: 9;
 
   img {
     height: 100%;
@@ -119,7 +127,9 @@ export default connect((state) => state)(function ({ provider, onProvider, child
     <Wrapper>
       <Account>
         <img src={mainNetwork ? '/logo.png' : '/logo_rinkeby.png'} className="logo" />
-        {address || '---'} : {balance || '0'}
+        <div className="account-info">
+          {address || '---'} <span>:</span> {balance || '0'}
+        </div>
         <AccountProvider>
           <img
             src="/brands/Metamask.svg"

@@ -26,12 +26,23 @@ export const Form = styled.form`
     display: flex;
     align-items: center;
     margin: 0 -25px 15px;
+    @media all and (max-width: 767px) {
+      flex-direction: column;
+      margin: 0 0 15px;
+    }
 
     > * {
       width: 100%;
       display: flex;
       flex-direction: column;
       margin: 0 25px;
+      @media all and (max-width: 767px) {
+        margin: 0 0 10px 0;
+
+        &.empty {
+          display: none;
+        }
+      }
 
       &.radio {
         flex-direction: row;
@@ -53,6 +64,9 @@ export const Form = styled.form`
         display: flex;
         align-items: center;
         justify-content: center;
+        @media all and (max-width: 767px) {
+          margin-bottom: 10px;
+        }
       }
     }
 
@@ -145,7 +159,7 @@ export default ({ lang, form, setForm, readOnly, children, errors }) => {
             readOnly={readOnly}
           />
         </div>
-        <div />
+        <div className="empty" />
       </div>
       <p>Set Expiry (UTC)</p>
       <div className="inputs">
@@ -236,7 +250,7 @@ export default ({ lang, form, setForm, readOnly, children, errors }) => {
             onChange={(e) => setForm({ ...form, termsUrl: e.target.value })}
             readOnly={readOnly}
             className={errors.termsUrl ? 'error' : ''}
-            />
+          />
         </div>
       </div>
       {children}

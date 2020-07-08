@@ -43,7 +43,7 @@ export const Refresh = styled.div`
   animation-fill-mode: forwards;
   @media all and (max-width: 767px) {
     top: 5px;
-    right: 5px;
+    right: -7px;
   }
 
   &:hover {
@@ -205,11 +205,7 @@ export default function ({ lang, onTab, onParent, children, ...props }) {
             <NoData>
               No digital collectibles available in your wallet. Purchase some from{' '}
               <a
-                href={
-                  MAIN_NETWORK
-                    ? `https://opensea.io/assets/${platforms[lang]}`
-                    : 'https://rinkeby.opensea.io/'
-                }
+                href={MAIN_NETWORK ? `https://opensea.io/assets/${platforms[lang]}` : 'https://rinkeby.opensea.io/'}
                 target="_blank"
               >
                 OpenSea

@@ -37,6 +37,7 @@
     "redux": "^4.0.5",
     "rightshare-js": "^1.0.12",
     "styled-components": "^4.4.1",
+    "tinyurl": "^1.1.6",
     "web3": "^1.2.7"
   },
   "devDependencies": {

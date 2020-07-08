@@ -12,6 +12,9 @@ const Wrapper = styled.div`
   justify-content: center;
   flex-direction: column;
   z-index: 1;
+  @media all and (max-width: 767px) {
+    position: fixed;
+  }
 
   @keyframes spin {
     0% {
