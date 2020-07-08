@@ -137,14 +137,14 @@ const tabs = [
     label: 'CryptoVoxels Parcels',
     Component: Parcels,
   },
-  {
-    label: 'Ethereum Name Service',
-    Component: ENSs,
-  },
-  {
-    label: 'Other NFTs',
-    Component: NFTs,
-  },
+  // {
+  //   label: 'Ethereum Name Service',
+  //   Component: ENSs,
+  // },
+  // {
+  //   label: 'Other NFTs',
+  //   Component: NFTs,
+  // },
   {
     label: 'How it works',
     Component: Intro,
@@ -153,7 +153,7 @@ const tabs = [
 
 export default function () {
   const [show, setShow] = useState(false)
-  const [active, setActive] = useState(2)
+  const [active, setActive] = useState(0)
   const { Component } = tabs[active]
   const tabLabels = tabs.map(({ label }) => label)
 

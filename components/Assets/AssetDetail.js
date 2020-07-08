@@ -420,7 +420,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
     if (freezeForm.isExclusive && availables.approve !== 0) return
     if (isValid) {
       setAvailables({ ...availables, freeze: 0 })
-      const { expiryDate, expiryTime, isExclusive, maxISupply, purpose, imageUrl, termsUrl } = freezeForm
+      const { expiryDate, expiryTime, isExclusive, maxISupply, purpose, imageUrl, termsUrl = 'none' } = freezeForm
       const [year, month, day] = expiryDate.split('-')
       const expiry = parseInt(new Date(Date.UTC(year, month - 1, day, ...expiryTime.split(':'))).getTime() / 1000)
       transansactions.push([
@@ -789,7 +789,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
             </div>
             {onFreeze && (
               <Template>
-                If you are palnning to build your own frame then
+                If you plan to build your own frame then
                 <br />
                 <a href="/template.zip" download>
                   Click Here to download PSD template

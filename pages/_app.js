@@ -234,8 +234,12 @@ class RightshareApp extends App {
                 padding: 15px 20px;
 
                 font-size: 16px;
-                text-transform: uppercase;
+                // text-transform: uppercase;
                 border-radius: 8px;
+
+                font-size: 14px;
+                padding: 13px 15px;
+                border-radius: 5px;
               }
 
               p {

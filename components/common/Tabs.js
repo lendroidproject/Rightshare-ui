@@ -61,7 +61,7 @@ export default connect((state) => state)(function ({ lang, onTab, ...props }) {
   const info = intlInfo(lang)
   const tabs = [
     { label: intl.MyAssets, Component: MyAssets },
-    { label: intl.MyFRights, Component: MyFRights, info: info.fRight },
+    // { label: intl.MyFRights, Component: MyFRights, info: info.fRight },
     { label: intl.MyIRights, Component: MyIRights, info: info.iRight },
   ]
 

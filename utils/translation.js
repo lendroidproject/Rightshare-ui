@@ -5,7 +5,7 @@ export const intlTabs = (lang) =>
     CV: {
       MyAssets: 'My Parcels',
       MyFRights: 'My Land Tokens',
-      MyIRights: 'My Meta Tokens',
+      MyIRights: 'My Customer Tokens',
     },
     ENS: {
       MyAssets: 'My Domains',
@@ -42,11 +42,11 @@ export const intlActions = (lang) =>
   ({
     CV: {
       approve: 'Approve',
-      issueUnencumberedI: 'Create Metatoken',
+      issueUnencumberedI: 'Create Customer Token',
       freeze: 'Activate Rental',
       issueI: 'Create a new Rental Token',
-      transfer: 'Transfer Rental Token',
-      revokeI: 'Burn Rental Token',
+      transfer: 'Transfer Customer Token',
+      revokeI: 'Burn Customer Token',
       unfreeze: 'Deactivate Rental',
       submit: 'Proceed',
     },

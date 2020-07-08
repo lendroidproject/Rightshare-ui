@@ -198,7 +198,7 @@ export default ({ lang, form, setForm, readOnly, children, errors }) => {
         <div className="separator">Or</div>
         <div>
           <input
-            placeholder="Enter image URL here"
+            placeholder="Paste the URL of your image here"
             value={form.imageUrl}
             onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
             readOnly={readOnly}
@@ -244,7 +244,7 @@ export default ({ lang, form, setForm, readOnly, children, errors }) => {
       )} */}
       <div className="inputs">
         <div>
-          <label>Terms URL</label>
+          <label>Terms URL (Optional)</label>
           <input
             value={form.termsUrl}
             onChange={(e) => setForm({ ...form, termsUrl: e.target.value })}
