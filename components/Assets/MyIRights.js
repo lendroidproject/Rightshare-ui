@@ -118,7 +118,7 @@ export default function ({ lang, info, onTab, onParent, children, ...props }) {
 
   return (
     <Wrapper>
-      {filtered.length > 0 && (
+      {/* {filtered.length > 0 && (
         <Info>
           <div className="tooltip">
             <ol>
@@ -128,7 +128,7 @@ export default function ({ lang, info, onTab, onParent, children, ...props }) {
             </ol>
           </div>
         </Info>
-      )}
+      )} */}
       {!refresh && <Assets {...assetsProps} />}
       {loading ? (
         <Spinner />
