@@ -25,6 +25,9 @@ export const Tabs = styled(FlexCenter)`
     cursor: pointer;
     font-size: 13px;
     position: relative;
+    &:not(:last-child) {
+      margin-right: 9px;
+    }
     @media all and (max-width: 767px) {
       font-size: 12px;
       white-space: nowrap;
