@@ -9,7 +9,7 @@ import Intro from '~components/Intro'
 
 const Accordion = styled.div`
   background: white;
-  min-height: calc(100vh - 190px);
+  min-height: calc(100vh - 278px);
   width: 90%;
   max-width: 1200px;
   margin: 0 auto 25px;

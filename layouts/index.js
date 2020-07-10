@@ -16,9 +16,14 @@ const Account = styled.div`
     height: 60px;
     display: block;
     margin: 0 auto 10px;
+    @media all and (max-width: 767px) {
+      height: 40px;
+      margin-bottom: 0;
+    }
   }
 
   @media all and (max-width: 767px) {
+    padding: 20px;
     .account-info {
       display: none;
     }
@@ -43,6 +48,9 @@ const Footer = styled.div`
 
     img {
       height: 50px;
+      @media all and (max-width: 767px) {
+        height: 40px;
+      }
     }
 
     &.discord:after {
