@@ -111,7 +111,6 @@ export const Form = styled.form`
 
 const Frames = styled.div`
   display: flex;
-  justify-content: space-between;
   flex-direction: row !important;
 
   .frame {
@@ -134,6 +133,10 @@ const Frames = styled.div`
     img {
       height: 60px;
       width: 45px;
+    }
+
+    &:not(:last-child) {
+      margin-right: 15px;
     }
   }
 `
@@ -195,7 +198,15 @@ export default ({ lang, form, setForm, readOnly, children, errors }) => {
             </div>
           ))}
         </Frames>
-        <div className="separator">Or</div>
+      </div>
+      <label>
+        Or use{' '}
+        <a href="/template.zip" download>
+          this template
+        </a>{' '}
+        and upload your own image
+      </label>
+      <div className="inputs">
         <div>
           <input
             placeholder="Paste the URL of your image here"
