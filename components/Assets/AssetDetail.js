@@ -447,7 +447,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
             )
           : issueI(
               address,
-              [tokenId, expiry, F_VERSION, I_VERSION],
+              [tokenId, 0, expiry, I_VERSION],
               [purpose, imageUrl.replace(/\//g, '|'), termsUrl.replace(/\//g, '|'), description],
               {
                 from: owner,
@@ -669,7 +669,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
               )
             : issueI(
                 address,
-                [tokenId, expiry, F_VERSION, I_VERSION],
+                [tokenId, 0, expiry, I_VERSION],
                 [purpose, imageUrl.replace(/\//g, '|'), termsUrl.replace(/\//g, '|'), description],
                 {
                   from: owner,
