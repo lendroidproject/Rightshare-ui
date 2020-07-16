@@ -396,8 +396,8 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
     const transansactions = []
     // if (!type) transansactions.push(['approve', approve(address)(approveAddress, tokenId, { from: owner })])
     if (isUnfreezable) transansactions.push(['unfreeze', unfreeze(tokenId, { from: owner })])
-    if (isIMintable && !freezeForm.isExclusive)
-      transansactions.push(['issueI', issueI([metadata.tokenId, Number(metadata.endTime), I_VERSION], { from: owner })])
+    // if (isIMintable && !freezeForm.isExclusive)
+    //   transansactions.push(['issueI', issueI([metadata.tokenId, Number(metadata.endTime), I_VERSION], { from: owner })])
     if (type === 'IRight') transansactions.push(['revokeI', revokeI(metadata.tokenId, { from: owner })])
     const init = {}
     transansactions.forEach(([key]) => key !== 'approve' && (init[key] = 0))
@@ -702,15 +702,15 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
   const handleIssueI = (e) => {
     e.preventDefault()
 
-    setStatus({ start: 'issueI' })
-    handleTransaction(issueI([metadata.tokenId, Number(metadata.endTime), I_VERSION], { from: owner }), ['issueI'])
-      .then(() => {
-        onReload()
-      })
-      .catch((err) => console.log(err))
-      .finally(() => {
-        setStatus(null)
-      })
+    // setStatus({ start: 'issueI' })
+    // handleTransaction(issueI([metadata.tokenId, Number(metadata.endTime), I_VERSION], { from: owner }), ['issueI'])
+    //   .then(() => {
+    //     onReload()
+    //   })
+    //   .catch((err) => console.log(err))
+    //   .finally(() => {
+    //     setStatus(null)
+    //   })
   }
   const handleRevoke = (e) => {
     e.preventDefault()
