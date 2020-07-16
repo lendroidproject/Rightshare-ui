@@ -360,7 +360,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
 
   const handleTransaction = ({ send }, [origin, ...args]) => {
     const isFunc = typeof intlTx[name] === 'function'
-    const name = freezeForm && !freezeForm.isExclusive && origin === 'freeze' ? 'issueI' : origin
+    const name = freezeForm && !freezeForm.isExclusive && origin === 'freeze' ? 'issueUnencumberedI' : origin
     setTxInfo(isFunc ? intlTx[name](...args) : intlTx[name])
     setTxHash('')
     setTxStatus('Waiting for sign transaction...')
