@@ -758,7 +758,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
   const [txTitle, ...txInfos] = txInfo
 
   const onFreeze = !type && freezeForm && !loading
-  console.log(availables)
+
   return (
     <ItemOverlay onClick={handleClose}>
       <Wrapper>
