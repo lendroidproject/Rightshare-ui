@@ -71,6 +71,7 @@ export const Form = styled.form`
     }
 
     input,
+    textarea,
     select {
       width: 100%;
       font-size: 14px;
@@ -156,13 +157,26 @@ export default ({ lang, form, setForm, readOnly, children, errors }) => {
       <div className="inputs">
         <div>
           <label>Purpose of the token</label>
-          <input
+          <select
             value={form.purpose}
             onChange={(e) => setForm({ ...form, purpose: e.target.value })}
             readOnly={readOnly}
-          />
+          >
+            <option value="Rental">Rental</option>
+          </select>
         </div>
         <div className="empty" />
+      </div>
+      <div className="inputs">
+        <div>
+          <label>Purpose of the token</label>
+          <textarea
+            value={form.description}
+            onChange={(e) => setForm({ ...form, description: e.target.value })}
+            maxLength={140}
+            readOnly={readOnly}
+          />
+        </div>
       </div>
       <p>Set Expiry (UTC)</p>
       <div className="inputs">

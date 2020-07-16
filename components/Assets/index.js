@@ -23,7 +23,7 @@ export default connect((state) => state)(function ({ children, data, loadMore, o
       addresses: { getName },
       FRight: { isFrozen, isUnfreezable, isIMintable, metadata },
       IRight: { metadata: iMetadata },
-      RightsDao: { currentFVersion, currentIVersion },
+      // RightsDao: { currentFVersion, currentIVersion },
     },
   } = props
   const [item, setItem] = useState(null)
@@ -35,7 +35,7 @@ export default connect((state) => state)(function ({ children, data, loadMore, o
       token_id: tokenId,
       asset_contract: { address },
     } = item
-    setItem(item)
+    // setItem(item)
     setLoading(true)
 
     const type = getName(address)
@@ -55,8 +55,8 @@ export default connect((state) => state)(function ({ children, data, loadMore, o
         })
         break
       default:
-        Promise.all([isFrozen(address, tokenId), currentFVersion(), currentIVersion()]).then(
-          ([isFrozen, fVersion, iVersion]) => {
+        Promise.all([isFrozen(address, tokenId)/*, currentFVersion(), currentIVersion()*/]).then(
+          ([isFrozen, fVersion = 1, iVersion = 1]) => {
             setItem({ ...item, isFrozen, fVersion, iVersion })
             setLoading(false)
           }

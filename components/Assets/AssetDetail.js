@@ -327,7 +327,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
     address: owner,
     methods: {
       NFT: { approve },
-      RightsDao: { freeze, issueUnencumberedI, unfreeze, issueI, revokeI },
+      RightsDao: { freeze /*, issueUnencumberedI*/, unfreeze, issueI, revokeI },
       IRight: { transfer },
     },
     addresses: { RightsDao: approveAddress },
@@ -360,7 +360,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
 
   const handleTransaction = ({ send }, [origin, ...args]) => {
     const isFunc = typeof intlTx[name] === 'function'
-    const name = freezeForm && !freezeForm.isExclusive && origin === 'freeze' ? 'issueUnencumberedI' : origin
+    const name = freezeForm && !freezeForm.isExclusive && origin === 'freeze' ? 'issueI' : origin
     setTxInfo(isFunc ? intlTx[name](...args) : intlTx[name])
     setTxHash('')
     setTxStatus('Waiting for sign transaction...')
@@ -420,7 +420,16 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
     if (freezeForm.isExclusive && availables.approve !== 0) return
     if (isValid) {
       setAvailables({ ...availables, freeze: 0 })
-      const { expiryDate, expiryTime, isExclusive, maxISupply, purpose, imageUrl, termsUrl = 'none' } = freezeForm
+      const {
+        expiryDate,
+        expiryTime,
+        isExclusive,
+        maxISupply,
+        purpose,
+        description,
+        imageUrl,
+        termsUrl = 'none',
+      } = freezeForm
       const [year, month, day] = expiryDate.split('-')
       const expiry = parseInt(new Date(Date.UTC(year, month - 1, day, ...expiryTime.split(':'))).getTime() / 1000)
       transansactions.push([
@@ -431,15 +440,15 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
               tokenId,
               expiry,
               [isExclusive ? 1 : maxISupply, F_VERSION, I_VERSION],
-              [purpose, imageUrl.replace(/\//g, '|'), termsUrl.replace(/\//g, '|')],
+              [purpose, imageUrl.replace(/\//g, '|'), termsUrl.replace(/\//g, '|'), description],
               {
                 from: owner,
               }
             )
-          : issueUnencumberedI(
+          : issueI(
               address,
-              [tokenId, expiry, I_VERSION],
-              [purpose, imageUrl.replace(/\//g, '|'), termsUrl.replace(/\//g, '|')],
+              [tokenId, expiry, F_VERSION, I_VERSION],
+              [purpose, imageUrl.replace(/\//g, '|'), termsUrl.replace(/\//g, '|'), description],
               {
                 from: owner,
               }
@@ -596,7 +605,8 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
         isExclusive: false,
         maxISupply: 1,
         circulatingISupply: 1,
-        purpose: '',
+        purpose: 'Rental',
+        description: '',
         imageUrl: Templates[0],
         termsUrl: '',
       })
@@ -604,13 +614,15 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
       // handleTransaction(approve(address)(approveAddress, tokenId, { from: owner }), ['approve'])
       //   .then(() => {
       //     const date = new Date(Date.now() + 1000 * 3600 * 24)
+      //     setAvailables({ ...availables, approve: 1 })
       //     handleFreezeForm({
       //       expiryDate: date.toISOString().split('T')[0],
       //       expiryTime: date.toISOString().split('T')[1].substr(0, 5),
-      //       isExclusive: true,
+      //       isExclusive: false,
       //       maxISupply: 1,
       //       circulatingISupply: 1,
-      //       purpose: '',
+      //       purpose: 'Rental',
+      //       description: '',
       //       imageUrl: Templates[0],
       //       termsUrl: '',
       //     })
@@ -628,7 +640,16 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
       return setErrors(errors)
     }
 
-    const { expiryDate, expiryTime, isExclusive, maxISupply, purpose, imageUrl: originImage, termsUrl } = freezeForm
+    const {
+      expiryDate,
+      expiryTime,
+      isExclusive,
+      maxISupply,
+      purpose,
+      description,
+      imageUrl: originImage,
+      termsUrl,
+    } = freezeForm
     const [year, month, day] = expiryDate.split('-')
     const expiry = parseInt(new Date(Date.UTC(year, month - 1, day, ...expiryTime.split(':'))).getTime() / 1000)
     tinyURL(originImage)
@@ -641,15 +662,15 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                 tokenId,
                 expiry,
                 [isExclusive ? 1 : maxISupply, F_VERSION, I_VERSION],
-                [purpose, imageUrl.replace(/\//g, '|'), termsUrl.replace(/\//g, '|')],
+                [purpose, imageUrl.replace(/\//g, '|'), termsUrl.replace(/\//g, '|'), description],
                 {
                   from: owner,
                 }
               )
-            : issueUnencumberedI(
+            : issueI(
                 address,
-                [tokenId, expiry, I_VERSION],
-                [purpose, imageUrl.replace(/\//g, '|'), termsUrl.replace(/\//g, '|')],
+                [tokenId, expiry, F_VERSION, I_VERSION],
+                [purpose, imageUrl.replace(/\//g, '|'), termsUrl.replace(/\//g, '|'), description],
                 {
                   from: owner,
                 }
@@ -831,27 +852,37 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                       {isFrozen === false &&
                         freezeForm &&
                         WithToolTip(
-                          freezeForm.isExclusive && availables['approve'] !== 0 ? (
-                            <button
-                              onClick={handleApprove}
-                              data-for="approve"
-                              data-tip={tooltips(availables['approve'])}
-                            >
-                              {intl.approve}
-                              {status && status.start === 'approve' && <img src="/spinner.svg" />}
-                            </button>
-                          ) : (
-                            <button
-                              disabled={!!status || availables['freeze'] === -1}
-                              onClick={handleFreeze}
-                              data-for="freeze"
-                              data-tip={tooltips(availables['freeze'])}
-                            >
-                              {intl.submit}
-                              {status && status.start === 'freeze' && <img src="/spinner.svg" />}
-                            </button>
-                          ),
+                          <button
+                            disabled={!!status || availables['freeze'] === -1}
+                            onClick={handleFreeze}
+                            data-for="freeze"
+                            data-tip={tooltips(availables['freeze'])}
+                          >
+                            {intl.submit}
+                            {status && status.start === 'freeze' && <img src="/spinner.svg" />}
+                          </button>,
                           freezeForm.isExclusive && availables['approve'] !== 0 ? 'approve' : 'freeze'
+                          // freezeForm.isExclusive && availables['approve'] !== 0 ? (
+                          //   <button
+                          //     onClick={handleApprove}
+                          //     data-for="approve"
+                          //     data-tip={tooltips(availables['approve'])}
+                          //   >
+                          //     {intl.approve}
+                          //     {status && status.start === 'approve' && <img src="/spinner.svg" />}
+                          //   </button>
+                          // ) : (
+                          //   <button
+                          //     disabled={!!status || availables['freeze'] === -1}
+                          //     onClick={handleFreeze}
+                          //     data-for="freeze"
+                          //     data-tip={tooltips(availables['freeze'])}
+                          //   >
+                          //     {intl.submit}
+                          //     {status && status.start === 'freeze' && <img src="/spinner.svg" />}
+                          //   </button>
+                          // ),
+                          // freezeForm.isExclusive && availables['approve'] !== 0 ? 'approve' : 'freeze'
                         )}
                       {isUnfreezable &&
                         WithToolTip(

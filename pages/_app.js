@@ -55,6 +55,7 @@ class RightshareApp extends App {
     const fortmatic = new Fortmatic(FORTMATIC_API_KEY)
     this.setState({ fortmatic }, async () => {
       if (window.ethereum) {
+        ethereum.autoRefreshOnNetworkChange = false
         window.web3 = new Web3(window.ethereum)
         if (ethereum._metamask.isEnabled() && (await ethereum._metamask.isUnlocked())) {
           this.initMetamask()
@@ -143,9 +144,9 @@ class RightshareApp extends App {
               RightsDao: '0x986179DfeCE47344F80e7b9B603914AaCC750493',
             }
           : {
-              FRight: '0xc2E808e423300B4acb346c67ecd694a9Deff4197',
-              IRight: '0xa9E9E44EFFA9f9b616bec4A451d791a58A675212',
-              RightsDao: '0xd2bF9083591f328EcD1bcB2698B3610714E3f415',
+              FRight: '0x3B7719c2c3c3A6de5CC4711415B656bCDC0A4434',
+              IRight: '0x63A52a41df33A40d5E39d6cEB4EEBD1d47ACc1b3',
+              RightsDao: '0xf61a634C4a8f1778A06202F6a1E5751ED0fBCdEa',
             },
       })
       store.dispatch({
@@ -176,11 +177,9 @@ class RightshareApp extends App {
   getBalance() {
     const { address, balance: origin } = this.state
     if (address) {
-      web3.eth.getBalance(address, (err, res) => {
-        if (!err) {
-          const balance = Number(web3.utils.fromWei(res))
-          if (origin !== balance) this.saveMetamask({ balance })
-        }
+      web3.eth.getBalance(address).then((res) => {
+        const balance = Number(web3.utils.fromWei(res))
+        if (origin !== balance) this.saveMetamask({ balance })
       })
     }
   }
