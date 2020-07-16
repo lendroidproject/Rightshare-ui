@@ -652,6 +652,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
     } = freezeForm
     const [year, month, day] = expiryDate.split('-')
     const expiry = parseInt(new Date(Date.UTC(year, month - 1, day, ...expiryTime.split(':'))).getTime() / 1000)
+
     tinyURL(originImage)
       .then((imageUrl) => {
         setStatus({ start: 'freeze' })
@@ -662,7 +663,12 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                 tokenId,
                 expiry,
                 [isExclusive ? 1 : maxISupply, F_VERSION, I_VERSION],
-                [purpose, description, imageUrl.replace(/\//g, '|'), termsUrl.replace(/\//g, '|')],
+                [
+                  purpose,
+                  description || 'none',
+                  imageUrl.replace(/\//g, '|'),
+                  (termsUrl || 'none').replace(/\//g, '|'),
+                ],
                 {
                   from: owner,
                 }
@@ -670,7 +676,12 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
             : issueI(
                 address,
                 [tokenId, 0, expiry, I_VERSION],
-                [purpose, description, imageUrl.replace(/\//g, '|'), termsUrl.replace(/\//g, '|')],
+                [
+                  purpose,
+                  description || 'none',
+                  imageUrl.replace(/\//g, '|'),
+                  (termsUrl || 'none').replace(/\//g, '|'),
+                ],
                 {
                   from: owner,
                 }
