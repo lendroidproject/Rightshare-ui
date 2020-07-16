@@ -440,7 +440,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
               tokenId,
               expiry,
               [isExclusive ? 1 : maxISupply, F_VERSION, I_VERSION],
-              [purpose, imageUrl.replace(/\//g, '|'), termsUrl.replace(/\//g, '|'), description],
+              [purpose, description, imageUrl.replace(/\//g, '|'), termsUrl.replace(/\//g, '|')],
               {
                 from: owner,
               }
@@ -448,7 +448,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
           : issueI(
               address,
               [tokenId, 0, expiry, I_VERSION],
-              [purpose, imageUrl.replace(/\//g, '|'), termsUrl.replace(/\//g, '|'), description],
+              [purpose, description, imageUrl.replace(/\//g, '|'), termsUrl.replace(/\//g, '|')],
               {
                 from: owner,
               }
@@ -662,7 +662,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                 tokenId,
                 expiry,
                 [isExclusive ? 1 : maxISupply, F_VERSION, I_VERSION],
-                [purpose, imageUrl.replace(/\//g, '|'), termsUrl.replace(/\//g, '|'), description],
+                [purpose, description, imageUrl.replace(/\//g, '|'), termsUrl.replace(/\//g, '|')],
                 {
                   from: owner,
                 }
@@ -670,7 +670,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
             : issueI(
                 address,
                 [tokenId, 0, expiry, I_VERSION],
-                [purpose, imageUrl.replace(/\//g, '|'), termsUrl.replace(/\//g, '|'), description],
+                [purpose, description, imageUrl.replace(/\//g, '|'), termsUrl.replace(/\//g, '|')],
                 {
                   from: owner,
                 }
