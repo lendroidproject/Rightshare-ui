@@ -1,5 +1,6 @@
 import styled from 'styled-components'
-import { intlForm } from '~utils/translation'
+// import { intlForm } from '~utils/translation'
+import LimitedText from '~/components/common/LimitedText'
 
 export const Form = styled.form`
   > p {
@@ -72,7 +73,8 @@ export const Form = styled.form`
 
     input,
     textarea,
-    select {
+    select,
+    .input {
       width: 100%;
       font-size: 14px;
       padding: 5px 10px;
@@ -170,11 +172,12 @@ export default ({ lang, form, setForm, readOnly, children, errors }) => {
       <div className="inputs">
         <div>
           <label>Purpose of the token</label>
-          <textarea
+          <LimitedText
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
-            maxLength={140}
-            readOnly={readOnly}
+            max={32}
+            warn={8}
+            exceed={10}
           />
         </div>
       </div>
