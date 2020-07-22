@@ -13,6 +13,10 @@ export const Form = styled.form`
     font-size: 12px;
     margin-bottom: 8px;
     display: block;
+
+    span {
+      font-size: 90%;
+    }
   }
 
   .radio label {
@@ -171,7 +175,9 @@ export default ({ lang, form, setForm, readOnly, children, errors }) => {
       </div>
       <div className="inputs">
         <div>
-          <label>Purpose of the token</label>
+          <label>
+            Purpose of the token <span>(Max 32 characters)</span>
+          </label>
           <LimitedText
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
