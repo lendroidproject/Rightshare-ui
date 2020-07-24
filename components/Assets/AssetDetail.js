@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import ReactTooltip from 'react-tooltip'
+import dayjs from 'dayjs'
 
 import { intlActions, intlTransactions } from '~utils/translation'
 import { validate } from '~utils/validation'
@@ -98,6 +99,23 @@ export const ItemDetail = styled(FlexInline)`
         top: 22.5%;
         height: 41%;
         border-radius: 4px;
+      }
+
+      .metadata {
+        position: absolute;
+        bottom: 6.5%;
+        height: 11%;
+        left: 10%;
+        right: 10%;
+        font-size: xx-small;
+        letter-spacing: -0.2px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-family: courier;
+        white-space: nowrap;
+        font-weight: 900;
       }
     }
   }
@@ -295,7 +313,7 @@ const Template = styled.div`
   }
 `
 
-const transformUTC = (time) => {
+const transformUTC = (time, isDate = false) => {
   const date = new Date(time)
   const dateUTC = Date.UTC(
     date.getFullYear(),
@@ -305,7 +323,11 @@ const transformUTC = (time) => {
     date.getMinutes(),
     date.getSeconds()
   )
-  return new Date(dateUTC).toISOString()
+  return isDate ? new Date(dateUTC) : new Date(dateUTC).toISOString()
+}
+
+const transformUTCfromString = (date, time) => {
+  return dayjs(`${date}T${time}:00`)
 }
 
 const transformFreeze = ({ expiry, endTime, isExclusive, maxISupply, circulatingISupply, serialNumber }) => ({
@@ -440,19 +462,14 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
               tokenId,
               expiry,
               [isExclusive ? 1 : maxISupply, F_VERSION, I_VERSION],
-              [purpose, description, imageUrl.replace(/\//g, '|'), termsUrl.replace(/\//g, '|')],
+              [purpose, description, imageUrl, termsUrl],
               {
                 from: owner,
               }
             )
-          : issueI(
-              address,
-              [tokenId, 0, expiry, I_VERSION],
-              [purpose, description, imageUrl.replace(/\//g, '|'), termsUrl.replace(/\//g, '|')],
-              {
-                from: owner,
-              }
-            ),
+          : issueI(address, [tokenId, 0, expiry, I_VERSION], [purpose, description, imageUrl, termsUrl], {
+              from: owner,
+            }),
       ])
       setTxErrors({ ...txErrors, global: '' })
       Promise.all(transansactions.map(handleEstimate))
@@ -663,12 +680,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                 tokenId,
                 expiry,
                 [isExclusive ? 1 : maxISupply, F_VERSION, I_VERSION],
-                [
-                  purpose,
-                  description || 'none',
-                  imageUrl.replace(/\//g, '|'),
-                  (termsUrl || 'none').replace(/\//g, '|'),
-                ],
+                [purpose, description || 'none', imageUrl, termsUrl || 'none'],
                 {
                   from: owner,
                 }
@@ -676,12 +688,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
             : issueI(
                 address,
                 [tokenId, 0, expiry, I_VERSION],
-                [
-                  purpose,
-                  description || 'none',
-                  imageUrl.replace(/\//g, '|'),
-                  (termsUrl || 'none').replace(/\//g, '|'),
-                ],
+                [purpose, description || 'none', imageUrl, termsUrl || 'none'],
                 {
                   from: owner,
                 }
@@ -799,6 +806,10 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                     }}
                     className="origin"
                   />
+                  <div className="metadata">
+                    <span>{freezeForm.purpose}</span>
+                    <span>Expires on {transformUTCfromString(freezeForm.expiryDate, freezeForm.expiryTime).format('DD MMM YY, HH:mm')} UTC</span>
+                  </div>
                 </div>
               ) : (
                 <img
