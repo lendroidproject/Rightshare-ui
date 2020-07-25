@@ -13,6 +13,7 @@ import withRedux from 'next-redux-wrapper'
 import configureStore from '~store'
 
 import Layout from '~layouts'
+import 'react-responsive-carousel/lib/styles/carousel.min.css'
 
 const MAIN_NETWORK = process.env.MAIN_NETWORK
 const OPENSEA_API_KEY = process.env.OPENSEA_API_KEY
@@ -144,9 +145,9 @@ class RightshareApp extends App {
               RightsDao: '0x3B0841ab834052f3DBd21a537f7886388d09A114',
             }
           : {
-              FRight: '0x45D14BF75bf8FaCe9f2DD8B145b09C5c6781aDD5',
-              IRight: '0x5f74a186ff88F0D8CBaeEA7A79470a99e8B15b1e',
-              RightsDao: '0x53a133EABab0220E5f06d59918796626Ab325043',
+              FRight: '0x76e78270d2117689864Bb5f94DAD7192BCd42298',
+              IRight: '0x006fE254Ee6c7D0565c5D688D9485699a715C8AA',
+              RightsDao: '0x0dF99b67006cbDF410F88E652C0DFF625Ee65cb1',
             },
       })
       store.dispatch({
@@ -208,6 +209,11 @@ class RightshareApp extends App {
             />
           )}
           <link href="https://necolas.github.io/normalize.css/latest/normalize.css" rel="stylesheet" type="text/css" />
+          <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css"
+            rel="stylesheet"
+            type="text/css"
+          />
           <link href="/fonts/avenir-lt-std/style.css" rel="stylesheet" type="text/css" />
           <style
             dangerouslySetInnerHTML={{

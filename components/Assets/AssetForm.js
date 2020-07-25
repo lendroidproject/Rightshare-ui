@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import styled from 'styled-components'
 // import { intlForm } from '~utils/translation'
 import LimitedText from '~/components/common/LimitedText'
@@ -7,6 +8,14 @@ export const Form = styled.form`
     margin: 4px 0;
     font-size: 15px;
     font-weight: 600;
+  }
+
+  .trash {
+    position: absolute;
+    font-size: 16px;
+    right: 0;
+    color: #c80e68;
+    cursor: pointer;
   }
 
   label {
@@ -155,19 +164,37 @@ export const Templates = [
   // 'https://tinyurl.com/rs-template-04',
 ]
 
-export default ({ lang, form, setForm, readOnly, children, errors }) => {
+export default ({
+  lang,
+  form,
+  setForm,
+  active,
+  metaTokens,
+  setMetaTokens,
+  onNewMeta,
+  onRemove,
+  readOnly,
+  children,
+  errors,
+}) => {
   // const intl = intlForm(lang)
+
+  const { purpose = 'Rental', description = '', imageUrl = '', termsUrl = '' } = metaTokens[active] || {}
+  const handleMeta = (updates) => {
+    if (metaTokens[active])
+      setMetaTokens(metaTokens.map((meta, idx) => (active === idx ? { ...meta, ...updates } : meta)))
+    else onNewMeta()
+  }
 
   return (
     <Form onSubmit={(e) => e.preventDefault()}>
+      {metaTokens.length > 1 && metaTokens[active] && (
+        <i className="trash fa fa-trash-alt" aria-hidden="true" onClick={onRemove} />
+      )}
       <div className="inputs">
         <div>
           <label>Purpose of the token</label>
-          <select
-            value={form.purpose}
-            onChange={(e) => setForm({ ...form, purpose: e.target.value })}
-            readOnly={readOnly}
-          >
+          <select value={purpose} onChange={(e) => handleMeta({ purpose: e.target.value })} readOnly={readOnly}>
             <option value="Rental">Rental</option>
           </select>
         </div>
@@ -179,8 +206,8 @@ export default ({ lang, form, setForm, readOnly, children, errors }) => {
             Purpose of the token <span>(Max 32 characters)</span>
           </label>
           <LimitedText
-            value={form.description}
-            onChange={(e) => setForm({ ...form, description: e.target.value })}
+            value={description}
+            onChange={(e) => handleMeta({ description: e.target.value })}
             max={32}
             warn={8}
             exceed={10}
@@ -214,8 +241,8 @@ export default ({ lang, form, setForm, readOnly, children, errors }) => {
           {Templates.map((url) => (
             <div
               key={url}
-              className={`frame ${form.imageUrl === url ? 'active' : ''}`}
-              onClick={() => setForm({ ...form, imageUrl: url })}
+              className={`frame ${imageUrl === url ? 'active' : ''}`}
+              onClick={() => handleMeta({ imageUrl: url })}
             >
               <img src={url} />
             </div>
@@ -233,8 +260,8 @@ export default ({ lang, form, setForm, readOnly, children, errors }) => {
         <div>
           <input
             placeholder="Paste the URL of your image here"
-            value={form.imageUrl}
-            onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
+            value={imageUrl}
+            onChange={(e) => handleMeta({ imageUrl: e.target.value })}
             readOnly={readOnly}
           />
         </div>
@@ -280,8 +307,8 @@ export default ({ lang, form, setForm, readOnly, children, errors }) => {
         <div>
           <label>Terms URL (Optional)</label>
           <input
-            value={form.termsUrl}
-            onChange={(e) => setForm({ ...form, termsUrl: e.target.value })}
+            value={termsUrl}
+            onChange={(e) => handleMeta({ termsUrl: e.target.value })}
             readOnly={readOnly}
             className={errors.termsUrl ? 'error' : ''}
           />

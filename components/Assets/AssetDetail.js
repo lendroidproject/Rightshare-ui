@@ -13,6 +13,8 @@ import AssetForm, { Templates } from './AssetForm'
 import AssetMetaData from './AssetMetaData'
 import TransferForm from './TransferForm'
 
+import { Carousel } from 'react-responsive-carousel'
+
 const MAIN_NETWORK = process.env.MAIN_NETWORK
 const ETHERSCAN = MAIN_NETWORK ? 'https://etherscan.io/tx/' : 'https://rinkeby.etherscan.io/tx/'
 
@@ -87,18 +89,34 @@ export const ItemDetail = styled(FlexInline)`
       padding: 8px;
     }
 
+    .carousel-root {
+      width: 213px;
+      height: 281px;
+      margin: auto;
+    }
+
+    .carousel .thumbs {
+      padding-left: 0;
+    }
+
+    .carousel .thumb {
+      width: 51px;
+      padding: 0;
+    }
+
     .template {
       position: relative;
-      height: 281px;
-      min-width: 213px;
+      max-width: 213px;
+      cursor: pointer;
+      display: flex;
 
       .origin {
         position: absolute;
-        left: 23%;
+        left: 23.5%;
         width: 55%;
-        top: 22.5%;
-        height: 41%;
-        border-radius: 4px;
+        top: 23.5%;
+        height: 42%;
+        border-radius: 5px;
       }
 
       .metadata {
@@ -118,6 +136,11 @@ export const ItemDetail = styled(FlexInline)`
         font-weight: 900;
       }
     }
+
+    .carousel .slide {
+      width: auto;
+      background: transparent;
+    }
   }
 
   .external {
@@ -126,6 +149,51 @@ export const ItemDetail = styled(FlexInline)`
     align-items: center;
     overflow: hidden;
     padding: 0;
+
+    &.freeze {
+      flex-direction: column;
+
+      .previews {
+        margin: 20px -3px 10px;
+
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+
+        .template {
+          max-width: 51px;
+          margin: 3px;
+
+          border: 3px solid transparent;
+          border-radius: 3px;
+          padding: 3px;
+
+          &.active {
+            border-color: #232160;
+          }
+
+          .origin {
+            border-radius: 2px;
+          }
+
+          .metadata {
+            font-size: 2px;
+          }
+
+          .close {
+            width: 15px;
+            position: absolute;
+            left: 50%;
+            top: 44%;
+            transform: translate(-50%, -50%) rotate(45deg);
+          }
+
+          &.new:hover {
+            filter: invert(0.3);
+          }
+        }
+      }
+    }
 
     img.image {
       height: auto;
@@ -357,6 +425,8 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
 
   const [availables, setAvailables] = useState({})
   const [originFreezeForm, setFreezeForm] = useState(null)
+  const [active, setActive] = useState(0)
+  const [metaTokens, setMetaTokens] = useState([])
   const [transferForm, setTransferForm] = useState(null)
   const [status, setStatus] = useState(null)
   const [errors, setErrors] = useState({})
@@ -364,21 +434,6 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
   const [txHash, setTxHash] = useState('')
   const [txStatus, setTxStatus] = useState('')
   const [txErrors, setTxErrors] = useState({})
-
-  const handleFreezeForm = (form) => {
-    if (Object.keys(errors).length) {
-      setErrors({})
-    }
-    setFreezeForm(form)
-    estimateFreeze(form)
-  }
-  const handleTransferForm = (form) => {
-    if (Object.keys(errors).length) {
-      setErrors({})
-    }
-    setTransferForm(form)
-    estimateTransfer(form)
-  }
 
   const handleTransaction = ({ send }, [origin, ...args]) => {
     const isFunc = typeof intlTx[name] === 'function'
@@ -433,8 +488,24 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
         setTxErrors({ ...txErrors, global: (err && err.message) || 'Something went wrong' })
       })
   }
-  const estimateFreeze = (freezeForm) => {
-    if (!freezeForm) return
+
+  const handleFreezeForm = (form, init) => {
+    if (Object.keys(errors).length) {
+      setErrors({})
+    }
+    setFreezeForm(form)
+    if (form) {
+      init && setMetaTokens(init)
+    } else {
+      setMetaTokens([])
+    }
+  }
+  useEffect(() => {
+    estimateFreeze()
+  }, [freezeForm, metaTokens])
+  const estimateFreeze = () => {
+    if (!freezeForm || !metaTokens.length) return
+
     const transansactions = []
     const validations = ['expiryDate', 'expiryTime', 'maxISupply']
     const [isValid] = validate(freezeForm, validations)
@@ -442,34 +513,27 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
     if (freezeForm.isExclusive && availables.approve !== 0) return
     if (isValid) {
       setAvailables({ ...availables, freeze: 0 })
-      const {
-        expiryDate,
-        expiryTime,
-        isExclusive,
-        maxISupply,
-        purpose,
-        description,
-        imageUrl,
-        termsUrl = 'none',
-      } = freezeForm
-      const [year, month, day] = expiryDate.split('-')
-      const expiry = parseInt(new Date(Date.UTC(year, month - 1, day, ...expiryTime.split(':'))).getTime() / 1000)
+      const { expiryDate, expiryTime, isExclusive, maxISupply } = freezeForm
+      const expiry = parseInt(transformUTC(`${expiryDate}T${expiryTime}:00`, true).getTime() / 1000)
       transansactions.push([
         'freeze',
         isExclusive
-          ? freeze(
+          ? freeze(address, tokenId, expiry, [isExclusive ? 1 : maxISupply, F_VERSION, I_VERSION], metaTokens, {
+              from: owner,
+            })
+          : issueI(
               address,
-              tokenId,
-              expiry,
-              [isExclusive ? 1 : maxISupply, F_VERSION, I_VERSION],
-              [purpose, description, imageUrl, termsUrl],
+              [tokenId, 0, expiry, I_VERSION],
+              metaTokens.map(({ purpose, description, imageUrl, termsUrl = 'none' }) => [
+                purpose,
+                description,
+                imageUrl,
+                termsUrl,
+              ]),
               {
                 from: owner,
               }
-            )
-          : issueI(address, [tokenId, 0, expiry, I_VERSION], [purpose, description, imageUrl, termsUrl], {
-              from: owner,
-            }),
+            ),
       ])
       setTxErrors({ ...txErrors, global: '' })
       Promise.all(transansactions.map(handleEstimate))
@@ -493,7 +557,16 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
         })
     }
   }
-  const estimateTransfer = (transferForm) => {
+  const handleTransferForm = (form) => {
+    if (Object.keys(errors).length) {
+      setErrors({})
+    }
+    setTransferForm(form)
+  }
+  useEffect(() => {
+    estimateTransfer()
+  }, [transferForm])
+  const estimateTransfer = () => {
     if (!transferForm) return
     setAvailables({ ...availables, transfer: 0 })
     const transansactions = []
@@ -612,21 +685,35 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
         setStatus(null)
       })
   }
-  const handleFreeze = (e) => {
-    e && e.preventDefault()
-    if (!freezeForm) {
-      const date = new Date(Date.now() + 1000 * 3600 * 24)
-      handleFreezeForm({
-        expiryDate: date.toISOString().split('T')[0],
-        expiryTime: date.toISOString().split('T')[1].substr(0, 5),
-        isExclusive: false,
-        maxISupply: 1,
-        circulatingISupply: 1,
+  const handleNewMeta = () => {
+    setMetaTokens([
+      ...metaTokens,
+      {
         purpose: 'Rental',
         description: '',
         imageUrl: Templates[0],
         termsUrl: '',
-      })
+      },
+    ])
+    setActive(metaTokens.length)
+  }
+  const handleRemoveMeta = () => {
+    setMetaTokens(metaTokens.filter((_, idx) => idx !== active))
+  }
+  const handleFreeze = (e) => {
+    e && e.preventDefault()
+    if (!freezeForm) {
+      const date = new Date(Date.now() + 1000 * 3600 * 24)
+      handleFreezeForm(
+        {
+          expiryDate: date.toISOString().split('T')[0],
+          expiryTime: date.toISOString().split('T')[1].substr(0, 5),
+          isExclusive: false,
+          maxISupply: 1,
+          circulatingISupply: 1,
+        },
+        [{ purpose: 'Rental', description: '', imageUrl: Templates[0], termsUrl: '' }]
+      )
       // setStatus({ start: 'approve' })
       // handleTransaction(approve(address)(approveAddress, tokenId, { from: owner }), ['approve'])
       //   .then(() => {
@@ -662,16 +749,12 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
       expiryTime,
       isExclusive,
       maxISupply,
-      purpose,
-      description,
-      imageUrl: originImage,
-      termsUrl,
     } = freezeForm
     const [year, month, day] = expiryDate.split('-')
     const expiry = parseInt(new Date(Date.UTC(year, month - 1, day, ...expiryTime.split(':'))).getTime() / 1000)
 
-    tinyURL(originImage)
-      .then((imageUrl) => {
+    Promise.all(metaTokens.map(({ imageUrl }) => tinyURL(imageUrl)))
+      .then((imageUrls) => {
         setStatus({ start: 'freeze' })
         handleTransaction(
           isExclusive
@@ -680,7 +763,12 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                 tokenId,
                 expiry,
                 [isExclusive ? 1 : maxISupply, F_VERSION, I_VERSION],
-                [purpose, description || 'none', imageUrl, termsUrl || 'none'],
+                metaTokens.map(({ purpose, description = 'none', termsUrl = 'none' }, idx) => [
+                  purpose,
+                  description,
+                  imageUrls[idx],
+                  termsUrl,
+                ]),
                 {
                   from: owner,
                 }
@@ -688,7 +776,12 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
             : issueI(
                 address,
                 [tokenId, 0, expiry, I_VERSION],
-                [purpose, description || 'none', imageUrl, termsUrl || 'none'],
+                metaTokens.map(({ purpose, description = 'none', termsUrl = 'none' }, idx) => [
+                  purpose,
+                  description,
+                  imageUrls[idx],
+                  termsUrl,
+                ]),
                 {
                   from: owner,
                 }
@@ -778,8 +871,8 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
   const onFreeze = !type && freezeForm && !loading
 
   return (
-    <ItemOverlay onClick={handleClose}>
-      <Wrapper>
+    <ItemOverlay onMouseDown={handleClose}>
+      <Wrapper onMouseDown={(e) => e.stopPropagation()}>
         <div className="heading">
           <p>
             {assetName}
@@ -788,30 +881,84 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
           </p>
           <Close onClick={handleClose} />
         </div>
-        <ItemDetail onClick={(e) => e.stopPropagation()}>
+        <ItemDetail>
           <div className="item-view">
-            <a href={permalink} className="external" target="_blank">
-              {onFreeze ? (
-                <div className="template">
-                  <img src={freezeForm.imageUrl} className="image" />
-                  <img
-                    src={
-                      infoImage || image
-                        ? infoImage || image
-                        : `https://via.placeholder.com/512/FFFFFF/000000?text=%23${tokenId}`
-                    }
-                    alt={infoName || name}
-                    style={{
-                      background: infoBack || background ? `#${infoBack || background}` : '#f3f3f3',
-                    }}
-                    className="origin"
-                  />
-                  <div className="metadata">
-                    <span>{freezeForm.purpose}</span>
-                    <span>Expires on {transformUTCfromString(freezeForm.expiryDate, freezeForm.expiryTime).format('DD MMM YY, HH:mm')} UTC</span>
+            {onFreeze ? (
+              <div className="external freeze">
+                <Carousel
+                  showThumbs={false}
+                  emulateTouch
+                  selectedItem={active}
+                  onChange={(active) => setActive(active)}
+                >
+                  {metaTokens.map((metaToken) => (
+                    <div className="template">
+                      <img src={metaToken.imageUrl} className="image" />
+                      <img
+                        src={
+                          infoImage || image
+                            ? infoImage || image
+                            : `https://via.placeholder.com/512/FFFFFF/000000?text=%23${tokenId}`
+                        }
+                        alt={infoName || name}
+                        style={{
+                          background: infoBack || background ? `#${infoBack || background}` : '#f3f3f3',
+                        }}
+                        className="origin"
+                      />
+                      <div className="metadata">
+                        <span>{metaToken.purpose}</span>
+                        <span>
+                          Expires on{' '}
+                          {transformUTCfromString(freezeForm.expiryDate, freezeForm.expiryTime).format(
+                            'DD MMM YY, HH:mm'
+                          )}{' '}
+                          UTC
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                  <div className="template new">
+                    <img src={Templates[0]} className="image" />
+                    <img src="/assets/close.svg" className="close" />
+                  </div>
+                </Carousel>
+                <div className="previews">
+                  {metaTokens.map((metaToken, idx) => (
+                    <div className={`template ${active === idx ? 'active' : ''}`} onClick={() => setActive(idx)}>
+                      <img src={metaToken.imageUrl} className="image" />
+                      <img
+                        src={
+                          infoImage || image
+                            ? infoImage || image
+                            : `https://via.placeholder.com/512/FFFFFF/000000?text=%23${tokenId}`
+                        }
+                        alt={infoName || name}
+                        style={{
+                          background: infoBack || background ? `#${infoBack || background}` : '#f3f3f3',
+                        }}
+                        className="origin"
+                      />
+                      <div className="metadata">
+                        <span>{metaToken.purpose}</span>
+                        <span>
+                          Expires on{' '}
+                          {transformUTCfromString(freezeForm.expiryDate, freezeForm.expiryTime).format(
+                            'DD MMM YY, HH:mm'
+                          )}{' '}
+                          UTC
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                  <div className="template new" onClick={handleNewMeta}>
+                    <img src={Templates[0]} className="image" />
+                    <img src="/assets/close.svg" className="close" />
                   </div>
                 </div>
-              ) : (
+              </div>
+            ) : (
+              <a href={permalink} className="external" target="_blank">
                 <img
                   src={
                     infoImage || image
@@ -824,8 +971,8 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                   }}
                   className="image"
                 />
-              )}
-            </a>
+              </a>
+            )}
             <div className="owner">
               <img src={avatar} alt={userName} />
               Owned by&nbsp;<span>{userName.length > 20 ? `${userName.substr(0, 17)}...` : userName}</span>
@@ -855,6 +1002,12 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                         {...{
                           form: freezeForm,
                           setForm: handleFreezeForm,
+                          active,
+                          setActive,
+                          metaTokens,
+                          setMetaTokens,
+                          onNewMeta: handleNewMeta,
+                          onRemove: handleRemoveMeta,
                         }}
                         errors={errors}
                       />
