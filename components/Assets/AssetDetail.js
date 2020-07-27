@@ -209,16 +209,12 @@ export const ItemDetail = styled(FlexInline)`
             font-size: 2px;
           }
 
-          .close {
-            width: 15px;
-            position: absolute;
-            left: 50%;
-            top: 44%;
-            transform: translate(-50%, -50%) rotate(45deg);
-          }
-
           &.new:hover {
             filter: invert(0.3);
+          }
+
+          img.close {
+            width: 17px;
           }
         }
       }
@@ -228,6 +224,14 @@ export const ItemDetail = styled(FlexInline)`
       height: auto;
       max-height: 281px;
       max-width: 100%;
+    }
+
+    img.close {
+      width: 30px;
+      position: absolute;
+      left: 50%;
+      top: 44%;
+      transform: translate(-50%, -50%) rotate(45deg);
     }
   }
 
