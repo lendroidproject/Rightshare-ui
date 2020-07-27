@@ -183,7 +183,7 @@ export default ({
   const handleMeta = (updates) => {
     if (metaTokens[active])
       setMetaTokens(metaTokens.map((meta, idx) => (active === idx ? { ...meta, ...updates } : meta)))
-    else onNewMeta()
+    else onNewMeta(updates)
   }
 
   return (
@@ -203,7 +203,7 @@ export default ({
       <div className="inputs">
         <div>
           <label>
-            Purpose of the token <span>(Max 32 characters)</span>
+            Description <span>(Max 32 characters)</span>
           </label>
           <LimitedText
             value={description}

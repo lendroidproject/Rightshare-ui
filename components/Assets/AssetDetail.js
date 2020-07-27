@@ -160,13 +160,42 @@ export const ItemDetail = styled(FlexInline)`
         justify-content: center;
         flex-wrap: wrap;
 
-        .template {
+        .preview {
           max-width: 51px;
           margin: 3px;
+          display: flex;
+          cursor: pointer;
 
           border: 3px solid transparent;
           border-radius: 3px;
           padding: 3px;
+
+          position: relative;
+          .trash {
+            display: none;
+            position: absolute;
+            z-index: 1;
+            right: 3px;
+            top: 3px;
+            color: #c80e68;
+            font-size: 10px;
+          }
+
+          &:not(.new):hover {
+            .trash {
+              display: block;
+            }
+
+            &:after {
+              content: '';
+              position: absolute;
+              left: 0;
+              top: 0;
+              right: 0;
+              bottom: 0;
+              background: rgba(255, 255, 255, 0.4);
+            }
+          }
 
           &.active {
             border-color: #232160;
@@ -685,7 +714,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
         setStatus(null)
       })
   }
-  const handleNewMeta = () => {
+  const handleNewMeta = (meta) => {
     setMetaTokens([
       ...metaTokens,
       {
@@ -693,12 +722,13 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
         description: '',
         imageUrl: Templates[0],
         termsUrl: '',
+        ...meta,
       },
     ])
     setActive(metaTokens.length)
   }
-  const handleRemoveMeta = () => {
-    setMetaTokens(metaTokens.filter((_, idx) => idx !== active))
+  const handleRemoveMeta = (index) => {
+    setMetaTokens(metaTokens.filter((_, idx) => idx !== (index || active)))
   }
   const handleFreeze = (e) => {
     e && e.preventDefault()
@@ -744,12 +774,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
       return setErrors(errors)
     }
 
-    const {
-      expiryDate,
-      expiryTime,
-      isExclusive,
-      maxISupply,
-    } = freezeForm
+    const { expiryDate, expiryTime, isExclusive, maxISupply } = freezeForm
     const [year, month, day] = expiryDate.split('-')
     const expiry = parseInt(new Date(Date.UTC(year, month - 1, day, ...expiryTime.split(':'))).getTime() / 1000)
 
@@ -887,6 +912,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
               <div className="external freeze">
                 <Carousel
                   showThumbs={false}
+                  showIndicators={false}
                   emulateTouch
                   selectedItem={active}
                   onChange={(active) => setActive(active)}
@@ -906,16 +932,18 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                         }}
                         className="origin"
                       />
-                      <div className="metadata">
-                        <span>{metaToken.purpose}</span>
-                        <span>
-                          Expires on{' '}
-                          {transformUTCfromString(freezeForm.expiryDate, freezeForm.expiryTime).format(
-                            'DD MMM YY, HH:mm'
-                          )}{' '}
-                          UTC
-                        </span>
-                      </div>
+                      {metaToken.description && (
+                        <div className="metadata">
+                          <span>{metaToken.description}</span>
+                          <span>
+                            Expires on{' '}
+                            {transformUTCfromString(freezeForm.expiryDate, freezeForm.expiryTime).format(
+                              'DD MMM YY, HH:mm'
+                            )}{' '}
+                            UTC
+                          </span>
+                        </div>
+                      )}
                     </div>
                   ))}
                   <div className="template new">
@@ -925,35 +953,47 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                 </Carousel>
                 <div className="previews">
                   {metaTokens.map((metaToken, idx) => (
-                    <div className={`template ${active === idx ? 'active' : ''}`} onClick={() => setActive(idx)}>
-                      <img src={metaToken.imageUrl} className="image" />
-                      <img
-                        src={
-                          infoImage || image
-                            ? infoImage || image
-                            : `https://via.placeholder.com/512/FFFFFF/000000?text=%23${tokenId}`
-                        }
-                        alt={infoName || name}
-                        style={{
-                          background: infoBack || background ? `#${infoBack || background}` : '#f3f3f3',
-                        }}
-                        className="origin"
-                      />
-                      <div className="metadata">
-                        <span>{metaToken.purpose}</span>
-                        <span>
-                          Expires on{' '}
-                          {transformUTCfromString(freezeForm.expiryDate, freezeForm.expiryTime).format(
-                            'DD MMM YY, HH:mm'
-                          )}{' '}
-                          UTC
-                        </span>
+                    <div className={`preview ${active === idx ? 'active' : ''}`} onClick={() => setActive(idx)}>
+                      {metaTokens.length > 1 && (
+                        <i className="trash fa fa-trash-alt" aria-hidden="true" onClick={() => handleRemoveMeta(idx)} />
+                      )}
+                      <div className="template">
+                        <img src={metaToken.imageUrl} className="image" />
+                        <img
+                          src={
+                            infoImage || image
+                              ? infoImage || image
+                              : `https://via.placeholder.com/512/FFFFFF/000000?text=%23${tokenId}`
+                          }
+                          alt={infoName || name}
+                          style={{
+                            background: infoBack || background ? `#${infoBack || background}` : '#f3f3f3',
+                          }}
+                          className="origin"
+                        />
+                        {metaToken.description && (
+                          <div className="metadata">
+                            <span>{metaToken.description}</span>
+                            <span>
+                              Expires on{' '}
+                              {transformUTCfromString(freezeForm.expiryDate, freezeForm.expiryTime).format(
+                                'DD MMM YY, HH:mm'
+                              )}{' '}
+                              UTC
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
-                  <div className="template new" onClick={handleNewMeta}>
-                    <img src={Templates[0]} className="image" />
-                    <img src="/assets/close.svg" className="close" />
+                  <div
+                    className={`preview new ${active === metaTokens.length ? 'active' : ''}`}
+                    onClick={handleNewMeta}
+                  >
+                    <div className="template">
+                      <img src={Templates[0]} className="image" />
+                      <img src="/assets/close.svg" className="close" />
+                    </div>
                   </div>
                 </div>
               </div>
