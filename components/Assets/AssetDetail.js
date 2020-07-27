@@ -107,6 +107,7 @@ export const ItemDetail = styled(FlexInline)`
     .template {
       position: relative;
       max-width: 213px;
+      width: 100%;
       cursor: pointer;
       display: flex;
 
@@ -161,9 +162,12 @@ export const ItemDetail = styled(FlexInline)`
         flex-wrap: wrap;
 
         .preview {
-          max-width: 51px;
+          width: 51px;
+          height: 63.33px;
           margin: 3px;
           display: flex;
+          align-items: center;
+          justify-content: center;
           cursor: pointer;
 
           border: 3px solid transparent;
@@ -214,7 +218,7 @@ export const ItemDetail = styled(FlexInline)`
           }
 
           img.close {
-            width: 17px;
+            width: 30px;
           }
         }
       }
@@ -227,7 +231,7 @@ export const ItemDetail = styled(FlexInline)`
     }
 
     img.close {
-      width: 30px;
+      width: 45px;
       position: absolute;
       left: 50%;
       top: 44%;
@@ -950,7 +954,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                       )}
                     </div>
                   ))}
-                  <div className="template new">
+                  <div className="template new" onClick={() => handleNewMeta()}>
                     <img src={Templates[0]} className="image" />
                     <img src="/assets/close.svg" className="close" />
                   </div>
@@ -990,12 +994,8 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                       </div>
                     </div>
                   ))}
-                  <div
-                    className={`preview new ${active === metaTokens.length ? 'active' : ''}`}
-                    onClick={handleNewMeta}
-                  >
+                  <div className="preview new" onClick={() => handleNewMeta()}>
                     <div className="template">
-                      <img src={Templates[0]} className="image" />
                       <img src="/assets/close.svg" className="close" />
                     </div>
                   </div>
