@@ -58,9 +58,12 @@ export const Info = styled.div`
     font-size: 15px;
     list-style: none;
     padding: 10px 15px;
-    background: url(/bg.jpg);
+
     border-radius: 5px;
     box-shadow: 0 0 5px #cdad72;
+
+    background: #180259;
+    background: linear-gradient(180deg, #180259 0%, #140249 100%);
 
     li {
       margin: 3px 0;

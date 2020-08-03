@@ -2,7 +2,6 @@ import React from 'react'
 import Head from 'next/head'
 import App from 'next/app'
 import ReactGA from 'react-ga'
-import { ThemeProvider } from 'styled-components'
 import RightshareJS from 'rightshare-js'
 
 import Web3 from 'web3'
@@ -19,8 +18,31 @@ const MAIN_NETWORK = process.env.MAIN_NETWORK
 const OPENSEA_API_KEY = process.env.OPENSEA_API_KEY
 const FORTMATIC_API_KEY = process.env.FORTMATIC_API_KEY
 
-const theme = {
-  primary: 'default',
+const themes = {
+  primary: `
+    --color-bg1: #4000B4;
+    --color-grad1: linear-gradient(to bottom, #4000B4 0%, #7E0783 100%);
+    --color-bg2: #180259;
+    --color-grad2: linear-gradient(to bottom, #180259 0%, #140249 100%);
+    --color-bg3: #FF00F1;
+    --color-grad3: linear-gradient(to bottom, #FF00F1 0%, #9700FF 100%);
+    --color-bg4: #18058D;
+    --color-grad4: linear-gradient(to bottom, #18058D 0%, #000000 100%);
+    --color-bg5: #1189FF;
+    --color-grad5: linear-gradient(to bottom, #1189FF 0%, #5704ED 100%);
+    --color-bg6: #00EEAE;
+    --color-grad6: linear-gradient(to bottom, #00EEAE 0%, #00C6D9 100%);
+    --color-bg7: #F900F9;
+    --color-grad7: linear-gradient(to bottom, #F900F9 0%, #890089 100%);
+    --color-text: #FFFFFF;
+    --color-bg: #000000;
+    --color-primary: #9700FF;
+    --color-secondary: #7D0884;
+    --color-highlight: #00FFDF;
+    --color-border: #7E0782;
+    --box-shadow1: inset 3px 3px 4px 0 rgba(0, 0, 0, 0.5);
+    --box-shadow2: inset 0 0 3px 0 #202124, -5px -5px 13px 0 #232239, 6px 6px 13px 0 #121120;
+  `,
 }
 
 class RightshareApp extends App {
@@ -31,6 +53,8 @@ class RightshareApp extends App {
     balanceTimer: null,
     provider: 'metamask',
     fortmatic: null,
+    loading: true,
+    theme: 'primary',
   }
 
   static async getInitialProps({ Component, ctx }) {
@@ -67,6 +91,10 @@ class RightshareApp extends App {
         window.web3 = new Web3(fortmatic.getProvider())
         this.initMetamask()
       }
+    })
+    this.setState({
+      loading: false,
+      theme: localStorage.getItem('theme') || 'primary',
     })
   }
 
@@ -185,10 +213,15 @@ class RightshareApp extends App {
     }
   }
 
+  handleTheme(theme) {
+    localStorage.setItem('theme', theme)
+    this.setState({ theme })
+  }
+
   render() {
     const {
       props: { Component, pageProps, store },
-      state: { provider },
+      state: { provider, theme },
     } = this
 
     return (
@@ -214,46 +247,25 @@ class RightshareApp extends App {
             rel="stylesheet"
             type="text/css"
           />
-          <link href="/fonts/avenir-lt-std/style.css" rel="stylesheet" type="text/css" />
+          <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+            rel="stylesheet"
+          />
           <style
             dangerouslySetInnerHTML={{
               __html: `
+              :root { ${themes[theme]} }
+
               body {
-                display: flex;
+                font-family: 'Poppins', sans-serif;
                 line-height: 1.5;
-                background: url('/bg.jpg');
-                background-color: #c2a061;
-                font-family: "Open Sans", sans-serif;
+                background: var(--color-bg2);
+                background: var(--color-grad2);
+                min-height: 100vh;
               }
 
               body * {
                 box-sizing: border-box;
-              }
-
-              button {
-                border: 0;
-                cursor: pointer;
-                margin-top: 12px;
-                background: #232160;
-                color: white;
-                padding: 15px 20px;
-
-                font-size: 16px;
-                // text-transform: uppercase;
-                border-radius: 8px;
-
-                font-size: 14px;
-                padding: 13px 15px;
-                border-radius: 5px;
-              }
-
-              p {
-                margin: 8px 0;
-              }
-
-              button:disabled {
-                background: #23216099;
-                cursor: not-allowed;
               }
 
               #__next {
@@ -280,13 +292,11 @@ class RightshareApp extends App {
           <meta name="msapplication-TileImage" content="/manifest/ms-icon-144x144.png" />
           <meta name="theme-color" content="#ffffff" />
         </Head>
-        <ThemeProvider theme={theme}>
-          <Provider store={store}>
-            <Layout mainNetwork={MAIN_NETWORK} provider={provider} onProvider={this.handleProvider.bind(this)}>
-              <Component {...pageProps} />
-            </Layout>
-          </Provider>
-        </ThemeProvider>
+        <Provider store={store}>
+          <Layout mainNetwork={MAIN_NETWORK} provider={provider} onProvider={this.handleProvider.bind(this)}>
+            <Component {...pageProps} onTheme={this.handleTheme.bind(this)} />
+          </Layout>
+        </Provider>
       </>
     )
   }

@@ -1,171 +1,113 @@
 import styled from 'styled-components'
 import { connect } from 'react-redux'
 
+import Button from '~components/common/Button'
+import Input from '../components/common/Input'
+
 const Wrapper = styled.div`
-  width: 100%;
+  height: 100vh;
+  max-width: 1440px;
+  margin: auto;
+  color: var(--color-text);
+
+  display: flex;
+  flex-direction: column;
 `
 
 const Account = styled.div`
-  margin: 0;
-  padding: 30px 20px 20px;
-  text-align: center;
-  word-break: break-all;
-  position: relative;
+  padding: 30px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
   .logo {
-    height: 60px;
-    display: block;
-    margin: 0 auto 10px;
-    @media all and (max-width: 767px) {
-      height: 40px;
-      margin-bottom: 0;
-    }
+    height: 45px;
   }
 
-  @media all and (max-width: 767px) {
-    padding: 20px;
-    .account-info {
-      display: none;
+  .account-info {
+    display: flex;
+    align-items: center;
+    margin: 0 -16px;
+
+    > * {
+      margin: 0 16px;
+    }
+
+    .input input {
+      width: 366px;
+      max-width: 100%;
     }
   }
 `
 
 const Content = styled.div`
-  width: 100%;
+  flex: 1;
+  height: 100%;
+  overflow: auto;
 `
 
 const Footer = styled.div`
   display: flex;
-  justify-content: center;
-  margin: 15px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 32px;
+  font-size: 14px;
+
+  .resources {
+    display: flex;
+    margin: 0 -10px;
+  }
 
   a {
     margin: 0 10px;
-    text-decoration: none;
-    color: #232160;
-    display: flex;
-    position: relative;
-
-    img {
-      height: 50px;
-      @media all and (max-width: 767px) {
-        height: 40px;
-      }
-    }
-
-    &.discord:after {
-      content: '';
-      position: absolute;
-      left: 10px;
-      right: 10px;
-      top: 10px;
-      bottom: 10px;
-      background: white;
-      border-radius: 50%;
-      z-index: -1;
-    }
   }
 `
 
-const CopyRight = styled.div`
-  text-align: center;
-  margin-bottom: 20px;
-`
+const Link = styled.a`
+  border-radius: 10px;
+  cursor: pointer;
 
-const Discord = styled.div`
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  z-index: 101;
-  @media all and (max-width: 767px) {
-    bottom: 15px;
-    right: 15px;
-  }
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  box-shadow: var(--box-shadow2);
 
-  a {
-    display: flex;
-
-    img {
-      width: 60px;
-    }
-
-    &:after {
-      content: '';
-      position: absolute;
-      left: 13px;
-      right: 13px;
-      top: 13px;
-      bottom: 15px;
-      background: white;
-      border-radius: 50%;
-      z-index: -1;
-    }
-  }
-`
-
-const AccountProvider = styled.div`
-  position: fixed;
-  display: flex;
+  width: 40px;
   height: 40px;
-  right: 20px;
-  top: 20px;
-  z-index: 9;
-
-  img {
-    height: 100%;
-    margin: 0 10px;
-    cursor: pointer;
-    border-radius: 50%;
-    filter: grayscale(1);
-
-    &.fortmatic {
-      background: #f7f6ff;
-    }
-
-    &.active {
-      filter: grayscale(0);
-    }
-  }
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
 `
 
 export default connect((state) => state)(function ({ provider, onProvider, children, ...props }) {
-  const { address, balance, mainNetwork } = props
+  const { address, mainNetwork } = props
 
   return (
     <Wrapper>
       <Account>
-        <img src={mainNetwork ? '/logo.png' : '/logo_rinkeby.png'} className="logo" />
+        <img src={mainNetwork ? '/meta/logo.svg' : '/meta/logo.svg'} className="logo" />
         <div className="account-info">
-          {address || '---'} <span>:</span> {balance || '0'}
+          <Input className="small" icon={<img src="/meta/eth.png" />} value={address || '---'} disabled />
+          <Button className={`black icon ${provider === 'metamask' ? 'active' : ''}`}>
+            <img src="/meta/Metamask.svg" onClick={() => onProvider('metamask')} />
+          </Button>
+          <Button className={`black icon ${provider === 'fortmatic' ? 'active' : ''}`}>
+            <img src="/meta/fortnite.svg" onClick={() => onProvider('fortmatic')} />
+          </Button>
         </div>
-        <AccountProvider>
-          <img
-            src="/brands/Metamask.svg"
-            className={`metamask ${provider === 'metamask' ? 'active' : ''}`}
-            onClick={() => onProvider('metamask')}
-          />
-          <img
-            src="/brands/Fortmatic.svg"
-            className={`fortmatic ${provider === 'fortmatic' ? 'active' : ''}`}
-            onClick={() => onProvider('fortmatic')}
-          />
-        </AccountProvider>
       </Account>
       <Content>{children}</Content>
       <Footer>
-        <a href="https://github.com/lendroidproject/Rightshare-contracts" target="_blank">
-          <img src="/logos/github.png" />
-        </a>
-        <a href="https://discordapp.com/invite/SyHdEbD" target="_blank" className="discord">
-          <img src="/logos/discord.png" />
-        </a>
+        <div>Copyright © 2020 Rightshare.</div>
+        <div className="resources">
+          <Link href="https://github.com/lendroidproject/Rightshare-contracts" target="_blank">
+            <img src="/meta/github.svg" />
+          </Link>
+          <Link href="https://discordapp.com/invite/SyHdEbD" target="_blank" className="discord">
+            <img src="/meta/discord.svg" />
+          </Link>
+        </div>
       </Footer>
-      <CopyRight>Copyright © 2020 Rightshare.</CopyRight>
-      <Discord>
-        <a href="https://discordapp.com/invite/SyHdEbD" target="_blank">
-          <img src="/discord.svg" />
-        </a>
-      </Discord>
     </Wrapper>
   )
 })

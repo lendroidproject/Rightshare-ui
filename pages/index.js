@@ -1,127 +1,43 @@
 import { useState } from 'react'
 import styled from 'styled-components'
 
-import { FlexCenter } from '~components/common/Wrapper'
+import Button from '~components/common/Button'
 import Parcels from '~components/Parcels'
 import ENSs from '~components/ENSs'
 import NFTs from '~components/NFTs'
 import Intro from '~components/Intro'
 
 const Accordion = styled.div`
-  background: white;
-  min-height: calc(100vh - 278px);
-  width: 90%;
-  max-width: 1200px;
-  margin: 0 auto 25px;
-  border-radius: 5px;
-  overflow: hidden;
-  @media all and (max-width: 767px) {
-    min-height: calc(100vh - 208px);
+  display: flex;
+  height: 100%;
+
+  > div {
+    border-radius: 10px;
   }
 
-  * {
-    color: black;
-
-    button {
-      color: white;
-      position: relative;
-
-      &:disabled img {
-        display: block;
-      }
-
-      img {
-        display: none;
-        position: absolute;
-        height: 100%;
-        top: 0;
-        left: calc(50% - 19px);
-      }
-    }
-  }
-
-  .accordion {
-    background-color: #eee;
-    color: #444;
-    cursor: pointer;
-    padding: 20px;
-    width: 100%;
-    border: none;
-    text-align: left;
-    outline: none;
-    font-size: 15px;
-    transition: 0.4s;
-  }
-
-  > .panel {
-    padding: 10px 20px;
-    background-color: white;
-    position: relative;
-    @media all and (max-width: 767px) {
-      padding: 10px;
-    }
+  .panel {
+    flex: 1;
+    height: 100%;
+    overflow: auto;
+    background: black;
   }
 `
 
-const Tabs = styled(FlexCenter)`
-  border-bottom: 1px solid #eee;
-  position: sticky;
-  top: 0;
-  background: white;
+const Tabs = styled.div`
+  background: #4000b4;
+  background: linear-gradient(180deg, #4000b4 0%, #7e0783 100%);
+
+  display: flex;
+  flex-direction: column;
+  min-width: 250px;
+  margin-right: 20px;
 
   .tab {
-    padding: 10px;
-    cursor: pointer;
+    padding: 20px 30px;
+    font-weight: bold;
 
-    &:hover,
-    &.active {
-      background-color: #27a0f7;
-      color: white;
-    }
-  }
-
-  .pop-up {
-    display: none;
-  }
-
-  @media all and (max-width: 767px) {
-    flex-direction: column;
-
-    .tab {
-      width: 100%;
-      text-align: center;
-      white-space: nowrap;
-      display: none;
-
-      &.active {
-        display: block;
-      }
-    }
-
-    .pop-up {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-
-      .tab {
-        display: block;
-
-        &.active {
-          display: none;
-        }
-      }
-
-      transition: all 0.2s;
-      &.hide {
-        display: none;
-        opacity: 0;
-        transform: translateY(-20px);
-      }
-      &.show {
-        display: flex;
-        opacity: 1;
-        transform: translateY(0px);
-      }
+    &:not(:last-child) {
+      border-bottom: 1px solid #9700ff;
     }
   }
 `
@@ -141,10 +57,10 @@ const tabs = [
   //   label: 'Ethereum Name Service',
   //   Component: ENSs,
   // },
-  // {
-  //   label: 'Other NFTs',
-  //   Component: NFTs,
-  // },
+  {
+    label: 'Other NFTs',
+    Component: NFTs,
+  },
   {
     label: 'How it works',
     Component: Intro,
@@ -153,7 +69,7 @@ const tabs = [
 
 export default function () {
   const [show, setShow] = useState(false)
-  const [active, setActive] = useState(0)
+  const [active, setActive] = useState(1)
   const { Component } = tabs[active]
   const tabLabels = tabs.map(({ label }) => label)
 
@@ -173,13 +89,11 @@ export default function () {
             onSelect={() => (active === index ? setShow(!show) : handleActive(index))}
           />
         ))}
-        <div className={`pop-up ${show ? 'show' : 'hide'}`}>
-          {tabLabels.map((label, index) => (
-            <Tab key={index} label={label} active={active === index} onSelect={() => handleActive(index)} />
-          ))}
-        </div>
       </Tabs>
       <div className="panel">
+        <Button className="primary">Text</Button>
+        <Button className="secondary">Text</Button>
+        <Button className="black">Text</Button>
         <Component onTab={() => setActive(tabs.length - 1)} />
       </div>
     </Accordion>

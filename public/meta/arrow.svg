@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="12px" height="8px" viewBox="0 0 12 8" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 64 (93537) - https://sketch.com -->
+    <title>Arrow Copy</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="1" transform="translate(-1262.000000, -138.000000)" fill="#FFFFFF">
+            <g id="Group-7" transform="translate(1165.000000, 124.000000)">
+                <g id="Group-8-Copy">
+                    <path d="M105.35809,23.7557077 L99.1947679,18.4073 C98.9350774,18.1821593 98.9350774,17.8184255 99.1947679,17.5927 L105.35809,12.2442923 C105.732977,11.9185692 106.342916,11.9185692 106.718469,12.2442923 C107.093355,12.5700154 107.093355,13.0986574 106.718469,13.4243805 L101.446085,18.0002924 L106.718469,22.5750347 C107.093355,22.9013426 107.093355,23.4299846 106.718469,23.7557077 C106.342916,24.0814308 105.732977,24.0814308 105.35809,23.7557077" id="Arrow-Copy" transform="translate(103.000000, 18.000000) scale(1, -1) rotate(90.000000) translate(-103.000000, -18.000000) "></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
