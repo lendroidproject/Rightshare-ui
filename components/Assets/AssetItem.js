@@ -2,31 +2,67 @@ import styled from 'styled-components'
 import Spinner from '~components/common/Spinner'
 
 const ItemWrapper = styled.div`
-  width: 100%;
-  max-width: 187px;
-  margin: 10px;
+  height: 270px;
+  width: 227px;
+  border: 2px solid var(--color-primary);
+  border-radius: 8px;
+  background-color: var(--color-bg4);
+  background: var(--color-grad4);
+  box-shadow: var(--box-shadow3);
+
+  margin: 20px;
   overflow: hidden;
   cursor: pointer;
-  background: #f3f3f3;
+  padding: 20px 20px 0;
+  position: relative;
 `
 const Thumbnail = styled.div`
-  height: 177px;
-  margin: 15px;
+  height: 182px;
+  width: 187px;
   overflow: hidden;
-  width: calc(100% - 30px);
+
+  border-radius: 8px;
+  background-color: var(--color-text);
 
   display: flex;
   align-items: center;
   justify-content: center;
 
+  padding: 10px;
+
   img {
     height: 100%;
+    max-width: 100%;
   }
 `
 const ItemInfo = styled.div`
-  padding: 0px 15px 15px;
-  font-size: 12px;
+  margin: 10px 0 12px;
+  font-size: 16px;
   text-align: center;
+
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 100%;
+  text-overflow: ellipsis;
+
+  .description {
+    position: absolute;
+    left: 20px;
+    right: 20px;
+    bottom: 0;
+
+    font-size: 12px;
+    padding: 2px 10px;
+    border-radius: 8px 8px 0 0;
+    background-color: var(--color-bg3);
+    background: var(--color-grad3);
+    color: white;
+
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 100%;
+    text-overflow: ellipsis;
+  }
 `
 
 export default ({ onSelect, ...data }) => {
@@ -36,6 +72,7 @@ export default ({ onSelect, ...data }) => {
     // image_thumbnail_url: thumbnail,
     image_url: image,
     name,
+    description,
     background_color: background,
     current_price: price,
     decimals,
@@ -58,7 +95,10 @@ export default ({ onSelect, ...data }) => {
           />
         )}
       </Thumbnail>
-      <ItemInfo>{infoName || name || `#${id}`}</ItemInfo>
+      <ItemInfo>
+        {infoName || name || `#${id}`}
+        <div className="description">{description || '---'}</div>
+      </ItemInfo>
     </ItemWrapper>
   )
 }

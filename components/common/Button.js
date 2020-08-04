@@ -15,7 +15,7 @@ const Wrapper = styled.button`
     color: var(--color-bg);
     border: 1px solid var(--color-highlight);
     border-radius: 4px;
-    padding: 10px 20px;
+    padding: 10px 30px;
   }
 
   &.secondary {
@@ -24,13 +24,41 @@ const Wrapper = styled.button`
     background: var(--color-grad7);
     box-shadow: var(--box-shadow2);
     padding: 11px 16px;
+    color: var(--color-text-black);
+
+    &.image {
+      display: flex;
+      align-items: center;
+      padding: 10px 20px 10px 10px;
+
+      img {
+        margin-right: 10px;
+      }
+    }
   }
 
   &.black {
     border: 1px solid var(--color-border);
-    background: var(--color-bg);
+    background: var(--color-bg-black);
     box-shadow: var(--box-shadow2);
+    color: var(--color-text-black);
     padding: 10px 20px;
+
+    &.image {
+      display: flex;
+      align-items: center;
+      padding: 9px 20px;
+
+      img {
+        margin-right: 10px;
+      }
+
+      img.suffix {
+        margin-left: 10px;
+        margin-right: 0;
+        pointer-events: none;
+      }
+    }
   }
 
   &.icon {
@@ -52,4 +80,4 @@ const Wrapper = styled.button`
   }
 `
 
-export default ({ className, ...props }) => <Wrapper className={`button ${className}`} {...props} />
+export default ({ className = 'primary', ...props }) => <Wrapper className={`button ${className}`} {...props} />

@@ -21,7 +21,8 @@ const Wrapper = styled.div`
 
     textarea {
       color: transparent !important;
-      caret-color: #232160;
+      caret-color: var(--color-text);
+      height: 40px;
     }
   }
 

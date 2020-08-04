@@ -4,14 +4,14 @@ const Wrapper = styled.div`
   position: relative;
   border-radius: 7px;
   background-color: var(--color-bg);
-  box-shadow: inset 0 0 3px 0 #202124, -5px -5px 13px 0 #232239, 6px 6px 13px 0 #121120;
+  box-shadow: var(--box-shadow2);
   display: flex;
 
   input {
     font-size: 16px;
     color: var(--color-text);
     border: 0;
-    background: transparent;
+    background: var(--color-bg-input);
     padding: 11px 13px;
 
     &.small {
@@ -31,6 +31,8 @@ const Wrapper = styled.div`
     img {
       height: 100%;
       margin: auto;
+
+      filter: var(--filter-invert);
     }
   }
 

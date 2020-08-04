@@ -6,7 +6,7 @@ const Wrapper = styled.div`
   right: 0;
   top: 0;
   bottom: 0;
-  background: white;
+  background: var(--color-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -35,7 +35,7 @@ const Wrapper = styled.div`
     position: absolute;
     width: 11px;
     height: 76px;
-    background: #5e54ac;
+    background: var(--color-text);
     left: 50px;
     top: 50px;
     transform: translate(-50%, -50%);
@@ -48,7 +48,7 @@ const Wrapper = styled.div`
   .spin > div div:nth-child(6) {
     width: 40px;
     height: 40px;
-    background: white;
+    background: var(--color-bg);
     border-radius: 50%;
   }
   .spin > div div:nth-child(3) {

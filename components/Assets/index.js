@@ -5,15 +5,17 @@ import { connect } from 'react-redux'
 import { FlexWrap } from '~components/common/Wrapper'
 
 import AssetDetail from './AssetDetail'
+import CreateMeta from './CreateMeta'
 import AssetItem from './AssetItem'
 import SuccessModal from './SuccessModal'
 
-const Wrapper = styled(FlexWrap)``
+const Wrapper = styled(FlexWrap)`
+  padding: 20px 0;
+`
+
 const Items = styled(FlexWrap)`
-  margin: -10px;
-  align-items: stretch;
-  margin-bottom: 15px;
-  width: 100%;
+  margin: 0 -20px;
+  justify-content: space-between;
 `
 
 export default connect((state) => state)(function ({ children, data, loadMore, onTab, onParent, lang, ...props }) {
@@ -29,6 +31,7 @@ export default connect((state) => state)(function ({ children, data, loadMore, o
   const [item, setItem] = useState(null)
   const [success, setSuccess] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [meta, setMeta] = useState(null)
 
   const handleSelect = (item) => {
     const {
@@ -55,7 +58,7 @@ export default connect((state) => state)(function ({ children, data, loadMore, o
         })
         break
       default:
-        Promise.all([isFrozen(address, tokenId)/*, currentFVersion(), currentIVersion()*/]).then(
+        Promise.all([isFrozen(address, tokenId) /*, currentFVersion(), currentIVersion()*/]).then(
           ([isFrozen, fVersion = 1, iVersion = 1]) => {
             setItem({ ...item, isFrozen, fVersion, iVersion })
             setLoading(false)
@@ -64,14 +67,44 @@ export default connect((state) => state)(function ({ children, data, loadMore, o
     }
   }
 
+  const handleClose = () => {
+    setMeta(false)
+    setItem(null)
+  }
+
   return (
     <Wrapper>
-      <Items>
-        {data.map((asset, index) => (
-          <AssetItem key={index} {...asset} onSelect={handleSelect} />
-        ))}
-      </Items>
-      {item && (
+      {meta ? (
+        <CreateMeta
+          lang={lang}
+          item={item}
+          loading={loading}
+          onReload={(reason) => {
+            setItem(null)
+            if (reason) {
+              switch (reason) {
+                default:
+                  setSuccess(reason)
+              }
+            } else {
+              dispatch({
+                type: 'RESET_ASSETS',
+                payload: {},
+              })
+              loadMore(true)
+            }
+          }}
+          onClose={handleClose}
+          {...props}
+        />
+      ) : (
+        <Items>
+          {data.map((asset, index) => (
+            <AssetItem key={index} {...asset} onSelect={handleSelect} />
+          ))}
+        </Items>
+      )}
+      {item && !meta && (
         <AssetDetail
           lang={lang}
           item={item}
@@ -91,7 +124,8 @@ export default connect((state) => state)(function ({ children, data, loadMore, o
               loadMore(true)
             }
           }}
-          onClose={() => setItem(null)}
+          onClose={handleClose}
+          onCreateMeta={() => setMeta(true)}
           {...props}
         />
       )}

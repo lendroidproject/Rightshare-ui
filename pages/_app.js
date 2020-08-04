@@ -26,6 +26,8 @@ const themes = {
     --color-grad2: linear-gradient(to bottom, #180259 0%, #140249 100%);
     --color-bg3: #FF00F1;
     --color-grad3: linear-gradient(to bottom, #FF00F1 0%, #9700FF 100%);
+    --color-tab: #FF00F1;
+    --color-tab-grad: linear-gradient(to bottom, #FF00F1 0%, #9700FF 100%);
     --color-bg4: #18058D;
     --color-grad4: linear-gradient(to bottom, #18058D 0%, #000000 100%);
     --color-bg5: #1189FF;
@@ -34,14 +36,81 @@ const themes = {
     --color-grad6: linear-gradient(to bottom, #00EEAE 0%, #00C6D9 100%);
     --color-bg7: #F900F9;
     --color-grad7: linear-gradient(to bottom, #F900F9 0%, #890089 100%);
+    --color-bg8: #4402D4;
+    --color-grad8: linear-gradient(to bottom, #4402D4 0%, #000000 100%);
     --color-text: #FFFFFF;
+    --color-text-black: #FFFFFF;
+    --color-text-head: #FFFFFF;
     --color-bg: #000000;
+    --color-bg-panel: #000000;
+    --color-bg-black: #000000;
+    --color-bg-input: transparent;
     --color-primary: #9700FF;
     --color-secondary: #7D0884;
     --color-highlight: #00FFDF;
     --color-border: #7E0782;
+    --color-border-grey: #000000;
+    --color-thick: #5B00FF;
+    --color-dark: #252525;
+    --color-grey: #393939;
+    --color-line: #552BA1;
+    --color-link: #00C9DC;
+    --color-purple: #B800FF;
+    --color-input: #82008F;
+    --color-blue: #4F00FF;
+    --color-disable: #4E4E4E;
     --box-shadow1: inset 3px 3px 4px 0 rgba(0, 0, 0, 0.5);
     --box-shadow2: inset 0 0 3px 0 #202124, -5px -5px 13px 0 #232239, 6px 6px 13px 0 #121120;
+    --box-shadow3: inset 0 0 3px 0 #202124, -5px -5px 13px 0 #232239;
+    --box-shadow4: -3px -3px 12px 0 #232239;
+    --box-shadow-modal: inset 2px 2px 6px 6px rgba(0,0,0,0.5), 13px 0 20px 0 rgba(0,0,0,0.03);
+    --filter-invert: invert(0);
+    --modal-bg: rgba(0, 0, 0, 0.91);
+    --color-green: #7fff67;
+  `,
+  dark: `
+    --color-bg1: #4000B4;
+    --color-grad1: linear-gradient(to bottom, #57DE87 0%, #53DBFD 100%);
+    --color-bg2: white;
+    --color-grad2: white;
+    --color-bg3: #12161E;
+    --color-grad3: #12161E;
+    --color-tab: #1991EB;
+    --color-tab-grad: #1991EB;
+    --color-bg4: #E3E3E3;
+    --color-grad4: #E3E3E3;
+    --color-bg5: #12265E;
+    --color-grad5: #12265E;
+    --color-bg6: #12265E;
+    --color-grad6: #12265E;
+    --color-bg7: #12265E;
+    --color-grad7: #12265E;
+    --color-bg8: #F7F7F7;
+    --color-grad8: #F7F7F7;
+    --color-text: #000000;
+    --color-text-black: #FFFFFF;
+    --color-text-head: #12265E;
+    --color-bg: #FFFFFF;
+    --color-bg-panel: #F7F7F7;
+    --color-bg-black: #12265E;
+    --color-bg-input: #F7F7F7;
+    --color-primary: #CCCCCC;
+    --color-secondary: #7D0884;
+    --color-highlight: #000;
+    --color-border: #1991EB;
+    --color-border-grey: #CCCCCC;
+    --color-thick: #CCCCCC;
+    --color-dark: #CCCCCC;
+    --color-grey: #CCCCCC;
+    --color-line: #CCCCCC;
+    --color-link: #12265E;
+    --color-purple: #12265E;
+    --color-input: #CCCCCC;
+    --color-blue: #4F00FF;
+    --color-disable: #4E4E4E;
+    --filter-invert: invert(1);
+    --modal-bg: rgba(255, 255, 255, 0.98);
+    --color-green: #218F04;
   `,
 }
 
@@ -266,6 +335,28 @@ class RightshareApp extends App {
 
               body * {
                 box-sizing: border-box;
+              }
+
+              *::-webkit-scrollbar {
+                width: 7px;
+                margin-left: 3px;
+              }
+
+              *::-webkit-scrollbar-track {
+                background: var(--color-bg);
+              }
+
+              *::-webkit-scrollbar-thumb {
+                border-radius: 5px;
+                background-color: var(--color-text);
+              }
+
+              *::-webkit-scrollbar-thumb:hover {
+                background: var(--color-primary);
+              }
+
+              input::-webkit-calendar-picker-indicator {
+                opacity: 0;
               }
 
               #__next {

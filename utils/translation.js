@@ -42,6 +42,7 @@ export const intlActions = (lang) =>
   ({
     CV: {
       approve: 'Approve',
+      createMeta: 'Create Metatoken',
       issueUnencumberedI: 'Create Customer Token',
       freeze: 'Activate Rental',
       issueI: 'Create a new Rental Token',
@@ -52,6 +53,7 @@ export const intlActions = (lang) =>
     },
     ENS: {
       approve: 'Approve',
+      createMeta: 'Create Metatoken',
       issueUnencumberedI: 'Create Metatoken',
       freeze: 'Activate Domain Rental',
       issueI: 'Create a new Rental Token',
@@ -62,6 +64,7 @@ export const intlActions = (lang) =>
     },
     NFT: {
       approve: 'Approve',
+      createMeta: 'Create Metatoken',
       issueUnencumberedI: 'Create Metatoken',
       freeze: 'Initiate Rightshare',
       issueI: 'Mint iRight',

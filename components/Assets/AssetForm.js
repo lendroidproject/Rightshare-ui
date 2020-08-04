@@ -5,27 +5,28 @@ import LimitedText from '~/components/common/LimitedText'
 
 export const Form = styled.form`
   > p {
-    margin: 4px 0;
-    font-size: 15px;
+    margin: 0 0 12px;
+    font-size: 18px;
     font-weight: 600;
-  }
-
-  .trash {
-    position: absolute;
-    font-size: 16px;
-    right: 0;
-    color: #c80e68;
-    cursor: pointer;
+    color: var(--color-blue);
   }
 
   label {
-    font-size: 12px;
+    font-size: 13px;
     margin-bottom: 8px;
     display: block;
 
     span {
       font-size: 90%;
     }
+
+    &.gap {
+      margin-bottom: 17px;
+    }
+  }
+
+  a {
+    color: var(--color-link);
   }
 
   .radio label {
@@ -39,7 +40,7 @@ export const Form = styled.form`
   .inputs {
     display: flex;
     align-items: center;
-    margin: 0 -25px 15px;
+    margin: 0 -25px 25px;
     @media all and (max-width: 767px) {
       flex-direction: column;
       margin: 0 0 15px;
@@ -50,6 +51,7 @@ export const Form = styled.form`
       display: flex;
       flex-direction: column;
       margin: 0 25px;
+      position: relative;
       @media all and (max-width: 767px) {
         margin: 0 0 10px 0;
 
@@ -84,19 +86,31 @@ export const Form = styled.form`
       }
     }
 
+    img.suffix {
+      position: absolute;
+      right: 10px;
+      bottom: 10px;
+      width: 20px;
+      pointer-events: none;
+    }
+
+    select {
+      appearance: none;
+    }
+
     input,
     textarea,
     select,
     .input {
       width: 100%;
-      font-size: 14px;
+      font-size: 16px;
       padding: 5px 10px;
       line-height: 1.5;
-      background: white;
+      background: transparent;
 
-      border: 1px solid #cccccc;
+      border: 1px solid var(--color-input);
       border-radius: 4px;
-      color: #232160;
+      color: var(--color-text);
 
       &[type='radio'] {
         cursor: pointer;
@@ -114,10 +128,6 @@ export const Form = styled.form`
         }
       }
 
-      &[readonly] {
-        background: #eee;
-      }
-
       &.error {
         border-color: red;
       }
@@ -130,29 +140,30 @@ const Frames = styled.div`
   flex-direction: row !important;
 
   .frame {
-    height: 74px;
-    width: 57px;
-    border: 1px dashed #cccccc;
+    height: 86px;
+    width: 67px;
     border-radius: 4px;
-    background-color: #ffffff;
     cursor: pointer;
+
+    border: 1px dashed var(--color-disable);
+    background-color: transparent;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
     &.active {
-      border: 1px dashed #000000;
-      background-color: #cbe558;
+      border-color: var(--color-purple);
+      background-color: var(--color-text);
     }
 
     img {
-      height: 60px;
-      width: 45px;
+      height: 74px;
+      width: 57px;
     }
 
     &:not(:last-child) {
-      margin-right: 15px;
+      margin-right: 6px;
     }
   }
 `
@@ -164,19 +175,7 @@ export const Templates = [
   // 'https://tinyurl.com/rs-template-04',
 ]
 
-export default ({
-  lang,
-  form,
-  setForm,
-  active,
-  metaTokens,
-  setMetaTokens,
-  onNewMeta,
-  onRemove,
-  readOnly,
-  children,
-  errors,
-}) => {
+export default ({ lang, form, setForm, active, metaTokens, setMetaTokens, onNewMeta, readOnly, children, errors }) => {
   // const intl = intlForm(lang)
 
   const { purpose = 'Rental', description = '', imageUrl = '', termsUrl = '' } = metaTokens[active] || {}
@@ -188,22 +187,17 @@ export default ({
 
   return (
     <Form onSubmit={(e) => e.preventDefault()}>
-      {metaTokens.length > 1 && metaTokens[active] && (
-        <i className="trash fa fa-trash-alt" aria-hidden="true" onClick={onRemove} />
-      )}
       <div className="inputs">
         <div>
           <label>Purpose of the token</label>
           <select value={purpose} onChange={(e) => handleMeta({ purpose: e.target.value })} readOnly={readOnly}>
             <option value="Rental">Rental</option>
           </select>
+          <img src="/meta/arrow.svg" className="suffix" />
         </div>
-        <div className="empty" />
-      </div>
-      <div className="inputs">
         <div>
           <label>
-            Description <span>(Max 32 characters)</span>
+            Token Description <span>(Max 32 characters)</span>
           </label>
           <LimitedText
             value={description}
@@ -224,6 +218,7 @@ export default ({
             onChange={(e) => setForm({ ...form, expiryDate: e.target.value })}
             readOnly={readOnly}
           />
+          <img src="/meta/calendar.svg" className="suffix" />
         </div>
         <div>
           <label>Time</label>
@@ -233,9 +228,10 @@ export default ({
             onChange={(e) => setForm({ ...form, expiryTime: e.target.value })}
             readOnly={readOnly}
           />
+          <img src="/meta/clock.svg" className="suffix" />
         </div>
       </div>
-      <label>Choose Frame Image</label>
+      <label className="gap">Choose Frame Image</label>
       <div className="inputs">
         <Frames>
           {Templates.map((url) => (
@@ -250,9 +246,9 @@ export default ({
         </Frames>
       </div>
       <label>
-        Or use{' '}
+        Or use this{' '}
         <a href="/template.zip" download>
-          this template
+          template
         </a>{' '}
         and upload your own image
       </label>
@@ -305,7 +301,9 @@ export default ({
       )} */}
       <div className="inputs">
         <div>
-          <label>Terms URL (Optional)</label>
+          <label>
+            Terms URL <span>(Optional)</span>
+          </label>
           <input
             value={termsUrl}
             onChange={(e) => handleMeta({ termsUrl: e.target.value })}

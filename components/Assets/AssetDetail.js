@@ -8,6 +8,7 @@ import { validate } from '~utils/validation'
 import { tinyURL } from '~utils/api'
 import { FlexCenter, FlexInline } from '~components/common/Wrapper'
 import Spinner from '~components/common/Spinner'
+import Button from '~components/common/Button'
 
 import AssetForm, { Templates } from './AssetForm'
 import AssetMetaData from './AssetMetaData'
@@ -23,7 +24,7 @@ const F_VERSION = 1
 const I_VERSION = 1
 
 export const ItemOverlay = styled(FlexCenter)`
-  background: rgba(0, 0, 0, 0.7);
+  background: var(--modal-bg);
   z-index: 11;
   position: fixed;
   left: 0;
@@ -33,37 +34,51 @@ export const ItemOverlay = styled(FlexCenter)`
 `
 
 export const Wrapper = styled.div`
-  padding: 15px 25px;
-  border-radius: 5px;
-  background: white;
-  max-width: 90%;
+  border: 2px solid var(--color-thick);
+  border-radius: 8px;
+  background-color: var(--color-bg8);
+  background: var(--color-grad8);
+  box-shadow: var(--box-shadow-modal);
+  color: var(--color-text);
+
+  padding: 40px 40px 20px;
+  width: 90%;
+  max-width: 780px;
+
   position: relative;
-  max-height: 100vh;
+  max-height: 90vh;
   overflow: auto;
 
   @media all and (max-width: 767px) {
-    max-height: 90vh;
-    padding: 15px 15px;
   }
 
   .heading {
-    padding-bottom: 12px;
-    border-bottom: 1px solid #ccc;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--color-text);
 
     p {
       margin: 0;
-      font-size: 16px;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--color-text-head);
 
       span {
-        color: #232160;
+        font-size: 12px;
+        font-weight: normal;
       }
     }
+  }
+
+  .close {
+    position: absolute;
+    right: 16px;
+    top: 12px;
   }
 `
 
 export const ItemDetail = styled(FlexInline)`
   align-items: stretch;
-  margin: -8px;
+  margin: -20px;
 
   @media all and (max-width: 767px) {
     flex-wrap: wrap;
@@ -71,17 +86,16 @@ export const ItemDetail = styled(FlexInline)`
   }
 
   > div {
-    padding: 20px 8px 8px;
-    margin: 8px;
+    margin: 20px;
   }
 
   .actions {
     position: relative;
-    min-height: 60px;
   }
 
   .item-view {
     max-width: 260px;
+
     @media all and (max-width: 767px) {
       max-width: unset;
       width: 100%;
@@ -149,7 +163,16 @@ export const ItemDetail = styled(FlexInline)`
     justify-content: center;
     align-items: center;
     overflow: hidden;
-    padding: 0;
+
+    border: 2px solid var(--color-primary);
+    border-radius: 8px;
+    background-color: var(--color-bg4);
+    background: var(--color-grad4);
+    box-shadow: var(--box-shadow3);
+    padding: 20px;
+
+    height: 270px;
+    width: 227px;
 
     &.freeze {
       flex-direction: column;
@@ -226,7 +249,6 @@ export const ItemDetail = styled(FlexInline)`
 
     img.image {
       height: auto;
-      max-height: 281px;
       max-width: 100%;
     }
 
@@ -240,13 +262,16 @@ export const ItemDetail = styled(FlexInline)`
   }
 
   .info {
-    position: relative;
-    width: 460px;
-    max-width: 100%;
+    flex: 1;
+    padding-bottom: 46px;
+
+    display: flex;
+    flex-direction: column;
 
     p.desc {
-      font-size: 16px;
-      margin-top: 0;
+      font-size: 12px;
+      margin: 20px 0;
+      flex: 1;
     }
   }
 
@@ -254,65 +279,35 @@ export const ItemDetail = styled(FlexInline)`
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 15px;
-    margin-bottom: 15px;
+    margin-top: 20px;
     font-size: 12px;
-
-    span {
-      color: #232160;
-    }
 
     img {
       border-radius: 50%;
-      width: 25px;
-      margin-right: 5px;
+      width: 26px;
+      margin-right: 8px;
     }
   }
 
   .buttons {
-    margin: 0 -6px;
-    display: flex;
-    align-items: flex-start;
-    font-size: 13px;
-    @media all and (max-width: 767px) {
-      flex-direction: column;
-      margin: 0 0;
-    }
-
-    button {
-      min-width: 145px;
-      @media all and (max-width: 767px) {
-        width: 100%;
-        padding: 8px 15px;
-        font-size: 100%;
-      }
+    > button {
+      margin-bottom: 15px;
     }
 
     .tooltip {
-      margin: 12px 6px;
-      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
       @media all and (max-width: 767px) {
-        width: 100%;
-        margin: 12px 0;
       }
 
       &__info {
-        padding: 3px 5px;
-        font-size: 11px;
+        font-size: 12px;
         display: flex;
         align-items: center;
-        justify-content: center;
-
-        position: absolute;
-        white-space: nowrap;
-        left: 0;
-        right: 0;
-        display: flex;
-        justify-content: center;
-        text-align: center;
 
         .tip {
-          color: #222060;
           font-weight: bold;
           margin-left: 5px;
           cursor: pointer;
@@ -368,36 +363,6 @@ export const ItemDetail = styled(FlexInline)`
   }
 `
 
-const Close = styled.div`
-  position: absolute;
-  right: 15px;
-  top: 15px;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  cursor: pointer;
-  border: 2px solid #e2b224;
-  background: white;
-
-  &:before,
-  &:after {
-    position: absolute;
-    left: 9px;
-    top: 4px;
-    content: ' ';
-    height: 12px;
-    width: 2px;
-    background-color: #e2b224;
-    border-radius: 1px;
-  }
-  &:before {
-    transform: rotate(45deg);
-  }
-  &:after {
-    transform: rotate(-45deg);
-  }
-`
-
 const Template = styled.div`
   border-radius: 6px;
   background-color: #ecebeb;
@@ -447,7 +412,7 @@ const transformFreeze = ({ expiry, endTime, isExclusive, maxISupply, circulating
   serialNumber,
 })
 
-export default ({ lang, item, loading, onReload, onClose, ...props }) => {
+export default ({ lang, item, loading, onReload, onClose, onCreateMeta, ...props }) => {
   const intl = intlActions(lang)
   const intlTx = intlTransactions(lang)
   const {
@@ -462,6 +427,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
 
   const [availables, setAvailables] = useState({})
   const [originFreezeForm, setFreezeForm] = useState(null)
+  const [createMeta, setCreateMeta] = useState(false)
   const [active, setActive] = useState(0)
   const [metaTokens, setMetaTokens] = useState([])
   const [transferForm, setTransferForm] = useState(null)
@@ -535,6 +501,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
       init && setMetaTokens(init)
     } else {
       setMetaTokens([])
+      setCreateMeta(false)
     }
   }
   useEffect(() => {
@@ -638,7 +605,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
     if (txErrors.global || gasLimit === -1) return '#c30000'
     if (!gasLimit) return 'black'
     if (gasLimit >= GAS_LIMIT) return '#f9a825'
-    return '#1b5e20'
+    return 'var(--color-green)'
   }
   const tooltips = (gasLimit) => {
     if (txErrors.global || gasLimit === -1) return 'Not available'
@@ -901,20 +868,13 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
 
   const [txTitle, ...txInfos] = txInfo
 
-  const onFreeze = !type && freezeForm && !loading
+  const onFreeze = !type && freezeForm && !loading && createMeta
 
   return (
     <ItemOverlay onMouseDown={handleClose}>
       <Wrapper onMouseDown={(e) => e.stopPropagation()}>
-        <div className="heading">
-          <p>
-            {assetName}
-            <br />
-            <span>{infoName || name || `#${tokenId}`}</span>
-          </p>
-          <Close onClick={handleClose} />
-        </div>
         <ItemDetail>
+          <img className="close" src="/meta/close-btn.svg" onClick={handleClose} />
           <div className="item-view">
             {onFreeze ? (
               <div className="external freeze">
@@ -1010,9 +970,6 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                       : `https://via.placeholder.com/512/FFFFFF/000000?text=%23${tokenId}`
                   }
                   alt={infoName || name}
-                  style={{
-                    background: infoBack || background ? `#${infoBack || background}` : '#f3f3f3',
-                  }}
                   className="image"
                 />
               </a>
@@ -1033,7 +990,14 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
           </div>
           {!metadata || metadata.baseAssetAddress !== '0x0000000000000000000000000000000000000000' ? (
             <div className="info">
-              {!onFreeze && <p className="desc">{infoDesc || description}</p>}
+              <div className="heading">
+                <p>
+                  {assetName}
+                  <br />
+                  <span>{infoName || name || `#${tokenId}`}</span>
+                </p>
+              </div>
+              {(!onFreeze || (onFreeze && !createMeta)) && <p className="desc">{infoDesc || description}</p>}
               {/* <div className="price">Price: {price ? price : 0}</div> */}
               <div className="actions">
                 {loading ? (
@@ -1071,27 +1035,27 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                       {isFrozen === false &&
                         freezeForm &&
                         WithToolTip(
-                          <button
+                          <Button
                             disabled={!!status || availables['freeze'] === -1}
-                            onClick={handleFreeze}
+                            onClick={createMeta ? handleFreeze : () => onCreateMeta(true)}
                             data-for="freeze"
                             data-tip={tooltips(availables['freeze'])}
                           >
-                            {intl.submit}
+                            {createMeta ? intl.submit : intl.createMeta}
                             {status && status.start === 'freeze' && <img src="/spinner.svg" />}
-                          </button>,
+                          </Button>,
                           freezeForm.isExclusive && availables['approve'] !== 0 ? 'approve' : 'freeze'
                           // freezeForm.isExclusive && availables['approve'] !== 0 ? (
-                          //   <button
+                          //   <Button
                           //     onClick={handleApprove}
                           //     data-for="approve"
                           //     data-tip={tooltips(availables['approve'])}
                           //   >
                           //     {intl.approve}
                           //     {status && status.start === 'approve' && <img src="/spinner.svg" />}
-                          //   </button>
+                          //   </Button>
                           // ) : (
-                          //   <button
+                          //   <Button
                           //     disabled={!!status || availables['freeze'] === -1}
                           //     onClick={handleFreeze}
                           //     data-for="freeze"
@@ -1099,13 +1063,13 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                           //   >
                           //     {intl.submit}
                           //     {status && status.start === 'freeze' && <img src="/spinner.svg" />}
-                          //   </button>
+                          //   </Button>
                           // ),
                           // freezeForm.isExclusive && availables['approve'] !== 0 ? 'approve' : 'freeze'
                         )}
                       {isUnfreezable &&
                         WithToolTip(
-                          <button
+                          <Button
                             disabled={!!status || availables['unfreeze'] === -1}
                             onClick={handleUnfreeze}
                             data-for="unfreeze"
@@ -1113,13 +1077,13 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                           >
                             {intl.unfreeze}
                             {status && status.start === 'unfreeze' && <img src="/spinner.svg" />}
-                          </button>,
+                          </Button>,
                           'unfreeze'
                         )}
                       {isIMintable &&
                         !freezeForm.isExclusive &&
                         WithToolTip(
-                          <button
+                          <Button
                             disabled={!!status || availables['issueI'] === -1}
                             onClick={handleIssueI}
                             data-for="issueI"
@@ -1127,13 +1091,13 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                           >
                             {intl.issueI}
                             {status && status.start === 'issueI' && <img src="/spinner.svg" />}
-                          </button>,
+                          </Button>,
                           'issueI'
                         )}
                       {type === 'IRight' &&
                         (transferForm ? (
                           WithToolTip(
-                            <button
+                            <Button
                               disabled={!!status || availables['transfer'] === -1}
                               onClick={handleTransfer}
                               data-for="transfer"
@@ -1141,16 +1105,16 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                             >
                               {intl.submit}
                               {status && status.start === 'transfer' && <img src="/spinner.svg" />}
-                            </button>,
+                            </Button>,
                             'transfer'
                           )
                         ) : (
-                          <button onClick={handleTransfer}>{intl.transfer}</button>
+                          <Button onClick={handleTransfer}>{intl.transfer}</Button>
                         ))}
                       {type === 'IRight' &&
                         !transferForm &&
                         WithToolTip(
-                          <button
+                          <Button
                             disabled={!!status || availables['revokeI'] === -1}
                             onClick={handleRevoke}
                             data-for="revokeI"
@@ -1158,7 +1122,7 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                           >
                             {intl.revokeI}
                             {status && status.start === 'revokeI' && <img src="/spinner.svg" />}
-                          </button>,
+                          </Button>,
                           'revokeI'
                         )}
                     </div>

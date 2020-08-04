@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react'
 
 import { getMyAssets, fetchMetadata } from '~utils/api'
 import Spinner from '~components/common/Spinner'
+import Button from '~components/common/Button'
 import Assets from '~components/Assets'
-import { PAGE_LIMIT, NoData, Refresh, Info, Wrapper } from './MyAssets'
+import { PAGE_LIMIT, NoData, Info, Wrapper } from './MyAssets'
 
 import { filterBase, filterPlatform, platforms, Addresses } from '~components/Parcels'
 
@@ -138,62 +139,72 @@ export default function ({ lang, info, onTab, onParent, children, ...props }) {
     onParent,
   }
 
+  const [filter, setFilter] = useState('')
+
   return (
     <Wrapper>
-      {filtered.length > 0 && (
-        <Info>
-          <div className="tooltip">
-            <ol>
-              {info.map((txt, idx) => (
-                <li key={idx}>{txt}</li>
-              ))}
-            </ol>
-          </div>
-        </Info>
-      )}
-      {!refresh && <Assets {...assetsProps} />}
-      {loading ? (
-        <Spinner />
-      ) : (
-        <>
-          <Refresh onClick={handleRefresh}>&#8634;</Refresh>
-          {filtered.length === 0 && (
-            <NoData>
-              {rights && filteredRights.length === 0 ? (
-                <>
-                  No digital collectibles available in your wallet. Purchase some from{' '}
-                  <a
-                    href={
-                      MAIN_NETWORK
-                        ? `https://opensea.io/assets/${platforms[lang]}`
-                        : 'https://rinkeby.opensea.io/'
-                    }
-                    target="_blank"
-                  >
-                    OpenSea
-                  </a>
-                  .
-                </>
-              ) : (
-                <>
-                  No fRights available in your wallet. Freeze a digital collectible from your{' '}
-                  <a
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault()
-                      onTab(0)
-                    }}
-                  >
-                    Assets
-                  </a>
-                  .
-                </>
-              )}
-            </NoData>
-          )}
-          {!end && <Spinner className="load-more" data-offset={page.offset} data-owner={owner} />}
-        </>
-      )}
+      <div className="header">
+        <h1>{title}</h1>
+        <div className="actions">
+          <Button className={`black ${filter ? 'active' : ''}`}>Filter By</Button>
+          <Button className="black" onClick={handleRefresh}>
+            Refresh
+          </Button>
+        </div>
+      </div>
+      <div className="content scroll-listener">
+        {filtered.length > 0 && (
+          <Info>
+            <div className="tooltip">
+              <ol>
+                {info.map((txt, idx) => (
+                  <li key={idx}>{txt}</li>
+                ))}
+              </ol>
+            </div>
+          </Info>
+        )}
+        {!refresh && <Assets {...assetsProps} />}
+        {loading ? (
+          <Spinner />
+        ) : (
+          <>
+            {filtered.length === 0 && (
+              <NoData>
+                {rights && filteredRights.length === 0 ? (
+                  <>
+                    No digital collectibles available in your wallet. Purchase some from{' '}
+                    <a
+                      href={
+                        MAIN_NETWORK ? `https://opensea.io/assets/${platforms[lang]}` : 'https://rinkeby.opensea.io/'
+                      }
+                      target="_blank"
+                    >
+                      OpenSea
+                    </a>
+                    .
+                  </>
+                ) : (
+                  <>
+                    No fRights available in your wallet. Freeze a digital collectible from your{' '}
+                    <a
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        onTab(0)
+                      }}
+                    >
+                      Assets
+                    </a>
+                    .
+                  </>
+                )}
+              </NoData>
+            )}
+            {!end && <Spinner className="load-more" data-offset={page.offset} data-owner={owner} />}
+          </>
+        )}
+      </div>
     </Wrapper>
   )
 }

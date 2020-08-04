@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { connect } from 'react-redux'
 
@@ -68,7 +69,7 @@ const Link = styled.a`
   cursor: pointer;
 
   border: 1px solid var(--color-border);
-  background: var(--color-bg);
+  background: var(--color-bg-black);
   box-shadow: var(--box-shadow2);
 
   width: 40px;
@@ -82,18 +83,38 @@ const Link = styled.a`
 export default connect((state) => state)(function ({ provider, onProvider, children, ...props }) {
   const { address, mainNetwork } = props
 
+  const [theme, setTheme] = useState('primary')
+  useEffect(() => {
+    setTheme(localStorage.getItem('theme'))
+  }, [])
+
   return (
     <Wrapper>
       <Account>
-        <img src={mainNetwork ? '/meta/logo.svg' : '/meta/logo.svg'} className="logo" />
+        <img src={theme === 'primary' ? '/meta/logo.svg' : '/meta/logo_dark.png'} className="logo" />
         <div className="account-info">
-          <Input className="small" icon={<img src="/meta/eth.png" />} value={address || '---'} disabled />
+          <Input
+            className="small"
+            icon={<img src="/meta/eth.png" />}
+            value={address || '---'}
+            style={{ borderRadius: 7 }}
+            disabled
+          />
           <Button className={`black icon ${provider === 'metamask' ? 'active' : ''}`}>
             <img src="/meta/Metamask.svg" onClick={() => onProvider('metamask')} />
           </Button>
           <Button className={`black icon ${provider === 'fortmatic' ? 'active' : ''}`}>
             <img src="/meta/fortnite.svg" onClick={() => onProvider('fortmatic')} />
           </Button>
+          <Button
+            style={{ fontSize: 30 }}
+            className="black icon"
+            dangerouslySetInnerHTML={{ __html: theme === 'primary' ? '&#9728;' : '&#9729' }}
+            onClick={() => {
+              localStorage.setItem('theme', localStorage.getItem('theme') === 'dark' ? 'primary' : 'dark')
+              window.location.reload()
+            }}
+          />
         </div>
       </Account>
       <Content>{children}</Content>
