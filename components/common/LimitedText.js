@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import { createRef, useState, useEffect } from 'react'
 
 const Wrapper = styled.div`
   position: relative;
@@ -13,6 +14,11 @@ const Wrapper = styled.div`
       height: 100%;
       user-select: none;
       pointer-events: none;
+
+      &.scroll {
+        word-break: break-all;
+        overflow: hidden scroll;
+      }
     }
 
     .exceed {
@@ -23,6 +29,7 @@ const Wrapper = styled.div`
       color: transparent !important;
       caret-color: var(--color-text);
       height: 40px;
+      word-break: break-all;
     }
   }
 
@@ -60,14 +67,31 @@ const Wrapper = styled.div`
 `
 
 export default ({ value = '', onChange, max, warn, exceed }) => {
+  const textarea = createRef()
+  const mask = createRef()
+
+  const [scroll, setScroll] = useState(false)
+  useEffect(() => {
+    setScroll(textarea.current && textarea.current.scrollHeight > 40)
+  }, [value])
+
   return (
     <Wrapper className="limited-text">
       <div className="input-wrapper">
-        <div className="mask input">
+        <div className={`mask input ${scroll ? 'scroll' : ''}`} ref={mask}>
           {value.substr(0, max)}
           {value.length > max && <span className="exceed">{value.substr(max)}</span>}
         </div>
-        <textarea value={value} onChange={onChange} />
+        <textarea
+          ref={textarea}
+          value={value}
+          onChange={onChange}
+          onScroll={(e) => {
+            if (textarea.current && mask.current) {
+              mask.current.scrollTop = textarea.current.scrollTop
+            }
+          }}
+        />
       </div>
       <div className="counter">
         <svg height="100%" viewBox="0 0 20 20" width="100%" className={value.length > max - warn ? 'large' : 'small'}>

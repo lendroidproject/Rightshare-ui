@@ -9,16 +9,22 @@ const Content = styled(ModalContent)`
   }
 `
 
-export default ({ onClose }) => (
+export default ({ onClose, children }) => (
   <ItemOverlay onMouseDown={onClose}>
     <Content onMouseDown={(e) => e.stopPropagation()}>
       <img src="/meta/loading-icon.svg" className="tick" />
-      <h1>Creating Metatoken</h1>
-      <p>
-        Please wait while your Metatoken is
-        <br />
-        minted to your address
-      </p>
+      {children ? (
+        children
+      ) : (
+        <>
+          <h1>Creating Metatoken</h1>
+          <p>
+            Please wait while your Metatoken is
+            <br />
+            minted to your address
+          </p>
+        </>
+      )}
     </Content>
   </ItemOverlay>
 )

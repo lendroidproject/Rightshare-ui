@@ -13,8 +13,7 @@ import Button from '~components/common/Button'
 import AssetForm, { Templates } from './AssetForm'
 import AssetMetaData from './AssetMetaData'
 import TransferForm from './TransferForm'
-
-import { Carousel } from 'react-responsive-carousel'
+import ProgressModal from './ProgressModal'
 
 const MAIN_NETWORK = process.env.MAIN_NETWORK
 const ETHERSCAN = MAIN_NETWORK ? 'https://etherscan.io/tx/' : 'https://rinkeby.etherscan.io/tx/'
@@ -73,6 +72,7 @@ export const Wrapper = styled.div`
     position: absolute;
     right: 16px;
     top: 12px;
+    cursor: pointer;
   }
 `
 
@@ -871,122 +871,26 @@ export default ({ lang, item, loading, onReload, onClose, onCreateMeta, ...props
   const onFreeze = !type && freezeForm && !loading && createMeta
 
   return (
-    <ItemOverlay onMouseDown={handleClose}>
+    <ItemOverlay>
       <Wrapper onMouseDown={(e) => e.stopPropagation()}>
         <ItemDetail>
           <img className="close" src="/meta/close-btn.svg" onClick={handleClose} />
           <div className="item-view">
-            {onFreeze ? (
-              <div className="external freeze">
-                <Carousel
-                  showThumbs={false}
-                  showIndicators={false}
-                  emulateTouch
-                  selectedItem={active}
-                  onChange={(active) => setActive(active)}
-                >
-                  {metaTokens.map((metaToken) => (
-                    <div className="template">
-                      <img src={metaToken.imageUrl} className="image" />
-                      <img
-                        src={
-                          infoImage || image
-                            ? infoImage || image
-                            : `https://via.placeholder.com/512/FFFFFF/000000?text=%23${tokenId}`
-                        }
-                        alt={infoName || name}
-                        style={{
-                          background: infoBack || background ? `#${infoBack || background}` : '#f3f3f3',
-                        }}
-                        className="origin"
-                      />
-                      {metaToken.description && (
-                        <div className="metadata">
-                          <span>{metaToken.description}</span>
-                          <span>
-                            Expires on{' '}
-                            {transformUTCfromString(freezeForm.expiryDate, freezeForm.expiryTime).format(
-                              'DD MMM YY, HH:mm'
-                            )}{' '}
-                            UTC
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                  <div className="template new" onClick={() => handleNewMeta()}>
-                    <img src={Templates[0]} className="image" />
-                    <img src="/assets/close.svg" className="close" />
-                  </div>
-                </Carousel>
-                <div className="previews">
-                  {metaTokens.map((metaToken, idx) => (
-                    <div className={`preview ${active === idx ? 'active' : ''}`} onClick={() => setActive(idx)}>
-                      {metaTokens.length > 1 && (
-                        <i className="trash fa fa-trash-alt" aria-hidden="true" onClick={() => handleRemoveMeta(idx)} />
-                      )}
-                      <div className="template">
-                        <img src={metaToken.imageUrl} className="image" />
-                        <img
-                          src={
-                            infoImage || image
-                              ? infoImage || image
-                              : `https://via.placeholder.com/512/FFFFFF/000000?text=%23${tokenId}`
-                          }
-                          alt={infoName || name}
-                          style={{
-                            background: infoBack || background ? `#${infoBack || background}` : '#f3f3f3',
-                          }}
-                          className="origin"
-                        />
-                        {metaToken.description && (
-                          <div className="metadata">
-                            <span>{metaToken.description}</span>
-                            <span>
-                              Expires on{' '}
-                              {transformUTCfromString(freezeForm.expiryDate, freezeForm.expiryTime).format(
-                                'DD MMM YY, HH:mm'
-                              )}{' '}
-                              UTC
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                  <div className="preview new" onClick={() => handleNewMeta()}>
-                    <div className="template">
-                      <img src="/assets/close.svg" className="close" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <a href={permalink} className="external" target="_blank">
-                <img
-                  src={
-                    infoImage || image
-                      ? infoImage || image
-                      : `https://via.placeholder.com/512/FFFFFF/000000?text=%23${tokenId}`
-                  }
-                  alt={infoName || name}
-                  className="image"
-                />
-              </a>
-            )}
+            <a href={permalink} className="external" target="_blank">
+              <img
+                src={
+                  infoImage || image
+                    ? infoImage || image
+                    : `https://via.placeholder.com/512/FFFFFF/000000?text=%23${tokenId}`
+                }
+                alt={infoName || name}
+                className="image"
+              />
+            </a>
             <div className="owner">
               <img src={avatar} alt={userName} />
               Owned by&nbsp;<span>{userName.length > 20 ? `${userName.substr(0, 17)}...` : userName}</span>
             </div>
-            {onFreeze && (
-              <Template>
-                If you plan to build your own frame then
-                <br />
-                <a href="/template.zip" download>
-                  Click Here to download PSD template
-                </a>
-              </Template>
-            )}
           </div>
           {!metadata || metadata.baseAssetAddress !== '0x0000000000000000000000000000000000000000' ? (
             <div className="info">
@@ -997,7 +901,7 @@ export default ({ lang, item, loading, onReload, onClose, onCreateMeta, ...props
                   <span>{infoName || name || `#${tokenId}`}</span>
                 </p>
               </div>
-              {(!onFreeze || (onFreeze && !createMeta)) && <p className="desc">{infoDesc || description}</p>}
+              <p className="desc">{infoDesc || description}</p>
               {/* <div className="price">Price: {price ? price : 0}</div> */}
               <div className="actions">
                 {loading ? (
@@ -1042,7 +946,6 @@ export default ({ lang, item, loading, onReload, onClose, onCreateMeta, ...props
                             data-tip={tooltips(availables['freeze'])}
                           >
                             {createMeta ? intl.submit : intl.createMeta}
-                            {status && status.start === 'freeze' && <img src="/spinner.svg" />}
                           </Button>,
                           freezeForm.isExclusive && availables['approve'] !== 0 ? 'approve' : 'freeze'
                           // freezeForm.isExclusive && availables['approve'] !== 0 ? (
@@ -1052,7 +955,6 @@ export default ({ lang, item, loading, onReload, onClose, onCreateMeta, ...props
                           //     data-tip={tooltips(availables['approve'])}
                           //   >
                           //     {intl.approve}
-                          //     {status && status.start === 'approve' && <img src="/spinner.svg" />}
                           //   </Button>
                           // ) : (
                           //   <Button
@@ -1062,7 +964,6 @@ export default ({ lang, item, loading, onReload, onClose, onCreateMeta, ...props
                           //     data-tip={tooltips(availables['freeze'])}
                           //   >
                           //     {intl.submit}
-                          //     {status && status.start === 'freeze' && <img src="/spinner.svg" />}
                           //   </Button>
                           // ),
                           // freezeForm.isExclusive && availables['approve'] !== 0 ? 'approve' : 'freeze'
@@ -1076,7 +977,6 @@ export default ({ lang, item, loading, onReload, onClose, onCreateMeta, ...props
                             data-tip={tooltips(availables['unfreeze'])}
                           >
                             {intl.unfreeze}
-                            {status && status.start === 'unfreeze' && <img src="/spinner.svg" />}
                           </Button>,
                           'unfreeze'
                         )}
@@ -1090,7 +990,6 @@ export default ({ lang, item, loading, onReload, onClose, onCreateMeta, ...props
                             data-tip={tooltips(availables['issueI'])}
                           >
                             {intl.issueI}
-                            {status && status.start === 'issueI' && <img src="/spinner.svg" />}
                           </Button>,
                           'issueI'
                         )}
@@ -1104,7 +1003,6 @@ export default ({ lang, item, loading, onReload, onClose, onCreateMeta, ...props
                               data-tip={tooltips(availables['transfer'])}
                             >
                               {intl.submit}
-                              {status && status.start === 'transfer' && <img src="/spinner.svg" />}
                             </Button>,
                             'transfer'
                           )
@@ -1121,7 +1019,6 @@ export default ({ lang, item, loading, onReload, onClose, onCreateMeta, ...props
                             data-tip={tooltips(availables['revokeI'])}
                           >
                             {intl.revokeI}
-                            {status && status.start === 'revokeI' && <img src="/spinner.svg" />}
                           </Button>,
                           'revokeI'
                         )}
@@ -1129,25 +1026,6 @@ export default ({ lang, item, loading, onReload, onClose, onCreateMeta, ...props
                   </>
                 )}
               </div>
-              {status && status.start && (
-                <Spinner>
-                  <div className={`tx-info ${txInfos.length > 1 ? '' : 'solid'}`}>
-                    <h3>{txTitle}</h3>
-                    {txInfos.map((txt, idx) => (
-                      <div className="tx-info__item" key={idx}>
-                        {txt}
-                      </div>
-                    ))}
-                  </div>
-                  {txHash && (
-                    <div className="tx-hash">
-                      <a href={`${ETHERSCAN}${txHash}`} target="_blank">
-                        View transaction on Etherscan
-                      </a>
-                    </div>
-                  )}
-                </Spinner>
-              )}
             </div>
           ) : (
             <div className="info">
@@ -1155,6 +1033,29 @@ export default ({ lang, item, loading, onReload, onClose, onCreateMeta, ...props
             </div>
           )}
         </ItemDetail>
+        {status && status.start && (
+          <ProgressModal
+            onClose={() => {
+              // setStatus(null)
+            }}
+          >
+            <div className={`tx-info ${txInfos.length > 1 ? '' : 'solid'}`}>
+              <h3>{txTitle}</h3>
+              {txInfos.map((txt, idx) => (
+                <div className="tx-info__item" key={idx}>
+                  {txt}
+                </div>
+              ))}
+            </div>
+            {txHash && (
+              <div className="tx-hash">
+                <a href={`${ETHERSCAN}${txHash}`} target="_blank">
+                  View transaction on Etherscan
+                </a>
+              </div>
+            )}
+          </ProgressModal>
+        )}
       </Wrapper>
     </ItemOverlay>
   )

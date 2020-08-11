@@ -49,7 +49,7 @@ const themes = {
     --color-secondary: #7D0884;
     --color-highlight: #00FFDF;
     --color-border: #7E0782;
-    --color-border-grey: #000000;
+    --color-border-grey: #FFFFFF;
     --color-thick: #5B00FF;
     --color-dark: #252525;
     --color-grey: #393939;
@@ -237,9 +237,9 @@ class RightshareApp extends App {
         apiKey: OPENSEA_API_KEY,
         addresses: MAIN_NETWORK
           ? {
-              FRight: '0x63A52a41df33A40d5E39d6cEB4EEBD1d47ACc1b3',
-              IRight: '0xf61a634C4a8f1778A06202F6a1E5751ED0fBCdEa',
-              RightsDao: '0x3B0841ab834052f3DBd21a537f7886388d09A114',
+              FRight: '0x53a133EABab0220E5f06d59918796626Ab325043',
+              IRight: '0x51dc3f98bE32CbeE0CD399500488Fc1254fa8689',
+              RightsDao: '0xC47Af0d7D3B568db6A26Fbc5c0084100925F32Ac',
             }
           : {
               FRight: '0x76e78270d2117689864Bb5f94DAD7192BCd42298',
@@ -335,6 +335,11 @@ class RightshareApp extends App {
 
               body * {
                 box-sizing: border-box;
+              }
+
+              a {
+                cursor: pointer;
+                color: var(--color-link);
               }
 
               *::-webkit-scrollbar {

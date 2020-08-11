@@ -91,7 +91,9 @@ export default connect((state) => state)(function ({ provider, onProvider, child
   return (
     <Wrapper>
       <Account>
-        <img src={theme === 'primary' ? '/meta/logo.svg' : '/meta/logo_dark.png'} className="logo" />
+        <a href="/" style={{ display: 'flex' }}>
+          <img src={theme === 'primary' ? '/meta/logo.svg' : '/meta/logo_dark.png'} className="logo" />
+        </a>
         <div className="account-info">
           <Input
             className="small"

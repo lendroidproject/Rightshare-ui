@@ -15,7 +15,7 @@ export const intlTabs = (lang) =>
     NFT: {
       MyAssets: 'My Assets',
       MyFRights: 'My fRights',
-      MyIRights: 'My iRights',
+      MyIRights: 'My Metatokens',
     },
   }[lang || defaultLang])
 

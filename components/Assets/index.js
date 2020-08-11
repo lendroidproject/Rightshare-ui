@@ -15,7 +15,7 @@ const Wrapper = styled(FlexWrap)`
 
 const Items = styled(FlexWrap)`
   margin: 0 -20px;
-  justify-content: space-between;
+  justify-content: center;
 `
 
 export default connect((state) => state)(function ({ children, data, loadMore, onTab, onParent, lang, ...props }) {

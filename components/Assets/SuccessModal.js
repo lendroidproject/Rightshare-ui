@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-import { ItemOverlay, ItemDetail } from './AssetDetail'
+import { ItemOverlay } from './AssetDetail'
 
 const MAIN_NETWORK = process.env.MAIN_NETWORK
 
@@ -60,7 +60,7 @@ export const Content = styled.div`
 `
 
 export default ({ onClose }) => (
-  <ItemOverlay onMouseDown={onClose}>
+  <ItemOverlay>
     <Content onMouseDown={(e) => e.stopPropagation()}>
       <img src="/meta/close-btn.svg" className="close" onClick={onClose} />
       <img src="/meta/celebrations.svg" className="tick" />

@@ -25,6 +25,7 @@ export default function ({ lang, onTab, onParent, children, ...props }) {
       addresses: { getName },
       IRight: { tokenURI, baseAsset },
     },
+    filtered: origin,
   } = props
   const [page, setPage] = useState({ offset: assets.length, limit: PAGE_LIMIT })
   const [loading, setLoading] = useState(owner !== props.owner || !props.iRights)
@@ -34,7 +35,7 @@ export default function ({ lang, onTab, onParent, children, ...props }) {
   const myAssets = (query, refresh = false) => {
     setLoading(true)
     setRefresh(refresh)
-    getMyAssets({ ...query, asset_contract_address })
+    getMyAssets({ ...query/*, asset_contract_address*/ })
       .then((response) => response.data)
       .then(({ assets: newAssets }) => {
         dispatch({
@@ -110,7 +111,9 @@ export default function ({ lang, onTab, onParent, children, ...props }) {
 
   const filteredRights = (rights || []).filter(filterPlatform(lang, getName))
   const filteredFRights = (fRights || []).filter(filterBase(lang))
-  const filtered = assets.filter(filterBase(lang))
+  const filtered = origin.filter(
+    (asset) => asset_contract_address.toLowerCase() === asset.asset_contract.address.toLowerCase()
+  )
   const assetsProps = {
     lang,
     data: filtered,
@@ -164,7 +167,7 @@ export default function ({ lang, onTab, onParent, children, ...props }) {
                     </a>
                     .
                   </>
-                ) : !rights || (fRights && filteredFRights.length === 0) ? (
+                ) : true || !rights || (fRights && filteredFRights.length === 0) ? (
                   <>
                     No iRights available in your wallet. Freeze a digital collectible from your{' '}
                     <a

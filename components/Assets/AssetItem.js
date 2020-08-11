@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import Spinner from '~components/common/Spinner'
 
 const ItemWrapper = styled.div`
-  height: 270px;
+  min-height: 270px;
   width: 227px;
   border: 2px solid var(--color-primary);
   border-radius: 8px;
@@ -45,6 +45,12 @@ const ItemInfo = styled.div`
   max-width: 100%;
   text-overflow: ellipsis;
 
+  span {
+    font-size: 12px;
+    position: relative;
+    top: -8px;
+  }
+
   .description {
     position: absolute;
     left: 20px;
@@ -78,6 +84,7 @@ export default ({ onSelect, ...data }) => {
     decimals,
     tokenInfo: { name: infoName, background_color: infoBack, image: infoImage } = {},
     loaded,
+    totalNFTRights,
   } = data
 
   return (
@@ -97,6 +104,8 @@ export default ({ onSelect, ...data }) => {
       </Thumbnail>
       <ItemInfo>
         {infoName || name || `#${id}`}
+        <br />
+        {totalNFTRights > 0 && <span>({totalNFTRights} metatokens)</span>}
         <div className="description">{description || '---'}</div>
       </ItemInfo>
     </ItemWrapper>

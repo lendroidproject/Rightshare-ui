@@ -7,6 +7,7 @@ import Button from '~components/common/Button'
 import Assets from '~components/Assets'
 
 import { filterPlatform, platforms } from '~components/Parcels'
+import Dropdown from '../Dropdown'
 
 const MAIN_NETWORK = process.env.MAIN_NETWORK
 
@@ -87,26 +88,43 @@ export const Info = styled.div`
   // }
 `
 
-export const fetchInfos = (assets, owner) =>
+export const fetchInfos = (assets, [owner, iRightAddr, totalNFTRights, baseAsset]) =>
   Promise.all(
     assets.map(
       (asset) =>
         new Promise((resolve) => {
-          if (asset.image_url || true) return resolve(asset)
           const {
             token_id: tokenId,
             asset_contract: { address },
           } = asset
-          forceFetch({ tokenId, address, owner })
-            .then(({ data }) =>
-              resolve({
-                ...asset,
-                image_url: asset.image_url || data.image_url,
-              })
-            )
+          Promise.all([
+            baseAsset(tokenId),
+            new Promise((resolve) =>
+              totalNFTRights(iRightAddr, address, Number(tokenId))
+                .then(resolve)
+                .catch(() => resolve(0))
+            ),
+          ])
+            .then(([base, total]) => resolve({ ...asset, totalNFTRights: total, base }))
             .catch((err) => {
-              resolve(asset)
+              console.log(err)
+              resolve({ ...asset, totalNFTRights: 0, base: null })
             })
+          // if (asset.image_url || true) return resolve(asset)
+          // const {
+          //   token_id: tokenId,
+          //   asset_contract: { address },
+          // } = asset
+          // forceFetch({ tokenId, address, owner })
+          //   .then(({ data }) =>
+          //     resolve({
+          //       ...asset,
+          //       image_url: asset.image_url || data.image_url,
+          //     })
+          //   )
+          //   .catch((err) => {
+          //     resolve(asset)
+          //   })
         })
     )
   )
@@ -118,10 +136,14 @@ export default function ({ lang, onTab, onParent, children, ...props }) {
     address: owner,
     methods: {
       addresses: { getName },
+      IRight: { totalNFTRights, baseAsset },
     },
     dispatch,
     assets = [],
+    addresses: { IRight: iRightAddr },
+    filtered: origin,
   } = props
+  console.log(origin)
   const [page, setPage] = useState({ offset: assets.length, limit: PAGE_LIMIT })
   const [loading, setLoading] = useState(owner !== props.owner || !props.assets)
   const [end, setEnd] = useState(!assets.length || assets.length % PAGE_LIMIT !== 0)
@@ -139,7 +161,7 @@ export default function ({ lang, onTab, onParent, children, ...props }) {
         })
         setPage({ offset: query.offset + PAGE_LIMIT, limit: PAGE_LIMIT })
         setEnd(newAssets.length < query.limit)
-        fetchInfos(newAssets, owner).then((data) =>
+        fetchInfos(newAssets, [owner, iRightAddr, totalNFTRights, baseAsset]).then((data) =>
           dispatch({
             type: 'GET_ASSET_INFO',
             payload: { data, type: 'assets' },
@@ -205,7 +227,7 @@ export default function ({ lang, onTab, onParent, children, ...props }) {
     return () => panel && panel.removeEventListener('scroll', isScrolledIntoView, false)
   }, [])
 
-  const filtered = assets.filter(filterPlatform(lang, getName))
+  const filtered = origin.filter((asset) => iRightAddr.toLowerCase() !== asset.asset_contract.address.toLowerCase())
   const assetsProps = {
     lang,
     data: filtered,
@@ -214,18 +236,43 @@ export default function ({ lang, onTab, onParent, children, ...props }) {
     onParent,
   }
 
-  const [filter, setFilter] = useState('')
+  const [filter, setFilter] = useState([])
+  const options = [
+    {
+      id: 1,
+      label: 'VIP Tickets',
+    },
+    {
+      id: 2,
+      label: 'Rental',
+    },
+    {
+      id: 3,
+      label: 'Grand Opening',
+    },
+  ]
 
   return (
     <Wrapper>
       <div className="header">
         <h1>{title}</h1>
         <div className="actions">
-          <Button className={`black image ${filter ? 'active' : ''}`}>
-            <img src="/meta/filter.svg" />
-            Filter By
-            <img src="/meta/arrow.svg" className="suffix" />
-          </Button>
+          <Dropdown
+            options={options}
+            onSelect={(val) => setFilter(filter.includes(val) ? filter.filter((a) => a !== val) : [...filter, val])}
+            position={{ left: '12px' }}
+            selection={filter}
+          >
+            <Button className={`black image ${filter ? 'active' : ''}`}>
+              <img src="/meta/filter.svg" />
+              {filter.length > 0
+                ? filter.length > 1
+                  ? `Filter By (${options[filter[0]].label} +${filter.length - 1})`
+                  : `Filter By (${options[filter[0]].label})`
+                : 'Filter By'}
+              <img src="/meta/arrow.svg" className="suffix" />
+            </Button>
+          </Dropdown>
           <Button className="black image" onClick={handleRefresh}>
             <img src="/meta/reload.svg" />
             Refresh

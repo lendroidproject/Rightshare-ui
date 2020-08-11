@@ -16,8 +16,12 @@ const Accordion = styled.div`
   display: flex;
   height: 100%;
 
-  > div {
-    border-radius: 10px;
+  > div:nth-child(1) {
+    border-radius: 0 10px 10px 0;
+  }
+
+  > div:nth-child(2) {
+    border-radius: 10px 0 0 10px;
   }
 
   .panel {
@@ -104,37 +108,37 @@ const Tabs = styled.div`
   }
 `
 
-const tabs = [
-  ...(MAIN_NETWORK
-    ? [
-        {
-          label: 'CryptoVoxels Parcels',
-          hasChild: true,
-          lang: 'CV',
-        },
-      ]
-    : [
-        {
-          label: 'Other NFTs',
-          hasChild: true,
-          lang: 'NFT',
-        },
-        {
-          label: 'CryptoVoxels Parcels',
-          hasChild: true,
-          lang: 'CV',
-        },
-        {
-          label: 'Ethereum Name Service',
-          hasChild: true,
-          lang: 'ENS',
-        },
-      ]),
-  {
-    label: 'How it works',
-    Component: Intro,
-  },
-]
+// const tabs = [
+//   ...(MAIN_NETWORK
+//     ? [
+//         {
+//           label: 'CryptoVoxels Parcels',
+//           hasChild: true,
+//           lang: 'CV',
+//         },
+//       ]
+//     : [
+//         {
+//           label: 'Other NFTs',
+//           hasChild: true,
+//           lang: 'NFT',
+//         },
+//         {
+//           label: 'CryptoVoxels Parcels',
+//           hasChild: true,
+//           lang: 'CV',
+//         },
+//         {
+//           label: 'Ethereum Name Service',
+//           hasChild: true,
+//           lang: 'ENS',
+//         },
+//       ]),
+//   {
+//     label: 'How it works',
+//     Component: Intro,
+//   },
+// ]
 
 const childTabs = [
   { label: 'MyAssets', Component: MyAssets, info: 'iRight', icon: '/meta/myassets.svg' },
@@ -156,8 +160,54 @@ class MetaTokenUI extends React.Component {
 
   render() {
     const { show, active, open, activeChild } = this.state
+    const {
+      assets = [],
+      // addresses: { IRight: iRightAddr },
+    } = this.props
 
-    const { hasChild, lang = 'NFT' } = tabs[active]
+    const assetTypes = {}
+    const baseMap = {}
+    const iRightAddr = this.props.addresses && this.props.addresses.IRight.toLowerCase()
+    assets.forEach((asset) => {
+      if (asset.asset_contract.address.toLowerCase() === iRightAddr) return
+      if (!assetTypes[asset.asset_contract.name]) {
+        assetTypes[asset.asset_contract.name] = [asset]
+      } else {
+        assetTypes[asset.asset_contract.name].push(asset)
+      }
+      baseMap[asset.asset_contract.address.toLowerCase()] = asset.asset_contract.name
+    })
+    assets.forEach((asset) => {
+      if (asset.asset_contract.address.toLowerCase() !== iRightAddr) return
+      if (!asset.base) return
+      if (baseMap[asset.base.baseAssetAddress.toLowerCase()]) {
+        assetTypes[baseMap[asset.base.baseAssetAddress.toLowerCase()]].push(asset)
+      }
+    })
+
+    const tabs = [
+      ...(!this.props.assets
+        ? [
+            {
+              label: '...',
+              hasChild: true,
+              lang: 'NFT',
+              assets: [],
+            },
+          ]
+        : Object.keys(assetTypes).map((assetName) => ({
+            label: assetName,
+            hasChild: true,
+            lang: 'NFT',
+            assets: assetTypes[assetName],
+          }))),
+      {
+        label: 'How it works',
+        Component: Intro,
+      },
+    ]
+
+    const { hasChild, lang = 'NFT', assets: filtered } = tabs[active]
     const intl = intlTabs(lang)
     const info = intlInfo(lang)
 
@@ -168,7 +218,8 @@ class MetaTokenUI extends React.Component {
           title: intl[childTabs[activeChild.split('-')[1]].label],
           info: info[childTabs[activeChild.split('-')[1]].info],
           onParent: () => this.setState({ active: tabs.length - 1 }),
-          onTab: (child) => this.setState({ activeChild: child }),
+          onTab: (child) => this.setState({ activeChild: `${active}-${child}` }),
+          filtered,
         }
       : {}
 
@@ -210,11 +261,11 @@ class MetaTokenUI extends React.Component {
             </svg>
           )}
         </div>
-        {hasChild && active && open && renderChilds(lang)}
+        {hasChild && active && open && renderChilds(lang, assets)}
       </>
     )
 
-    const renderChilds = () => {
+    const renderChilds = (lang, assets) => {
       const tabs = childTabs.map(({ label, info: infoKey, icon }) => ({
         label: intl[label],
         info: info[infoKey],

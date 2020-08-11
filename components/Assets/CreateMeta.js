@@ -856,7 +856,6 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                           data-tip={tooltips(availables['freeze'])}
                         >
                           {intl.submit}
-                          {status && status.start === 'freeze' && <img src="/spinner.svg" />}
                         </Button>,
                         freezeForm.isExclusive && availables['approve'] !== 0 ? 'approve' : 'freeze'
                         // freezeForm.isExclusive && availables['approve'] !== 0 ? (
@@ -866,7 +865,6 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                         //     data-tip={tooltips(availables['approve'])}
                         //   >
                         //     {intl.approve}
-                        //     {status && status.start === 'approve' && <img src="/spinner.svg" />}
                         //   </Button>
                         // ) : (
                         //   <Button
@@ -876,7 +874,6 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                         //     data-tip={tooltips(availables['freeze'])}
                         //   >
                         //     {intl.submit}
-                        //     {status && status.start === 'freeze' && <img src="/spinner.svg" />}
                         //   </Button>
                         // ),
                         // freezeForm.isExclusive && availables['approve'] !== 0 ? 'approve' : 'freeze'
@@ -885,25 +882,6 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
                 </>
               )}
             </div>
-            {status && status.start && (
-              <Spinner>
-                <div className={`tx-info ${txInfos.length > 1 ? '' : 'solid'}`}>
-                  <h3>{txTitle}</h3>
-                  {txInfos.map((txt, idx) => (
-                    <div className="tx-info__item" key={idx}>
-                      {txt}
-                    </div>
-                  ))}
-                </div>
-                {txHash && (
-                  <div className="tx-hash">
-                    <a href={`${ETHERSCAN}${txHash}`} target="_blank">
-                      View transaction on Etherscan
-                    </a>
-                  </div>
-                )}
-              </Spinner>
-            )}
           </div>
         ) : (
           <div className="info">
@@ -914,17 +892,25 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
       {status && status.start && (
         <ProgressModal
           onClose={() => {
-            dispatch({
-              type: 'RESET_ASSETS',
-              payload: {},
-            })
-            switch (success) {
-              default:
-                onParent(2)
-            }
-            setSuccess(null)
+            // setStatus(null)
           }}
-        />
+        >
+          <div className={`tx-info ${txInfos.length > 1 ? '' : 'solid'}`}>
+            <h1>{txTitle}</h1>
+            {txInfos.map((txt, idx) => (
+              <div className="tx-info__item" key={idx}>
+                {txt}
+              </div>
+            ))}
+          </div>
+          {txHash && (
+            <div className="tx-hash">
+              <a href={`${ETHERSCAN}${txHash}`} target="_blank">
+                View transaction on Etherscan
+              </a>
+            </div>
+          )}
+        </ProgressModal>
       )}
     </Wrapper>
   )
