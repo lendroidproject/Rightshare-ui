@@ -262,6 +262,7 @@ export default function ({ lang, onTab, onParent, children, ...props }) {
             onSelect={(val) => setFilter(filter.includes(val) ? filter.filter((a) => a !== val) : [...filter, val])}
             position={{ left: '12px' }}
             selection={filter}
+            closeOnSelect={false}
           >
             <Button className={`black image ${filter ? 'active' : ''}`}>
               <img src="/meta/filter.svg" />

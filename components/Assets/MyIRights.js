@@ -8,6 +8,7 @@ import { PAGE_LIMIT, NoData, Info, Wrapper } from './MyAssets'
 import { fetchInfos } from './MyFRights'
 
 import { filterBase, filterPlatform, platforms } from '~components/Parcels'
+import Dropdown from '../Dropdown'
 
 const MAIN_NETWORK = process.env.MAIN_NETWORK
 
@@ -35,7 +36,7 @@ export default function ({ lang, onTab, onParent, children, ...props }) {
   const myAssets = (query, refresh = false) => {
     setLoading(true)
     setRefresh(refresh)
-    getMyAssets({ ...query/*, asset_contract_address*/ })
+    getMyAssets({ ...query /*, asset_contract_address*/ })
       .then((response) => response.data)
       .then(({ assets: newAssets }) => {
         dispatch({
@@ -122,15 +123,46 @@ export default function ({ lang, onTab, onParent, children, ...props }) {
     onParent,
   }
 
-  const [filter, setFilter] = useState('')
+  const [filter, setFilter] = useState([])
+  const options = [
+    {
+      id: 1,
+      label: 'VIP Tickets',
+    },
+    {
+      id: 2,
+      label: 'Rental',
+    },
+    {
+      id: 3,
+      label: 'Grand Opening',
+    },
+  ]
 
   return (
     <Wrapper>
       <div className="header">
         <h1>{title}</h1>
         <div className="actions">
-          <Button className={`black ${filter ? 'active' : ''}`}>Filter By</Button>
-          <Button className="black" onClick={handleRefresh}>
+          <Dropdown
+            options={options}
+            onSelect={(val) => setFilter(filter.includes(val) ? filter.filter((a) => a !== val) : [...filter, val])}
+            position={{ left: '12px' }}
+            selection={filter}
+            closeOnSelect={false}
+          >
+            <Button className={`black image ${filter ? 'active' : ''}`}>
+              <img src="/meta/filter.svg" />
+              {filter.length > 0
+                ? filter.length > 1
+                  ? `Filter By (${options[filter[0] - 1].label} +${filter.length - 1})`
+                  : `Filter By (${options[filter[0] - 1].label})`
+                : 'Filter By'}
+              <img src="/meta/arrow.svg" className="suffix" />
+            </Button>
+          </Dropdown>
+          <Button className="black image" onClick={handleRefresh}>
+            <img src="/meta/reload.svg" />
             Refresh
           </Button>
         </div>
