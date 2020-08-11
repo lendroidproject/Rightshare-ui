@@ -6,6 +6,7 @@ import Button from '~components/common/Button'
 import Assets from '~components/Assets'
 
 import { Form } from '~components/Assets/AssetForm'
+import { getAsset } from '~utils/api'
 
 const MAIN_NETWORK = process.env.MAIN_NETWORK
 
@@ -77,6 +78,7 @@ export default function (props) {
     methods: {
       IRight: { fetchRights },
     },
+    addresses: { IRight: iRightAddr },
   } = props
 
   const [loading, setLoading] = useState(false)
@@ -94,8 +96,21 @@ export default function (props) {
   const handleLookup = () => {
     const { ethAddr, nftAddr, nftId } = form
     setLoading(true)
-    fetchRights(ethAddr, nftAddr, nftId)
-      .then(setAssets)
+    fetchRights(ethAddr, nftAddr, Number(nftId))
+      .then((assets) => {
+        Promise.all(assets.map((asset) => getAsset(ethAddr, iRightAddr, asset.tokenId)))
+          .then((origins) =>
+            setAssets(origins.map((origin, idx) => ({ ...origin.data, metadata: assets[idx], loaded: true })))
+          )
+          .catch((err) => {
+            console.log(err)
+            setAssets([])
+          })
+          .finally(() => {
+            setLoading(false)
+            setFetched(true)
+          })
+      })
       .catch((err) => {
         console.log(err)
         setAssets([])

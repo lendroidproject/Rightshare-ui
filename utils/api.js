@@ -51,6 +51,13 @@ export function getMyAssets(params) {
   })
 }
 
+export function getAsset(ethAddr, nftAddr, nftId) {
+  return request({
+    url: `/asset/${nftAddr}/${nftId}`,
+    params: { account_address: ethAddr },
+  })
+}
+
 export function forceFetch({ tokenId, address, owner }) {
   return request(
     {

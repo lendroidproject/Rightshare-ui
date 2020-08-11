@@ -28,6 +28,7 @@ export default connect((state) => state)(function ({ children, data, loadMore, o
       // RightsDao: { currentFVersion, currentIVersion },
     },
   } = props
+
   const [item, setItem] = useState(null)
   const [success, setSuccess] = useState(null)
   const [loading, setLoading] = useState(false)
