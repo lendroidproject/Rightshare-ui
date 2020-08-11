@@ -19,6 +19,7 @@ const Accordion = styled.div`
 
   > div:nth-child(1) {
     border-radius: 0 10px 10px 0;
+    flex: 0 0 250px;
   }
 
   > div:nth-child(2) {
@@ -40,7 +41,6 @@ const Tabs = styled.div`
 
   display: flex;
   flex-direction: column;
-  min-width: 250px;
   margin-right: 20px;
 
   .tab {
