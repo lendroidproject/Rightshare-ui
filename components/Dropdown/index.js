@@ -7,6 +7,7 @@ export default function Dropdown({
   label,
   options,
   render,
+  selection,
   onSelect,
   position = {},
   closeOnSelect = true,
@@ -42,7 +43,11 @@ export default function Dropdown({
       <Content className={`animated fadeIn ${show ? 'show' : ''}`} position={position}>
         <label>{label}</label>
         {options.map(({ id, label, icon }) => (
-          <Option key={id} onClick={() => onSelect(id)} className={`pointer ${closeOnSelect ? '' : 'trigger'}`}>
+          <Option
+            key={id}
+            onClick={() => onSelect(id)}
+            className={`pointer ${selection.includes(id) ? 'active' : ''} ${closeOnSelect ? '' : 'trigger'}`}
+          >
             {render ? (
               render({ id, label, icon })
             ) : (

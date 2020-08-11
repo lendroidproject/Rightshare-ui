@@ -57,6 +57,11 @@ export const Option = styled.div`
   }
 
   &:hover {
-    color: var(--color-orange);
+    background: var(--color-border);
+    opacity: 0.9;
+  }
+
+  &.active {
+    background: var(--color-border);
   }
 `

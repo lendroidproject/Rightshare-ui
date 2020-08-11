@@ -267,8 +267,8 @@ export default function ({ lang, onTab, onParent, children, ...props }) {
               <img src="/meta/filter.svg" />
               {filter.length > 0
                 ? filter.length > 1
-                  ? `Filter By (${options[filter[0]].label} +${filter.length - 1})`
-                  : `Filter By (${options[filter[0]].label})`
+                  ? `Filter By (${options[filter[0] - 1].label} +${filter.length - 1})`
+                  : `Filter By (${options[filter[0] - 1].label})`
                 : 'Filter By'}
               <img src="/meta/arrow.svg" className="suffix" />
             </Button>
