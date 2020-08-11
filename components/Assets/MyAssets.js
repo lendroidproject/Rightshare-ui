@@ -143,7 +143,7 @@ export default function ({ lang, onTab, onParent, children, ...props }) {
     addresses: { IRight: iRightAddr },
     filtered: origin,
   } = props
-  console.log(origin)
+
   const [page, setPage] = useState({ offset: assets.length, limit: PAGE_LIMIT })
   const [loading, setLoading] = useState(owner !== props.owner || !props.assets)
   const [end, setEnd] = useState(!assets.length || assets.length % PAGE_LIMIT !== 0)

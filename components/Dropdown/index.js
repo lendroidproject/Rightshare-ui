@@ -52,7 +52,7 @@ export default function Dropdown({
               render({ id, label, icon })
             ) : (
               <>
-                {icon && icon} {label}
+                {icon && icon} {selection.includes(id) ? '+' : '-'} {label}
               </>
             )}
           </Option>

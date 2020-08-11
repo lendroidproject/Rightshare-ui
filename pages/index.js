@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 
 import { intlTabs, intlInfo } from '~utils/translation'
 import Button from '~components/common/Button'
+import AssetLookup from '~components/AssetLookup'
 import Intro from '~components/Intro'
 
 import MyAssets from '~components/Assets/MyAssets'
@@ -201,6 +202,10 @@ class MetaTokenUI extends React.Component {
             lang: 'NFT',
             assets: assetTypes[assetName],
           }))),
+      {
+        label: 'Access Lookup',
+        Component: AssetLookup,
+      },
       {
         label: 'How it works',
         Component: Intro,
