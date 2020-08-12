@@ -15,7 +15,14 @@ export const fetchInfos = (assets, [baseAsset, tokenURI]) =>
     assets.map(
       (asset) =>
         new Promise((resolve) => {
-          Promise.all([baseAsset(asset.token_id), tokenURI(asset.token_id)])
+          Promise.all([
+            new Promise((resolve) =>
+              baseAsset(Number(asset.token_id))
+                .then(resolve)
+                .catch(() => resolve(null))
+            ),
+            tokenURI(Number(asset.token_id)),
+          ])
             .then(([base, uri]) => {
               asset.base = base
               asset.lang = Addresses[base[0]]

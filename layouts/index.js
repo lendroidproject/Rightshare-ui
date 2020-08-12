@@ -85,7 +85,7 @@ export default connect((state) => state)(function ({ provider, onProvider, child
 
   const [theme, setTheme] = useState('primary')
   useEffect(() => {
-    setTheme(localStorage.getItem('theme'))
+    setTheme(localStorage.getItem('theme') || 'primary')
   }, [])
 
   return (
@@ -108,7 +108,7 @@ export default connect((state) => state)(function ({ provider, onProvider, child
           <Button className={`black icon ${provider === 'fortmatic' ? 'active' : ''}`}>
             <img src="/meta/fortnite.svg" onClick={() => onProvider('fortmatic')} />
           </Button>
-          <Button
+          {/* <Button
             style={{ fontSize: 30 }}
             className="black icon"
             dangerouslySetInnerHTML={{ __html: theme === 'primary' ? '&#9728;' : '&#9729' }}
@@ -116,7 +116,7 @@ export default connect((state) => state)(function ({ provider, onProvider, child
               localStorage.setItem('theme', localStorage.getItem('theme') === 'dark' ? 'primary' : 'dark')
               window.location.reload()
             }}
-          />
+          /> */}
         </div>
       </Account>
       <Content>{children}</Content>
