@@ -62,7 +62,7 @@ const Tabs = styled.div`
   margin-right: 20px;
 
   .mobile-only {
-    dispaly: none;
+    display: none;
 
     position: absolute;
     top: 0;
