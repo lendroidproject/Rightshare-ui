@@ -49,21 +49,31 @@ export const Wrapper = styled.div`
   overflow: auto;
 
   @media all and (max-width: 767px) {
+    padding: 25px 21px 22px;
   }
 
   .heading {
     padding-bottom: 14px;
     border-bottom: 1px solid var(--color-text);
+    @media all and (max-width: 767px) {
+      padding-bottom: 12px;
+    }
 
     p {
       margin: 0;
       font-size: 18px;
       font-weight: 600;
       color: var(--color-text-head);
+      @media all and (max-width: 767px) {
+        font-size: 14px;
+      }
 
       span {
         font-size: 12px;
         font-weight: normal;
+        @media all and (max-width: 767px) {
+          font-size: 10px;
+        }
       }
     }
   }
@@ -73,6 +83,10 @@ export const Wrapper = styled.div`
     right: 16px;
     top: 12px;
     cursor: pointer;
+    @media all and (max-width: 767px) {
+      right: 21px;
+      top: 21px;
+    }
   }
 `
 
@@ -87,6 +101,9 @@ export const ItemDetail = styled(FlexInline)`
 
   > div {
     margin: 20px;
+    @media all and (max-width: 767px) {
+      margin: 0;
+    }
   }
 
   .actions {
@@ -100,7 +117,6 @@ export const ItemDetail = styled(FlexInline)`
       max-width: unset;
       width: 100%;
       margin: 0;
-      padding: 8px;
     }
 
     .carousel-root {
@@ -173,6 +189,12 @@ export const ItemDetail = styled(FlexInline)`
 
     height: 270px;
     width: 227px;
+    @media all and (max-width: 767px) {
+      height: 200px;
+      width: 168px;
+      margin: auto;
+      padding: 15px 15px 17px;
+    }
 
     &.freeze {
       flex-direction: column;
@@ -267,11 +289,19 @@ export const ItemDetail = styled(FlexInline)`
 
     display: flex;
     flex-direction: column;
+    @media all and (max-width: 767px) {
+      margin-top: 15px;
+      padding-bottom: 0;
+    }
 
     p.desc {
       font-size: 12px;
       margin: 20px 0;
       flex: 1;
+      @media all and (max-width: 767px) {
+        margin: 12px 0 18px;
+        font-size: 10px;
+      }
     }
   }
 
@@ -281,17 +311,28 @@ export const ItemDetail = styled(FlexInline)`
     justify-content: center;
     margin-top: 20px;
     font-size: 12px;
+    @media all and (max-width: 767px) {
+      margin-top: 8px;
+      font-size: 10px;
+    }
 
     img {
       border-radius: 50%;
       width: 26px;
       margin-right: 8px;
+      @media all and (max-width: 767px) {
+        width: 19px;
+        margin-right: 5px;
+      }
     }
   }
 
   .buttons {
     > button {
       margin-bottom: 15px;
+      @media all and (max-width: 767px) {
+        width: 100%;
+      }
     }
 
     .tooltip {
@@ -300,6 +341,12 @@ export const ItemDetail = styled(FlexInline)`
       align-items: center;
 
       @media all and (max-width: 767px) {
+        flex-direction: column;
+
+        button {
+          width: 100%;
+          margin-bottom: 15px;
+        }
       }
 
       &__info {

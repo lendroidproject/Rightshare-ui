@@ -58,6 +58,16 @@ const Wrapper = styled.button`
         margin-right: 0;
         pointer-events: none;
       }
+      @media all and (max-width: 767px) {
+        font-size: 0;
+        padding: 9px;
+        img {
+          margin-right: 0;
+        }
+        img.suffix {
+          display: none;
+        }
+      }
     }
   }
 
@@ -68,10 +78,17 @@ const Wrapper = styled.button`
     align-items: center;
     justify-content: center;
     padding: 5px;
+    @media all and (max-width: 767px) {
+      width: 31px;
+      height: 31px;
+    }
 
     img {
       height: 24px;
       filter: grayscale(1);
+      @media all and (max-width: 767px) {
+        height: 18px;
+      }
     }
 
     &.active img {

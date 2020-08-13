@@ -115,12 +115,18 @@ export default function ({ lang, onTab, onParent, children, ...props }) {
   const filtered = origin.filter(
     (asset) => asset_contract_address.toLowerCase() === asset.asset_contract.address.toLowerCase()
   )
+  const [meta, setMeta] = useState(null)
+  const [item, setItem] = useState(null)
   const assetsProps = {
     lang,
     data: filtered,
     loadMore: handleRefresh,
     onTab,
     onParent,
+    meta,
+    setMeta,
+    item,
+    setItem,
   }
 
   const [filter, setFilter] = useState([])
@@ -147,7 +153,7 @@ export default function ({ lang, onTab, onParent, children, ...props }) {
           <Dropdown
             options={options}
             onSelect={(val) => setFilter(filter.includes(val) ? filter.filter((a) => a !== val) : [...filter, val])}
-            position={{ left: '12px' }}
+            position={{ right: '0px' }}
             selection={filter}
             closeOnSelect={false}
           >

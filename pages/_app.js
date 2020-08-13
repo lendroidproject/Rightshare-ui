@@ -343,7 +343,7 @@ class RightshareApp extends App {
               }
 
               *::-webkit-scrollbar {
-                width: 7px;
+                width: 3px;
                 margin-left: 3px;
               }
 

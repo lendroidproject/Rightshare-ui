@@ -6,6 +6,9 @@ import { Content as ModalContent } from './SuccessModal'
 const Content = styled(ModalContent)`
   p {
     font-size: 18px;
+    @media all and (max-width: 767px) {
+      font-size: 14px;
+    }
   }
 `
 

@@ -11,7 +11,7 @@ const Wrapper = styled.div`
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  z-index: 1;
+  z-index: 11;
   @media all and (max-width: 767px) {
     position: fixed;
   }
@@ -78,12 +78,16 @@ const Wrapper = styled.div`
   .spin div {
     box-sizing: content-box;
   }
+
+  img {
+    width: 100%;
+  }
 `
 
 export default ({ className = '', children, ...props }) => (
   <Wrapper className={`spinner ${className}`} {...props}>
     <div className="loadingio-spinner">
-      <div className="spin">
+      {/* <div className="spin">
         <div>
           <div></div>
           <div></div>
@@ -92,7 +96,8 @@ export default ({ className = '', children, ...props }) => (
           <div></div>
           <div></div>
         </div>
-      </div>
+      </div> */}
+      <img src="/meta/loading-metatoken.gif" />
     </div>
     {children && children}
   </Wrapper>

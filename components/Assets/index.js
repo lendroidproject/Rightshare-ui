@@ -11,14 +11,36 @@ import SuccessModal from './SuccessModal'
 
 const Wrapper = styled(FlexWrap)`
   padding: 20px 0;
+  @media all and (max-width: 767px) {
+    width: 100%;
+    padding: 0;
+  }
 `
 
 const Items = styled(FlexWrap)`
   margin: 0 -20px;
   justify-content: center;
+  @media all and (max-width: 767px) {
+    padding: 18px 10px;
+    border-radius: 12px;
+    background: var(--color-bg);
+    margin: 0;
+  }
 `
 
-export default connect((state) => state)(function ({ children, data, loadMore, onTab, onParent, lang, ...props }) {
+export default connect((state) => state)(function ({
+  meta,
+  setMeta,
+  item,
+  setItem,
+  children,
+  data,
+  loadMore,
+  onTab,
+  onParent,
+  lang,
+  ...props
+}) {
   const {
     dispatch,
     methods: {
@@ -29,10 +51,8 @@ export default connect((state) => state)(function ({ children, data, loadMore, o
     },
   } = props
 
-  const [item, setItem] = useState(null)
   const [success, setSuccess] = useState(null)
   const [loading, setLoading] = useState(false)
-  const [meta, setMeta] = useState(null)
 
   const handleSelect = (item) => {
     const {
@@ -69,7 +89,7 @@ export default connect((state) => state)(function ({ children, data, loadMore, o
   }
 
   const handleClose = () => {
-    setMeta(false)
+    setMeta(null)
     setItem(null)
   }
 
@@ -99,11 +119,13 @@ export default connect((state) => state)(function ({ children, data, loadMore, o
           {...props}
         />
       ) : (
-        <Items>
-          {data.map((asset, index) => (
-            <AssetItem key={index} {...asset} onSelect={handleSelect} />
-          ))}
-        </Items>
+        data.length > 0 && (
+          <Items>
+            {data.map((asset, index) => (
+              <AssetItem key={index} {...asset} onSelect={handleSelect} />
+            ))}
+          </Items>
+        )
       )}
       {item && !meta && (
         <AssetDetail

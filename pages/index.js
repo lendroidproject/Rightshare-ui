@@ -20,10 +20,25 @@ const Accordion = styled.div`
   > div:nth-child(1) {
     border-radius: 0 10px 10px 0;
     flex: 0 0 250px;
+
+    @media all and (max-width: 767px) {
+      padding-top: 105px;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      border-radius: 0;
+      z-index: 1;
+      height: 100vh;
+      overflow: auto;
+      display: none;
+    }
   }
 
   > div:nth-child(2) {
     border-radius: 10px 0 0 10px;
+    @media all and (max-width: 767px) {
+      border-radius: 0;
+    }
   }
 
   .panel {
@@ -32,6 +47,9 @@ const Accordion = styled.div`
     overflow: auto;
     background: var(--color-bg-panel);
     position: relative;
+    @media all and (max-width: 767px) {
+      background: transparent;
+    }
   }
 `
 
@@ -42,6 +60,24 @@ const Tabs = styled.div`
   display: flex;
   flex-direction: column;
   margin-right: 20px;
+
+  .mobile-only {
+    dispaly: none;
+
+    position: absolute;
+    top: 0;
+    padding: 40px 22px 22px;
+    justify-content: space-between;
+    width: 100%;
+
+    @media all and (max-width: 767px) {
+      display: flex;
+    }
+
+    .logo {
+      height: 40px;
+    }
+  }
 
   .tab {
     padding: 18px 32px;
@@ -66,6 +102,17 @@ const Tabs = styled.div`
       svg {
         transform: rotate(180deg);
         transition: all 0.2s;
+      }
+    }
+  }
+
+  &:not(.child) > .tab {
+    @media all and (max-width: 767px) {
+      &:first-child {
+        border-top: 1px solid var(--color-primary);
+      }
+      &:last-child {
+        border-bottom: 1px solid var(--color-primary);
       }
     }
   }
@@ -164,6 +211,7 @@ class MetaTokenUI extends React.Component {
     const {
       assets = [],
       // addresses: { IRight: iRightAddr },
+      onHideMenu,
     } = this.props
 
     const assetTypes = {}
@@ -229,12 +277,15 @@ class MetaTokenUI extends React.Component {
       : {}
 
     const handleActive = (active) => {
-      this.setState({
-        active,
-        activeChild: `${active}-0`,
-        show: false,
-        open: active,
-      })
+      this.setState(
+        {
+          active,
+          activeChild: `${active}-0`,
+          show: false,
+          open: active,
+        },
+        () => onHideMenu()
+      )
     }
 
     const Tab = ({ label, icon, hasChild, open, active, onSelect }) => (
@@ -285,7 +336,7 @@ class MetaTokenUI extends React.Component {
               active={activeChild === `${active}-${index}`}
               label={label}
               icon={icon}
-              onSelect={() => this.setState({ activeChild: `${active}-${index}` })}
+              onSelect={() => this.setState({ activeChild: `${active}-${index}` }, () => onHideMenu())}
             />
           ))}
         </Tabs>
@@ -294,7 +345,13 @@ class MetaTokenUI extends React.Component {
 
     return (
       <Accordion>
-        <Tabs>
+        <Tabs className="mobile-open">
+          <div className="mobile-only">
+            <a href="/" style={{ display: 'flex' }}>
+              <img src="/meta/logo.svg" className="logo" />
+            </a>
+            <img src="/meta/mobile-close.svg" alt="" className="mobile-hamburger" onClick={() => onHideMenu()} />
+          </div>
           {tabs.map(({ label, hasChild }, index) => (
             <Tab
               key={index}

@@ -24,22 +24,37 @@ export const Wrapper = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
+    @media all and (max-width: 767px) {
+      background: var(--color-bg-panel);
+    }
 
     padding: 20px 32px;
     position: relative;
+    @media all and (max-width: 767px) {
+      padding: 11px 24px;
+    }
 
     h1 {
       font-size: 24px;
       font-weight: 600;
       margin: 0;
+      @media all and (max-width: 767px) {
+        font-size: 16px;
+      }
     }
 
     .actions {
       margin: 0 -12px;
       display: flex;
+      @media all and (max-width: 767px) {
+        margin: 0 -9px;
+      }
 
       .button {
         margin: 0 12px;
+        @media all and (max-width: 767px) {
+          margin: 0 9px;
+        }
       }
     }
 
@@ -50,6 +65,9 @@ export const Wrapper = styled.div`
       bottom: 0;
       border-top: 1px solid var(--color-border-grey);
       position: absolute;
+      @media all and (max-width: 767px) {
+        border: 0;
+      }
     }
   }
 
@@ -58,6 +76,10 @@ export const Wrapper = styled.div`
     overflow: auto;
     position: relative;
     padding: 0 32px;
+    @media all and (max-width: 767px) {
+      padding: 17px 2.5% 5px;
+      overflow: hidden auto;
+    }
   }
 `
 
@@ -232,12 +254,18 @@ export default function ({ lang, onTab, onParent, children, ...props }) {
   }, [])
 
   const filtered = origin.filter((asset) => iRightAddr.toLowerCase() !== asset.asset_contract.address.toLowerCase())
+  const [meta, setMeta] = useState(null)
+  const [item, setItem] = useState(null)
   const assetsProps = {
     lang,
     data: filtered,
     loadMore: handleRefresh,
     onTab,
     onParent,
+    meta,
+    setMeta,
+    item,
+    setItem,
   }
 
   const [filter, setFilter] = useState([])
@@ -261,27 +289,42 @@ export default function ({ lang, onTab, onParent, children, ...props }) {
       <div className="header">
         <h1>{title}</h1>
         <div className="actions">
-          <Dropdown
-            options={options}
-            onSelect={(val) => setFilter(filter.includes(val) ? filter.filter((a) => a !== val) : [...filter, val])}
-            position={{ left: '12px' }}
-            selection={filter}
-            closeOnSelect={false}
-          >
-            <Button className={`black image ${filter ? 'active' : ''}`}>
-              <img src="/meta/filter.svg" />
-              {filter.length > 0
-                ? filter.length > 1
-                  ? `Filter By (${options[filter[0] - 1].label} +${filter.length - 1})`
-                  : `Filter By (${options[filter[0] - 1].label})`
-                : 'Filter By'}
-              <img src="/meta/arrow.svg" className="suffix" />
+          {meta ? (
+            <Button
+              className="secondary image"
+              onClick={() => {
+                setMeta(null)
+                setItem(null)
+              }}
+            >
+              <img src="/meta/arrow-circle.svg" />
+              Back to My Assets
             </Button>
-          </Dropdown>
-          <Button className="black image" onClick={handleRefresh}>
-            <img src="/meta/reload.svg" />
-            Refresh
-          </Button>
+          ) : (
+            <>
+              <Dropdown
+                options={options}
+                onSelect={(val) => setFilter(filter.includes(val) ? filter.filter((a) => a !== val) : [...filter, val])}
+                position={{ right: '0px' }}
+                selection={filter}
+                closeOnSelect={false}
+              >
+                <Button className={`black image ${filter ? 'active' : ''}`}>
+                  <img src="/meta/filter.svg" />
+                  {filter.length > 0
+                    ? filter.length > 1
+                      ? `Filter By (${options[filter[0] - 1].label} +${filter.length - 1})`
+                      : `Filter By (${options[filter[0] - 1].label})`
+                    : 'Filter By'}
+                  <img src="/meta/arrow.svg" className="suffix" />
+                </Button>
+              </Dropdown>
+              <Button className="black image" onClick={handleRefresh}>
+                <img src="/meta/reload.svg" />
+                Refresh
+              </Button>
+            </>
+          )}
         </div>
       </div>
       <div className="content scroll-listener">

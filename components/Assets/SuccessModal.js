@@ -18,6 +18,9 @@ export const Content = styled.div`
 
   padding: 0px 25px 20px;
   text-align: center;
+  @media all and (max-width: 767px) {
+    font-size: 14px;
+  }
 
   @media all and (max-width: 767px) {
     width: 90%;
@@ -48,6 +51,9 @@ export const Content = styled.div`
     color: var(--color-purple);
     font-size: 28px;
     font-weight: 600;
+    @media all and (max-width: 767px) {
+      font-size: 24px;
+    }
   }
 
   p {

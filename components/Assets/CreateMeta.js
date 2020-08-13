@@ -35,10 +35,16 @@ export const Wrapper = styled.div`
       font-size: 16px;
       font-weight: 600;
       color: var(--color-text-head);
+      @media all and (max-width: 767px) {
+        font-size: 14px;
+      }
 
       span {
         font-size: 12px;
         font-weight: normal;
+        @media all and (max-width: 767px) {
+          font-size: 10px;
+        }
       }
     }
   }
@@ -60,10 +66,18 @@ export const ItemDetail = styled(FlexInline)`
   @media all and (max-width: 767px) {
     flex-wrap: wrap;
     margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
   }
 
   > div {
     margin: 20px;
+    @media all and (max-width: 767px) {
+      margin: 0;
+    }
   }
 
   .actions {
@@ -73,6 +87,9 @@ export const ItemDetail = styled(FlexInline)`
   .item-view {
     width: 340px;
     max-width: 100%;
+    @media all and (max-width: 767px) {
+      width: 100%;
+    }
 
     border: 2px solid var(--color-dark);
     border-radius: 8px;
@@ -86,6 +103,10 @@ export const ItemDetail = styled(FlexInline)`
       height: 337px;
       width: 255px;
       margin: auto;
+      @media all and (max-width: 767px) {
+        width: 182px;
+        height: 240px;
+      }
     }
 
     .carousel .thumbs {
@@ -155,6 +176,18 @@ export const ItemDetail = styled(FlexInline)`
       overflow: visible;
       width: 255px;
       margin: auto;
+      @media all and (max-width: 767px) {
+        width: auto;
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: flex-start;
+
+        .mobile-wrapper {
+          width: 182px;
+          margin-bottom: 15px;
+          position: relative;
+        }
+      }
 
       .carousel-status {
         display: flex;
@@ -170,9 +203,26 @@ export const ItemDetail = styled(FlexInline)`
         justify-content: center;
         flex-wrap: wrap;
 
+        @media all and (max-width: 767px) {
+          margin-bottom: 0;
+          margin-top: 0;
+          border-radius: 4px;
+          background-color: #1f046e;
+          padding: 12px 5px;
+          height: 240px;
+          width: 121px;
+          overflow: auto;
+          margin: -3.5px -5px;
+          justify-content: flex-start;
+          align-items: flex-start;
+        }
+
         .preview {
           width: 43px;
           height: 53px;
+          @media all and (max-width: 767px) {
+            margin: 3.5px 5px;
+          }
 
           display: flex;
           align-items: center;
@@ -184,8 +234,6 @@ export const ItemDetail = styled(FlexInline)`
           border: 1px dashed transparent;
           border-radius: 4px;
           background-color: transparent;
-
-          position: relative;
 
           &.active {
             border-color: var(--color-purple);
@@ -236,6 +284,14 @@ export const ItemDetail = styled(FlexInline)`
     display: flex;
     flex-direction: column;
 
+    @media all and (max-width: 767px) {
+      border-radius: 8px;
+      background-color: #000000;
+      box-shadow: inset 1px 1px 7px 1px rgba(0, 0, 0, 0.5), 13px 0 20px 0 rgba(0, 0, 0, 0.03);
+      padding: 20px 22px;
+      margin-top: 20px;
+    }
+
     p.desc {
       font-size: 12px;
       margin: 20px 0;
@@ -249,16 +305,25 @@ export const ItemDetail = styled(FlexInline)`
     justify-content: center;
     margin-bottom: 16px;
     font-size: 12px;
+    @media all and (max-width: 767px) {
+      margin-top: 8px;
+      font-size: 10px;
+    }
 
     img {
       border-radius: 50%;
       width: 26px;
       margin-right: 8px;
+      @media all and (max-width: 767px) {
+        width: 19px;
+        margin-right: 5px;
+      }
     }
   }
 
   .buttons {
     button {
+      margin-bottom: 15px;
     }
 
     .tooltip {
@@ -267,6 +332,12 @@ export const ItemDetail = styled(FlexInline)`
       align-items: center;
 
       @media all and (max-width: 767px) {
+        flex-direction: column;
+
+        button {
+          width: 100%;
+          margin-bottom: 15px;
+        }
       }
 
       &__info {
@@ -339,12 +410,18 @@ const Template = styled.div`
 
   font-size: 14px;
   text-align: center;
+  @media all and (max-width: 767px) {
+    font-size: 12px;
+  }
 
   a {
     font-size: 14px;
     color: var(--color-link);
     margin-top: 3px;
     display: block;
+    @media all and (max-width: 767px) {
+      font-size: 12px;
+    }
   }
 `
 
@@ -708,10 +785,6 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
 
   return (
     <Wrapper onMouseDown={(e) => e.stopPropagation()}>
-      <Button className="secondary image" onClick={() => onClose()}>
-        <img src="/meta/arrow-circle.svg" />
-        Back to My Assets
-      </Button>
       <ItemDetail>
         <div className="item-view">
           <div className="heading">
@@ -726,56 +799,58 @@ export default ({ lang, item, loading, onReload, onClose, ...props }) => {
             Owned by&nbsp;<span>{userName.length > 20 ? `${userName.substr(0, 17)}...` : userName}</span>
           </div>
           <div className="external freeze">
-            {metaTokens.length > 1 && (
-              <img src="/meta/delete.svg" className="trash" onClick={() => handleRemoveMeta(active)} />
-            )}
-            <Carousel
-              showThumbs={false}
-              showIndicators={false}
-              showStatus={false}
-              emulateTouch
-              selectedItem={active}
-              onChange={(active) => setActive(active)}
-            >
-              {metaTokens.map((metaToken, idx) => (
-                <div className="template" key={idx}>
-                  <img src={metaToken.imageUrl} className="image" />
-                  <img
-                    src={
-                      infoImage || image
-                        ? infoImage || image
-                        : `https://via.placeholder.com/512/FFFFFF/000000?text=%23${tokenId}`
-                    }
-                    alt={infoName || name}
-                    style={{
-                      background: infoBack || background ? `#${infoBack || background}` : '#f3f3f3',
-                    }}
-                    className="origin"
-                  />
-                  {metaToken.description && (
-                    <div className="metadata">
-                      <span>{metaToken.description}</span>
-                      <span>
-                        Expires on{' '}
-                        {transformUTCfromString(freezeForm.expiryDate, freezeForm.expiryTime).format(
-                          'DD MMM YY, HH:mm'
-                        )}{' '}
-                        UTC
-                      </span>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </Carousel>
-            <div className="carousel-status">
-              <img src="/meta/arrow-left.svg" onClick={() => active >= 1 && setActive(active - 1)} />
-              <span>
-                {active + 1} / {metaTokens.length}
-              </span>
-              <img
-                src="/meta/arrow-right.svg"
-                onClick={() => active < metaTokens.length - 1 && setActive(active + 1)}
-              />
+            <div className="mobile-wrapper">
+              {metaTokens.length > 1 && (
+                <img src="/meta/delete.svg" className="trash" onClick={() => handleRemoveMeta(active)} />
+              )}
+              <Carousel
+                showThumbs={false}
+                showIndicators={false}
+                showStatus={false}
+                emulateTouch
+                selectedItem={active}
+                onChange={(active) => setActive(active)}
+              >
+                {metaTokens.map((metaToken, idx) => (
+                  <div className="template" key={idx}>
+                    <img src={metaToken.imageUrl} className="image" />
+                    <img
+                      src={
+                        infoImage || image
+                          ? infoImage || image
+                          : `https://via.placeholder.com/512/FFFFFF/000000?text=%23${tokenId}`
+                      }
+                      alt={infoName || name}
+                      style={{
+                        background: infoBack || background ? `#${infoBack || background}` : '#f3f3f3',
+                      }}
+                      className="origin"
+                    />
+                    {metaToken.description && (
+                      <div className="metadata">
+                        <span>{metaToken.description}</span>
+                        <span>
+                          Expires on{' '}
+                          {transformUTCfromString(freezeForm.expiryDate, freezeForm.expiryTime).format(
+                            'DD MMM YY, HH:mm'
+                          )}{' '}
+                          UTC
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </Carousel>
+              <div className="carousel-status">
+                <img src="/meta/arrow-left.svg" onClick={() => active >= 1 && setActive(active - 1)} />
+                <span>
+                  {active + 1} / {metaTokens.length}
+                </span>
+                <img
+                  src="/meta/arrow-right.svg"
+                  onClick={() => active < metaTokens.length - 1 && setActive(active + 1)}
+                />
+              </div>
             </div>
             <div className="previews">
               {metaTokens.map((metaToken, idx) => (

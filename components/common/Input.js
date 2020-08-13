@@ -17,6 +17,10 @@ const Wrapper = styled.div`
     &.small {
       font-size: 12px;
       padding: 13px 13px;
+      @media all and (max-width: 767px) {
+        padding: 10px;
+        font-size: 10px;
+      }
     }
   }
 
@@ -27,6 +31,10 @@ const Wrapper = styled.div`
     top: 50%;
     transform: translateY(-50%);
     width: 27px;
+    @media all and (max-width: 767px) {
+      height: 20px;
+      width: 20px;
+    }
 
     img {
       height: 100%;
@@ -37,7 +45,10 @@ const Wrapper = styled.div`
   }
 
   &.icon input {
-    padding-left: 40px;
+      padding-left: 40px;
+      @media all and (max-width: 767px) {
+      padding-left: 34px;
+    }
   }
 
   &.suffix input {

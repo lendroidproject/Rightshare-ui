@@ -9,12 +9,18 @@ export const Form = styled.form`
     font-size: 18px;
     font-weight: 600;
     color: var(--color-blue);
+    @media all and (max-width: 767px) {
+      font-size: 16px;
+    }
   }
 
   label {
     font-size: 13px;
     margin-bottom: 8px;
     display: block;
+    @media all and (max-width: 767px) {
+      font-size: 12px;
+    }
 
     span {
       font-size: 90%;
@@ -35,6 +41,9 @@ export const Form = styled.form`
     color: #232160;
     font-size: 14px;
     font-weight: 500;
+    @media all and (max-width: 767px) {
+      font-size: 12px;
+    }
   }
 
   .inputs {
@@ -107,6 +116,9 @@ export const Form = styled.form`
       padding: 5px 10px;
       line-height: 1.5;
       background: transparent;
+      @media all and (max-width: 767px) {
+        font-size: 14px;
+      }
 
       border: 1px solid var(--color-input);
       border-radius: 4px;
