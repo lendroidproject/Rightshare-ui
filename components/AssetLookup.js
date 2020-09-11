@@ -87,10 +87,16 @@ export default function (props) {
 
   const [form, setForm] = useState({})
 
+  const [meta, setMeta] = useState(null)
+  const [item, setItem] = useState(null)
   const assetsProps = {
     lang: 'NFT',
     data: assets,
     loadMore: () => {},
+    meta,
+    setMeta,
+    item,
+    setItem,
   }
 
   const handleLookup = () => {

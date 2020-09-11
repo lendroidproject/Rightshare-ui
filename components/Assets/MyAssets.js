@@ -127,7 +127,10 @@ export const fetchInfos = (assets, [owner, iRightAddr, totalNFTRights, baseAsset
             ),
             new Promise((resolve) =>
               totalNFTRights(iRightAddr, address, Number(tokenId))
-                .then(resolve)
+                .then((rights) => {
+                  console.log(iRightAddr, address, tokenId, rights)
+                  resolve(rights)
+                })
                 .catch(() => resolve(0))
             ),
           ])
