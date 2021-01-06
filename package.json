@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/lendroidproject/Rightshare-ui#readme",
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "dayjs": "^1.8.30",
     "dotenv": "^8.2.0",
     "fortmatic": "^2.0.6",
