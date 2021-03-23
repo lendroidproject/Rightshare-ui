@@ -45,12 +45,14 @@ export default function ({ lang, onTab, onParent, children, ...props }) {
         })
         setPage({ offset: query.offset + PAGE_LIMIT, limit: PAGE_LIMIT })
         setEnd(newAssets.length < query.limit)
-        fetchInfos(newAssets, [baseAsset, tokenURI]).then((data) =>
-          dispatch({
-            type: 'GET_ASSET_INFO',
-            payload: { data, type: 'iRights' },
-          })
-        )
+        fetchInfos(newAssets, [baseAsset, tokenURI])
+          .then((data) =>
+            dispatch({
+              type: 'GET_ASSET_INFO',
+              payload: { data, type: 'iRights' },
+            })
+          )
+          .catch(console.log)
       })
       .catch((error) => {
         dispatch({

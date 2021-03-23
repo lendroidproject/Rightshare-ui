@@ -65,26 +65,28 @@ export default connect((state) => state)(function ({
     const type = getName(address)
     switch (type) {
       case 'FRight':
-        Promise.all([metadata(tokenId), isIMintable(tokenId), isUnfreezable(tokenId)]).then(
-          ([metadata, isIMintable, isUnfreezable]) => {
+        Promise.all([metadata(tokenId), isIMintable(tokenId), isUnfreezable(tokenId)])
+          .then(([metadata, isIMintable, isUnfreezable]) => {
             setItem({ ...item, type, metadata, isIMintable, isUnfreezable })
             setLoading(false)
-          }
-        )
+          })
+          .catch(console.log)
         break
       case 'IRight':
-        Promise.all([iMetadata(tokenId)]).then(([metadata]) => {
-          setItem({ ...item, type, metadata })
-          setLoading(false)
-        })
+        Promise.all([iMetadata(tokenId)])
+          .then(([metadata]) => {
+            setItem({ ...item, type, metadata })
+            setLoading(false)
+          })
+          .catch(console.log)
         break
       default:
-        Promise.all([isFrozen(address, tokenId) /*, currentFVersion(), currentIVersion()*/]).then(
-          ([isFrozen, fVersion = 1, iVersion = 1]) => {
+        Promise.all([isFrozen(address, tokenId) /*, currentFVersion(), currentIVersion()*/])
+          .then(([isFrozen, fVersion = 1, iVersion = 1]) => {
             setItem({ ...item, isFrozen, fVersion, iVersion })
             setLoading(false)
-          }
-        )
+          })
+          .catch(console.log)
     }
   }
 

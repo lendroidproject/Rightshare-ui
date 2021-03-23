@@ -30,12 +30,12 @@ export const fetchInfos = (assets, [baseAsset, tokenURI]) =>
               fetchMetadata(uri)
                 .then(({ data: tokenInfo }) => resolve({ ...asset, tokenInfo }))
                 .catch((err) => {
-                  console.error(err)
+                  console.log(err)
                   resolve(asset)
                 })
             })
             .catch((err) => {
-              console.error(err, asset)
+              console.log(err, asset)
               resolve(asset)
             })
         })
@@ -71,12 +71,14 @@ export default function ({ lang, info, onTab, onParent, children, ...props }) {
         })
         setPage({ offset: query.offset + PAGE_LIMIT, limit: PAGE_LIMIT })
         setEnd(newAssets.length < query.limit)
-        fetchInfos(newAssets, [baseAsset, tokenURI]).then((data) =>
-          dispatch({
-            type: 'GET_ASSET_INFO',
-            payload: { data, type: 'fRights' },
-          })
-        )
+        fetchInfos(newAssets, [baseAsset, tokenURI])
+          .then((data) =>
+            dispatch({
+              type: 'GET_ASSET_INFO',
+              payload: { data, type: 'fRights' },
+            })
+          )
+          .catch(console.log)
       })
       .catch((error) => {
         dispatch({

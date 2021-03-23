@@ -123,7 +123,9 @@ export const fetchInfos = (assets, [owner, iRightAddr, totalNFTRights, baseAsset
             new Promise((resolve) =>
               baseAsset(Number(tokenId))
                 .then(resolve)
-                .catch(() => resolve(null))
+                .catch(() => {
+                  resolve(null)
+                })
             ),
             new Promise((resolve) =>
               totalNFTRights(iRightAddr, address, Number(tokenId))
@@ -131,7 +133,9 @@ export const fetchInfos = (assets, [owner, iRightAddr, totalNFTRights, baseAsset
                   console.log(iRightAddr, address, tokenId, rights)
                   resolve(rights)
                 })
-                .catch(() => resolve(0))
+                .catch(() => {
+                  resolve(0)
+                })
             ),
           ])
             .then(([base, total]) => resolve({ ...asset, totalNFTRights: total, base }))
@@ -190,12 +194,14 @@ export default function ({ lang, onTab, onParent, children, ...props }) {
         })
         setPage({ offset: query.offset + PAGE_LIMIT, limit: PAGE_LIMIT })
         setEnd(newAssets.length < query.limit)
-        fetchInfos(newAssets, [owner, iRightAddr, totalNFTRights, baseAsset]).then((data) =>
-          dispatch({
-            type: 'GET_ASSET_INFO',
-            payload: { data, type: 'assets' },
-          })
-        )
+        fetchInfos(newAssets, [owner, iRightAddr, totalNFTRights, baseAsset])
+          .then((data) =>
+            dispatch({
+              type: 'GET_ASSET_INFO',
+              payload: { data, type: 'assets' },
+            })
+          )
+          .catch(console.log)
       })
       .catch((error) => {
         dispatch({
