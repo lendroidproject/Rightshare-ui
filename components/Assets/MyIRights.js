@@ -12,7 +12,7 @@ import Dropdown from '../Dropdown'
 
 const MAIN_NETWORK = process.env.MAIN_NETWORK
 
-export default function ({ lang, onTab, onParent, children, ...props }) {
+export default function MyIRights({ lang, onTab, onParent, children, ...props }) {
   const {
     title,
     info,

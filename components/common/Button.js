@@ -97,4 +97,6 @@ const Wrapper = styled.button`
   }
 `
 
-export default ({ className = 'primary', ...props }) => <Wrapper className={`button ${className}`} {...props} />
+export default function Button({ className = 'primary', ...props }) {
+  return <Wrapper className={`button ${className}`} {...props} />
+}

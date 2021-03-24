@@ -63,6 +63,6 @@ const reducer = (state, action) => {
 
 const defaults = {}
 
-export default (initialState = defaults) => {
+export default function configureStore(initialState = defaults) {
   return createStore(reducer, initialState)
 }

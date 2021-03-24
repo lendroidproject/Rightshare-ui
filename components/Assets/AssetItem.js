@@ -91,7 +91,7 @@ const ItemInfo = styled.div`
   }
 `
 
-export default ({ onSelect, ...data }) => {
+export default function AssetItem({ onSelect, ...data }) {
   const {
     token_id: id,
     // image_preview_url: preview,

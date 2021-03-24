@@ -459,7 +459,7 @@ const transformFreeze = ({ expiry, endTime, isExclusive, maxISupply, circulating
   serialNumber,
 })
 
-export default ({ lang, item, loading, onReload, onClose, onCreateMeta, ...props }) => {
+export default function AssetDetail({ lang, item, loading, onReload, onClose, onCreateMeta, ...props }) {
   const intl = intlActions(lang)
   const intlTx = intlTransactions(lang)
   const {

@@ -45,8 +45,8 @@ const Wrapper = styled.div`
   }
 
   &.icon input {
-      padding-left: 40px;
-      @media all and (max-width: 767px) {
+    padding-left: 40px;
+    @media all and (max-width: 767px) {
       padding-left: 34px;
     }
   }
@@ -56,9 +56,11 @@ const Wrapper = styled.div`
   }
 `
 
-export default ({ icon, suffix, ...props }) => (
-  <Wrapper className={`input ${icon ? 'icon' : ''} ${suffix ? 'suffix' : ''}`}>
-    {icon && <div className="icon">{icon}</div>}
-    <input {...props} />
-  </Wrapper>
-)
+export default function Input({ icon, suffix, ...props }) {
+  return (
+    <Wrapper className={`input ${icon ? 'icon' : ''} ${suffix ? 'suffix' : ''}`}>
+      {icon && <div className="icon">{icon}</div>}
+      <input {...props} />
+    </Wrapper>
+  )
+}

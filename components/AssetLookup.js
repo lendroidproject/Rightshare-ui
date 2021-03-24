@@ -73,7 +73,7 @@ export const Info = styled.div`
   margin-bottom: 15px;
 `
 
-export default function (props) {
+export default function AssetLookup(props) {
   const {
     methods: {
       IRight: { fetchRights },

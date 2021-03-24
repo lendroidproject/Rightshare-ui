@@ -84,10 +84,11 @@ const Wrapper = styled.div`
   }
 `
 
-export default ({ className = '', children, ...props }) => (
-  <Wrapper className={`spinner ${className}`} {...props}>
-    <div className="loadingio-spinner">
-      {/* <div className="spin">
+export default function Spinner({ className = '', children, ...props }) {
+  return (
+    <Wrapper className={`spinner ${className}`} {...props}>
+      <div className="loadingio-spinner">
+        {/* <div className="spin">
         <div>
           <div></div>
           <div></div>
@@ -97,8 +98,9 @@ export default ({ className = '', children, ...props }) => (
           <div></div>
         </div>
       </div> */}
-      <img src="/meta/loading-metatoken.gif" />
-    </div>
-    {children && children}
-  </Wrapper>
-)
+        <img src="/meta/loading-metatoken.gif" />
+      </div>
+      {children && children}
+    </Wrapper>
+  )
+}

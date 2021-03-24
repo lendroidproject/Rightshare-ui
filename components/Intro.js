@@ -54,7 +54,7 @@ const Wrapper = styled.div`
   }
 `
 
-export default function () {
+export default function Intro() {
   return (
     <Wrapper>
       <h3>How it works</h3>

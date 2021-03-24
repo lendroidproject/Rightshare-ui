@@ -19,35 +19,37 @@ export const Table = styled.table`
   }
 `
 
-export default ({ data: { expiry, isExclusive, maxISupply, circulatingISupply, serialNumber } }) => (
-  <Table cellSpacing="0" borderSpacing="1">
-    <tbody>
-      <tr>
-        <td>Expiry (UTC):</td>
-        <td>{expiry}</td>
-      </tr>
-      <tr>
-        <td>Exclusive :</td>
-        <td>{isExclusive ? 'Yes' : 'No'}</td>
-      </tr>
-      {maxISupply && (
+export default function AssetMetaData({ data: { expiry, isExclusive, maxISupply, circulatingISupply, serialNumber } }) {
+  return (
+    <Table cellSpacing="0" borderSpacing="1">
+      <tbody>
         <tr>
-          <td>Max I Supply :</td>
-          <td>{maxISupply}</td>
+          <td>Expiry (UTC):</td>
+          <td>{expiry}</td>
         </tr>
-      )}
-      {circulatingISupply && (
         <tr>
-          <td>Curculating I Supply :</td>
-          <td>{circulatingISupply}</td>
+          <td>Exclusive :</td>
+          <td>{isExclusive ? 'Yes' : 'No'}</td>
         </tr>
-      )}
-      {serialNumber && (
-        <tr>
-          <td>Serial Number :</td>
-          <td>{serialNumber}</td>
-        </tr>
-      )}
-    </tbody>
-  </Table>
-)
+        {maxISupply && (
+          <tr>
+            <td>Max I Supply :</td>
+            <td>{maxISupply}</td>
+          </tr>
+        )}
+        {circulatingISupply && (
+          <tr>
+            <td>Curculating I Supply :</td>
+            <td>{circulatingISupply}</td>
+          </tr>
+        )}
+        {serialNumber && (
+          <tr>
+            <td>Serial Number :</td>
+            <td>{serialNumber}</td>
+          </tr>
+        )}
+      </tbody>
+    </Table>
+  )
+}

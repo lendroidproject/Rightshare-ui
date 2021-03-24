@@ -42,7 +42,7 @@ export const fetchInfos = (assets, [baseAsset, tokenURI]) =>
     )
   )
 
-export default function ({ lang, info, onTab, onParent, children, ...props }) {
+export default function MyFRights({ lang, info, onTab, onParent, children, ...props }) {
   const {
     address: owner,
     dispatch,

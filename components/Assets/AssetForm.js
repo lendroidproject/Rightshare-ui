@@ -187,7 +187,7 @@ export const Templates = [
   // 'https://tinyurl.com/rs-template-04',
 ]
 
-export default ({ lang, form, setForm, active, metaTokens, setMetaTokens, onNewMeta, readOnly, children, errors }) => {
+export default function AssetForm({ lang, form, setForm, active, metaTokens, setMetaTokens, onNewMeta, readOnly, children, errors }) {
   // const intl = intlForm(lang)
 
   const { purpose = 'Rental', description = '', imageUrl = '', termsUrl = '' } = metaTokens[active] || {}

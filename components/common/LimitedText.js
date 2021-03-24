@@ -66,7 +66,7 @@ const Wrapper = styled.div`
   }
 `
 
-export default ({ value = '', onChange, max, warn, exceed }) => {
+export default function LimitedText({ value = '', onChange, max, warn, exceed }) {
   const textarea = createRef()
   const mask = createRef()
 

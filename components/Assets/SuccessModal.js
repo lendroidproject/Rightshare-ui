@@ -65,34 +65,36 @@ export const Content = styled.div`
   }
 `
 
-export default ({ onClose }) => (
-  <ItemOverlay>
-    <Content onMouseDown={(e) => e.stopPropagation()}>
-      <img src="/meta/close-btn.svg" className="close" onClick={onClose} />
-      <img src="/meta/celebrations.svg" className="tick" />
-      <h1>Congratulations</h1>
-      <p>
-        Your ticketing for virtual events meta tokens have been minted. They’re in your wallet. Refresh the page in a
-        couple of minutes and you can see them. You can also view details, share or sell them directly from your{' '}
-        <a
-          href={MAIN_NETWORK ? 'https://opensea.io/account' : 'https://rinkeby.opensea.io/account'}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          your OpenSea account
-        </a>
-        .<br />
-        <a
-          href="#"
-          onClick={(e) => {
-            e.preventDefault()
-            onClose()
-          }}
-        >
-          Click Here
-        </a>{' '}
-        to understand your minted Rights Tokens better.
-      </p>
-    </Content>
-  </ItemOverlay>
-)
+export default function SuccessModal({ onClose }) {
+  return (
+    <ItemOverlay>
+      <Content onMouseDown={(e) => e.stopPropagation()}>
+        <img src="/meta/close-btn.svg" className="close" onClick={onClose} />
+        <img src="/meta/celebrations.svg" className="tick" />
+        <h1>Congratulations</h1>
+        <p>
+          Your ticketing for virtual events meta tokens have been minted. They’re in your wallet. Refresh the page in a
+          couple of minutes and you can see them. You can also view details, share or sell them directly from your{' '}
+          <a
+            href={MAIN_NETWORK ? 'https://opensea.io/account' : 'https://rinkeby.opensea.io/account'}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            your OpenSea account
+          </a>
+          .<br />
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault()
+              onClose()
+            }}
+          >
+            Click Here
+          </a>{' '}
+          to understand your minted Rights Tokens better.
+        </p>
+      </Content>
+    </ItemOverlay>
+  )
+}

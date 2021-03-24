@@ -162,7 +162,7 @@ export const fetchInfos = (assets, [owner, iRightAddr, totalNFTRights, baseAsset
     )
   )
 
-export default function ({ lang, onTab, onParent, children, ...props }) {
+export default function MyAssets({ lang, onTab, onParent, children, ...props }) {
   const {
     title,
     info,
