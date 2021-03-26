@@ -240,6 +240,17 @@ export default function MyAssets({ lang, onTab, onParent, children, ...props }) 
     }
   }, [owner, info])
 
+  useEffect(() => {
+    myAssets(
+      {
+        offset: 0,
+        limit: PAGE_LIMIT,
+        owner,
+      },
+      true
+    )
+  }, [])
+
   const isScrolledIntoView = () => {
     const el = document.querySelector('.load-more')
     if (!el || el.dataset.loading === 'true') return

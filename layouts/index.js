@@ -180,11 +180,8 @@ export default connect((state) => state)(function ({ provider, onProvider, child
             style={{ borderRadius: 7 }}
             disabled
           />
-          <Button className={`black icon ${provider === 'metamask' ? 'active' : ''}`}>
-            <img src="/meta/Metamask.svg" onClick={() => onProvider('metamask')} />
-          </Button>
-          <Button className={`black icon ${provider === 'fortmatic' ? 'active' : ''}`}>
-            <img src="/meta/fortnite.svg" onClick={() => onProvider('fortmatic')} />
+          <Button className={`black icon active`}>
+            <img src={`/meta/${provider}.svg`} onClick={() => onProvider()} />
           </Button>
           {/* <Button
             style={{ fontSize: 30 }}

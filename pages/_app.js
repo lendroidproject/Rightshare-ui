@@ -5,6 +5,8 @@ import ReactGA from 'react-ga'
 import RightshareJS from 'rightshare-js'
 
 import Web3 from 'web3'
+import Web3Modal from 'web3modal'
+import WalletConnectProvider from '@walletconnect/web3-provider'
 import Fortmatic from 'fortmatic'
 
 import { Provider } from 'react-redux'
@@ -15,8 +17,26 @@ import Layout from '~layouts'
 import 'react-responsive-carousel/lib/styles/carousel.min.css'
 
 const MAIN_NETWORK = process.env.MAIN_NETWORK
+const INFURA_ID = process.env.INFURA_ID
 const OPENSEA_API_KEY = process.env.OPENSEA_API_KEY
 const FORTMATIC_API_KEY = process.env.FORTMATIC_API_KEY
+
+let web3Modal
+
+const providerOptions = (network) => ({
+  walletconnect: {
+    package: WalletConnectProvider,
+    options: {
+      infuraId: INFURA_ID,
+    },
+  },
+  fortmatic: {
+    package: Fortmatic,
+    options: {
+      key: FORTMATIC_API_KEY,
+    },
+  },
+})
 
 const themes = {
   primary: `
@@ -121,7 +141,6 @@ class RightshareApp extends App {
     addressTimer: null,
     balanceTimer: null,
     provider: 'metamask',
-    fortmatic: null,
     loading: true,
     theme: 'primary',
   }
@@ -146,56 +165,41 @@ class RightshareApp extends App {
       },
     })
 
-    const fortmatic = new Fortmatic(FORTMATIC_API_KEY)
-    this.setState({ fortmatic }, async () => {
-      if (window.ethereum) {
-        ethereum.autoRefreshOnNetworkChange = false
-        window.web3 = new Web3(window.ethereum)
-        if (ethereum.isConnected()) {
-          this.initMetamask()
-        } else {
-          ethereum.enable().then(() => this.initMetamask())
-        }
-      } else {
-        window.web3 = new Web3(fortmatic.getProvider())
-        this.initMetamask()
-      }
-    })
     this.setState({
       loading: false,
       theme: localStorage.getItem('theme') || 'primary',
     })
+
+    this.setWeb3Modal()
+    this.connectWallet()
+  }
+
+  setWeb3Modal() {
+    if (web3Modal) {
+      web3Modal.clearCachedProvider()
+    }
+    web3Modal = new Web3Modal({
+      cacheProvider: false,
+      providerOptions: providerOptions(),
+      disableInjectedProvider: false,
+    })
+  }
+
+  connectWallet() {
+    web3Modal
+      .connect()
+      .then((provider) => {
+        this.setState({
+          provider: provider.isMetaMask ? 'metamask' : provider.isFortmatic ? 'fortmatic' : 'wallet-connect',
+        })
+        window.web3 = new Web3(provider)
+        this.initMetamask()
+      })
+      .catch(console.log)
   }
 
   componentWillUnmount() {
     this.releaseTimer()
-  }
-
-  handleProvider(type) {
-    const { provider, fortmatic, address, balance } = this.state
-    const { store } = this.props
-    if (type === provider) return
-    this.releaseTimer()
-    const { methods } = store.getState()
-    switch (type) {
-      case 'fortmatic':
-        window.web3 = new Web3(fortmatic.getProvider())
-        methods.web3.setProvider(fortmatic.getProvider())
-        web3.eth.getAccounts((err, accounts) => {
-          if (!err) {
-            this.setState({ provider: 'fortmatic' }, () => this.initMetamask({ address: accounts[0] }))
-          } else {
-            window.web3 = new Web3(window.ethereum)
-            this.setState({ provider: 'metamask' }, () => this.initMetamask({ address, balance }))
-          }
-        })
-        break
-      default:
-        this.setState({ provider: 'metamask' }, () => this.initMetamask())
-        window.web3 = new Web3(window.ethereum)
-        methods.web3.setProvider(window.ethereum)
-        break
-    }
   }
 
   releaseTimer() {
@@ -367,6 +371,11 @@ class RightshareApp extends App {
               #__next {
                 width: 100%;
               }
+
+              #WEB3_CONNECT_MODAL_ID {
+                position: absolute;
+                z-index: 101;
+              }
             `,
             }}
           />
@@ -389,7 +398,7 @@ class RightshareApp extends App {
           <meta name="theme-color" content="#ffffff" />
         </Head>
         <Provider store={store}>
-          <Layout mainNetwork={MAIN_NETWORK} provider={provider} onProvider={this.handleProvider.bind(this)}>
+          <Layout mainNetwork={MAIN_NETWORK} provider={provider} onProvider={this.connectWallet.bind(this)}>
             <Component {...pageProps} onTheme={this.handleTheme.bind(this)} />
           </Layout>
         </Provider>

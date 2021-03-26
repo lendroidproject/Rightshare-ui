@@ -235,7 +235,7 @@ class MetaTokenUI extends React.Component {
     })
 
     const tabs = [
-      ...(!this.props.assets
+      ...(!this.props.assets || this.props.assets.length === 0
         ? [
             {
               label: '...',
